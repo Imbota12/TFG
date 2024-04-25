@@ -106,8 +106,10 @@ public class CrearUsuario extends AppCompatActivity {
                 if (!nombre.matches("[a-zA-Z]+")) {
                     // Si el texto contiene caracteres que no son letras, mostrar un mensaje de error
                     error.setText("El nombre solo puede contener letras");
+                    crear.setEnabled(false);
                 }else{
                     error.setText(" ");
+                    crear.setEnabled(true);
                 }
             }
         });
@@ -130,8 +132,10 @@ public class CrearUsuario extends AppCompatActivity {
                 if (!apellido.matches("[a-zA-Z]+")) {
                     // Si el texto contiene caracteres que no son letras, mostrar un mensaje de error
                     error.setText("El apellido solo puede contener letras");
+                    crear.setEnabled(false);
                 }else{
                     error.setText(" ");
+                    crear.setEnabled(true);
                 }
             }
         });
@@ -154,9 +158,11 @@ public class CrearUsuario extends AppCompatActivity {
                 if (!dnia.matches("[a-zA-Z0-9]+")) {
                     // Si el texto contiene caracteres que no son letras ni números, mostrar un mensaje de error
                     error.setText("El DNI solo puede contener letras o números");
+                    crear.setEnabled(false);
                 } else {
                     // Si el texto contiene solo letras o números, eliminar el mensaje de error si estaba presente
                     error.setText(" ");
+                    crear.setEnabled(true);
                 }
             }
         });
@@ -179,9 +185,38 @@ public class CrearUsuario extends AppCompatActivity {
                 if (!telefono.matches("[6-9][0-9]{0,8}")) {
                     // Si el texto no cumple con los criterios, mostrar un mensaje de error
                     error.setText("El teléfono debe tener entre 6 y 9 dígitos y empezar por 6, 7 o 9");
+                    crear.setEnabled(false);
                 } else {
                     // Si el texto cumple con los criterios, eliminar el mensaje de error si estaba presente
                     error.setText(" ");
+                    crear.setEnabled(true);
+                }
+            }
+        });
+
+        contrasena.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                // No se requiere acción antes del cambio de texto
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                // No se requiere acción durante el cambio de texto
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                // Verificar si la contraseña cumple con los criterios
+                String contrasena = s.toString();
+                if (contrasena.isEmpty() || contrasena.length() < 4 || contrasena.length() > 16) {
+                    // Si la contraseña está vacía o no cumple con los criterios, mostrar un mensaje de error
+                    error.setText("La contraseña debe tener entre 4 y 16 caracteres");
+                    crear.setEnabled(false);
+                } else {
+                    // Si la contraseña cumple con los criterios, eliminar el mensaje de error si estaba presente
+                    error.setText(null);
+                    crear.setEnabled(true);
                 }
             }
         });
@@ -228,11 +263,6 @@ public class CrearUsuario extends AppCompatActivity {
         }
         if (telefono.getText().toString().isEmpty()) {
             telefono.setError("Campo vacío");
-            return false;
-        }
-
-        if (contrasena.length() < 4 ){
-            telefono.setError("Contraseña debe tener más de 4 digitos");
             return false;
         }
 
