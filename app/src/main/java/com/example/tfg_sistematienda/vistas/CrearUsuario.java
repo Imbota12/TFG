@@ -3,8 +3,11 @@ package com.example.tfg_sistematienda.vistas;
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.InputFilter;
 import android.text.TextWatcher;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -19,15 +22,23 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.tfg_sistematienda.R;
+import com.example.tfg_sistematienda.controladores.BBDDController;
+import com.example.tfg_sistematienda.modelos.TiendaModel;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class CrearUsuario extends AppCompatActivity {
 
 
+    private BBDDController bbddController = new BBDDController();
     private EditText nombre, apellidos, usuario, contrasena, dni, telefono, veriContra;
     private Spinner tienda;
     private Button crear;
     private Switch vendedor, reponedor;
     private TextView error;
+    private String nifTienda;
+    private boolean isVendedor, isReponedor;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -40,6 +51,8 @@ public class CrearUsuario extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+
 
         nombre = findViewById(R.id.et_nombre_usuario);
         apellidos = findViewById(R.id.et_apellidos_usuario);
@@ -64,6 +77,8 @@ public class CrearUsuario extends AppCompatActivity {
                 // Si se activa el switchVendedor, desactivar el switchReponedor
                 if (isChecked) {
                     reponedor.setChecked(false);
+                    isVendedor=true;
+                    isReponedor=false;
                 }
             }
         });
@@ -74,19 +89,27 @@ public class CrearUsuario extends AppCompatActivity {
                 // Si se activa el switchReponedor, desactivar el switchVendedor
                 if (isChecked) {
                     vendedor.setChecked(false);
+                    isVendedor=false;
+                    isReponedor=true;
                 }
             }
         });
 
+
+
+
         crear.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                if (comprobarCampos() ==false){
+                if (comprobarCampos() == true){
+
                     vaciarCampos();
                 };
                 return true;
             }
         });
+
+
 
         nombre.addTextChangedListener(new TextWatcher() {
             @Override
@@ -221,6 +244,9 @@ public class CrearUsuario extends AppCompatActivity {
             }
         });
 
+
+        rellenarSpinnerTiendas();
+
     }
 
 
@@ -237,6 +263,13 @@ public class CrearUsuario extends AppCompatActivity {
         apellidos.setText(" ");
         usuario.setText(" ");
         contrasena.setText(" ");
+        dni.setText(" ");
+        telefono.setText(" ");
+        error.setText(null);
+        veriContra.setText(" ");
+        vendedor. setEnabled(false);
+        reponedor.setEnabled(false);
+
     }
 
     public boolean comprobarCampos(){
@@ -266,11 +299,51 @@ public class CrearUsuario extends AppCompatActivity {
             return false;
         }
 
+        if (!vendedor.isChecked() && !reponedor.isChecked()){
+            error.setText("Debe seleccionar un rol");
+            return false;
+        }
+
         if (!contrasena.equals(veriContra)){
             contrasena.setError("Las contraseñas deben coincidir");
             veriContra.setError("Las contraseñas deben coincidir");
             return false;
         }
         return true;
+    }
+
+    public void rellenarSpinnerTiendas(){
+        List<TiendaModel> tiendas = bbddController.obtenerListaTiendas();
+
+        // Obtener nombres de las tiendas para mostrar en el Spinner
+        ArrayList<String> nombresTiendas = new ArrayList<>();
+        for (TiendaModel tienda : tiendas) {
+            nombresTiendas.add(tienda.getNombre());
+        }
+
+        // Crear un adaptador para el Spinner
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, nombresTiendas);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        // Configurar el adaptador en el Spinner
+        tienda.setAdapter(adapter);
+
+        // Manejar la selección del usuario en el Spinner
+        tienda.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                // Obtener la tienda seleccionada por el usuario
+                TiendaModel tiendaSeleccionada = tiendas.get(position);
+                String nombreTienda = tiendaSeleccionada.getNombre();
+                nifTienda = tiendaSeleccionada.getCif();
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                // Manejar el caso en el que no se haya seleccionado ninguna tienda
+            }
+        });
+
     }
 }

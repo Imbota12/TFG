@@ -2,17 +2,22 @@ package com.example.tfg_sistematienda.BBDD;
 
 import android.os.StrictMode;
 
+import com.example.tfg_sistematienda.modelos.TiendaModel;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ConexionBBDD {
 
     private Connection conexion = null;
     private static final String DRIVER = "org.postgresql.Driver";
-    private static final String URL = "jdbc:postgresql://10.0.2.2:5432/TFG";
+    private static final String URL = "jdbc:postgresql://10.0.2.2:5432/TiendaInfo";
     private static final String USUARIO = "postgres";
     private static final String PASSWORD = "admin";
 
@@ -271,7 +276,39 @@ public class ConexionBBDD {
         return insertarOK;
     }
 
+    public List<TiendaModel> obtenerListaTiendas() {
+        List<TiendaModel> listaTiendas = new ArrayList<>();
+        conectarBD();
 
+        try {
+            String query = "SELECT cif, nombre, direccion, telefono FROM Tienda";
+            PreparedStatement preparedStatement = conexion.prepareStatement(query);
+            ResultSet resultSet = preparedStatement.executeQuery();
 
+            while (resultSet.next()) {
+                String cif = resultSet.getString("cif");
+                String nombre = resultSet.getString("nombre");
+                String direccion = resultSet.getString("direccion");
+                String telefono = resultSet.getString("telefono");
 
+                TiendaModel tienda = new TiendaModel(cif, nombre, direccion, telefono);
+                listaTiendas.add(tienda);
+            }
+
+            resultSet.close();
+            preparedStatement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                cerrarConnection(conexion); // Supongo que tienes un método cerrarConnection() para cerrar la conexión
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        return listaTiendas;
+    }
 }
+
+
