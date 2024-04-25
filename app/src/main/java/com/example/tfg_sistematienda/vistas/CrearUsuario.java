@@ -1,6 +1,8 @@
 package com.example.tfg_sistematienda.vistas;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputFilter;
@@ -27,6 +29,9 @@ import com.example.tfg_sistematienda.modelos.TiendaModel;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.mindrot.jbcrypt.BCrypt;
+
+
 
 public class CrearUsuario extends AppCompatActivity {
 
@@ -71,6 +76,8 @@ public class CrearUsuario extends AppCompatActivity {
 
         error = findViewById(R.id.tx_error);
 
+        error.setVisibility(View.INVISIBLE);
+
         vendedor.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -98,14 +105,26 @@ public class CrearUsuario extends AppCompatActivity {
 
 
 
-        crear.setOnLongClickListener(new View.OnLongClickListener() {
+        crear.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onLongClick(View v) {
+            public void onClick(View v) {
                 if (comprobarCampos() == true){
 
+
+
+
+                    if (bbddController.insertarUsuario(dni.getText().toString(), nombre.getText().toString(), apellidos.getText().toString(), telefono.getText().toString(),
+                            usuario.getText().toString(), hashPassword(contrasena.getText().toString()), nifTienda, false, isVendedor, isReponedor)){
+
+                        mostrarDialogoCrearOtroUsuario();
+
+                    }
+
                     vaciarCampos();
-                };
-                return true;
+
+
+
+                }
             }
         });
 
@@ -124,13 +143,14 @@ public class CrearUsuario extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                // Verificar si el texto contiene solo letras
+                // Verificar si el texto contiene solo letras y espacios
                 String nombre = s.toString();
-                if (!nombre.matches("[a-zA-Z]+")) {
-                    // Si el texto contiene caracteres que no son letras, mostrar un mensaje de error
-                    error.setText("El nombre solo puede contener letras");
+                if (!nombre.matches("[a-zA-Z\\s]+")) {
+                    // Si el texto contiene caracteres que no son letras ni espacios, mostrar un mensaje de error
+                    error.setVisibility(View.VISIBLE);
+                    error.setText("El nombre solo puede contener letras y espacios");
                     crear.setEnabled(false);
-                }else{
+                } else {
                     error.setText(" ");
                     crear.setEnabled(true);
                 }
@@ -150,17 +170,20 @@ public class CrearUsuario extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                // Verificar si el texto contiene solo letras
+                // Verificar si el texto contiene solo letras y espacios
                 String apellido = s.toString();
-                if (!apellido.matches("[a-zA-Z]+")) {
-                    // Si el texto contiene caracteres que no son letras, mostrar un mensaje de error
-                    error.setText("El apellido solo puede contener letras");
+                if (!apellido.matches("[a-zA-Z\\s]+")) {
+                    // Si el texto contiene caracteres que no son letras ni espacios, mostrar un mensaje de error
+
+                    error.setVisibility(View.VISIBLE);
+                    error.setText("El apellido solo puede contener letras y espacios");
                     crear.setEnabled(false);
-                }else{
+                } else {
                     error.setText(" ");
                     crear.setEnabled(true);
                 }
             }
+
         });
 
         dni.addTextChangedListener(new TextWatcher() {
@@ -180,6 +203,7 @@ public class CrearUsuario extends AppCompatActivity {
                 String dnia = s.toString();
                 if (!dnia.matches("[a-zA-Z0-9]+")) {
                     // Si el texto contiene caracteres que no son letras ni números, mostrar un mensaje de error
+                    error.setVisibility(View.VISIBLE);
                     error.setText("El DNI solo puede contener letras o números");
                     crear.setEnabled(false);
                 } else {
@@ -207,6 +231,7 @@ public class CrearUsuario extends AppCompatActivity {
                 String telefono = s.toString();
                 if (!telefono.matches("[6-9][0-9]{0,8}")) {
                     // Si el texto no cumple con los criterios, mostrar un mensaje de error
+                    error.setVisibility(View.VISIBLE);
                     error.setText("El teléfono debe tener entre 6 y 9 dígitos y empezar por 6, 7 o 9");
                     crear.setEnabled(false);
                 } else {
@@ -234,6 +259,7 @@ public class CrearUsuario extends AppCompatActivity {
                 String contrasena = s.toString();
                 if (contrasena.isEmpty() || contrasena.length() < 4 || contrasena.length() > 16) {
                     // Si la contraseña está vacía o no cumple con los criterios, mostrar un mensaje de error
+                    error.setVisibility(View.VISIBLE);
                     error.setText("La contraseña debe tener entre 4 y 16 caracteres");
                     crear.setEnabled(false);
                 } else {
@@ -253,22 +279,49 @@ public class CrearUsuario extends AppCompatActivity {
 
 
 
+    private void mostrarDialogoCrearOtroUsuario() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Usuario creado exitosamente");
+        builder.setMessage("¿Qué desea hacer a continuación?");
+        builder.setPositiveButton("Crear otro usuario", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // Aquí puedes agregar el código para crear otro usuario
+                // Por ejemplo, puedes limpiar los campos del formulario
+                // y permitir al usuario ingresar los datos de otro usuario.
+                vaciarCampos();
+            }
+        });
+        builder.setNegativeButton("Volver al menú", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // Aquí puedes agregar el código para volver al menú principal
+                // Por ejemplo, puedes iniciar una nueva actividad que muestre el menú.
+                //volverAlMenu();
+            }
+        });
+        builder.setCancelable(false); // Evitar que el diálogo se cierre al tocar fuera de él
+        builder.show();
+
+    }
 
 
 
 
 
     public void vaciarCampos(){
-        nombre.setText(" ");
-        apellidos.setText(" ");
-        usuario.setText(" ");
-        contrasena.setText(" ");
-        dni.setText(" ");
-        telefono.setText(" ");
+        nombre.setText("");
+        apellidos.setText("");
+        usuario.setText("");
+        contrasena.setText("");
+        dni.setText("");
+        telefono.setText("");
         error.setText(null);
-        veriContra.setText(" ");
-        vendedor. setEnabled(false);
-        reponedor.setEnabled(false);
+        veriContra.setText("");
+        vendedor.setChecked(false);
+        reponedor.setChecked(false);
+        error.setText("");
+        error.setVisibility(View.INVISIBLE);
 
     }
 
@@ -304,11 +357,18 @@ public class CrearUsuario extends AppCompatActivity {
             return false;
         }
 
-        if (!contrasena.equals(veriContra)){
+        if (!contrasena.getText().toString().equals(veriContra.getText().toString())){
             contrasena.setError("Las contraseñas deben coincidir");
             veriContra.setError("Las contraseñas deben coincidir");
             return false;
         }
+
+        List<String> todosCorreos= bbddController.obtenerListaCorreos();
+        if (todosCorreos.contains(usuario.getText().toString())){
+            usuario.setError("El usuario ya existe");
+            return false;
+        }
+
         return true;
     }
 
@@ -346,4 +406,9 @@ public class CrearUsuario extends AppCompatActivity {
         });
 
     }
+
+    public static String hashPassword(String password) {
+        return BCrypt.hashpw(password, BCrypt.gensalt());
+    }
+
 }

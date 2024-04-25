@@ -309,6 +309,37 @@ public class ConexionBBDD {
 
         return listaTiendas;
     }
+
+
+    public List<String> obtenerListaCorreos() {
+        List<String> listaCorreos = new ArrayList<>();
+        conectarBD(); // Supongamos que esta función establece la conexión a la base de datos
+
+        try {
+            String query = "SELECT correo FROM Usuarios";
+            PreparedStatement preparedStatement = conexion.prepareStatement(query);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()) {
+                String correo = resultSet.getString("correo");
+                listaCorreos.add(correo);
+            }
+
+            resultSet.close();
+            preparedStatement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                cerrarConnection(conexion); // Supongo que tienes un método cerrarConnection() para cerrar la conexión
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        return listaCorreos;
+    }
+
 }
 
 
