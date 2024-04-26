@@ -60,6 +60,38 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
+    <TextView
+        android:id="@+id/tx_inicio"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="448dp"
+        android:layout_marginBottom="612dp"
+        android:text="INICIO DE SESION"
+        android:textAlignment="center"
+        android:textSize="48sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/tx_olvido"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="776dp"
+        android:layout_marginBottom="428dp"
+        android:text="¿SE LE OLVIDÓ EL CORREO Y/O CONTRASEÑA?"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/bt_recuperar"
+        android:layout_width="306dp"
+        android:layout_height="72dp"
+        android:layout_marginStart="776dp"
+        android:layout_marginBottom="300dp"
+        android:text="RECUPERAR CREDENCIALES"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
 
 

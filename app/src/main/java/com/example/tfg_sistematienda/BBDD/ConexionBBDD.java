@@ -3,6 +3,7 @@ package com.example.tfg_sistematienda.BBDD;
 import android.os.StrictMode;
 
 import com.example.tfg_sistematienda.modelos.TiendaModel;
+import com.example.tfg_sistematienda.modelos.UsuarioModel;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -316,7 +317,7 @@ public class ConexionBBDD {
         conectarBD(); // Supongamos que esta función establece la conexión a la base de datos
 
         try {
-            String query = "SELECT correo FROM Usuarios";
+            String query = "SELECT correo FROM usuario";
             PreparedStatement preparedStatement = conexion.prepareStatement(query);
             ResultSet resultSet = preparedStatement.executeQuery();
 
@@ -339,6 +340,100 @@ public class ConexionBBDD {
 
         return listaCorreos;
     }
+
+
+    public UsuarioModel buscarUsuario(String nombre, String apellidos, String dni, String telefono) {
+        UsuarioModel usuarioEncontrado = null;
+        conectarBD(); // Supongamos que esta función establece la conexión a la base de datos
+
+        try {
+            // Construir la consulta SQL con los parámetros proporcionados
+            String query = "SELECT * FROM usuario WHERE nombre = ? AND apellido = ? AND dni = ? AND telefono = ?";
+            PreparedStatement preparedStatement = conexion.prepareStatement(query);
+            preparedStatement.setString(1, nombre);
+            preparedStatement.setString(2, apellidos);
+            preparedStatement.setString(3, dni);
+            preparedStatement.setString(4, telefono);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            // Si se encuentra al menos un resultado, el usuario existe
+            if (resultSet.next()) {
+                // Crear un objeto UsuarioModel con los datos del resultado
+                usuarioEncontrado = new UsuarioModel(
+                        resultSet.getString("dni"),
+                        resultSet.getString("nombre"),
+                        resultSet.getString("apellido"),
+                        resultSet.getString("telefono"),
+                        resultSet.getString("correo"),
+                        resultSet.getBoolean("activo"),
+                        resultSet.getString("contraseña"),
+                        resultSet.getString("id_tienda"),
+                        resultSet.getBoolean("is_admin"),
+                        resultSet.getBoolean("is_vendedor"),
+                        resultSet.getBoolean("is_reponedor")
+                );
+            }
+
+
+            resultSet.close();
+            preparedStatement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                cerrarConnection(conexion); // Supongo que tienes un método cerrarConnection() para cerrar la conexión
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        return usuarioEncontrado;
+    }
+
+    public boolean actualizarUsuario(UsuarioModel usuarioActualizado) {
+        conectarBD(); // Supongamos que esta función establece la conexión a la base de datos
+
+        try {
+            // Construir la consulta SQL para actualizar el usuario
+            String query = "UPDATE usuario SET nombre = ?, apellido = ?, telefono = ?, correo = ?, activo = ?, contraseña = ?, id_tienda = ?, is_admin = ?, is_vendedor = ?, is_reponedor = ? WHERE dni = ?";
+            PreparedStatement preparedStatement = conexion.prepareStatement(query);
+
+            // Establecer los valores de los parámetros en la consulta SQL
+            preparedStatement.setString(1, usuarioActualizado.getNombre());
+            preparedStatement.setString(2, usuarioActualizado.getApellido());
+            preparedStatement.setString(3, usuarioActualizado.getTelefono());
+            preparedStatement.setString(4, usuarioActualizado.getCorreo());
+            preparedStatement.setBoolean(5, usuarioActualizado.isActivo());
+            preparedStatement.setString(6, usuarioActualizado.getContraseña());
+            preparedStatement.setString(7, usuarioActualizado.getIdTienda());
+            preparedStatement.setBoolean(8, usuarioActualizado.isAdmin());
+            preparedStatement.setBoolean(9, usuarioActualizado.isVendedor());
+            preparedStatement.setBoolean(10, usuarioActualizado.isReponedor());
+            preparedStatement.setString(11, usuarioActualizado.getDni());
+
+            // Ejecutar la consulta SQL para actualizar el usuario
+            int filasActualizadas = preparedStatement.executeUpdate();
+
+            // Verificar si se actualizaron filas (es decir, si el usuario se actualizó correctamente)
+            if (filasActualizadas > 0) {
+                return true; // El usuario se actualizó correctamente
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                cerrarConnection(conexion); // Supongo que tienes un método cerrarConnection() para cerrar la conexión
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        return false; // La actualización del usuario falló
+    }
+
+
+
 
 }
 

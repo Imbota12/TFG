@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextWatcher;
+import android.util.Patterns;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -23,6 +24,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.tfg_sistematienda.MainActivity;
 import com.example.tfg_sistematienda.R;
 import com.example.tfg_sistematienda.controladores.BBDDController;
 import com.example.tfg_sistematienda.modelos.TiendaModel;
@@ -109,20 +111,21 @@ public class CrearUsuario extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (comprobarCampos() == true){
+                    // Obtener los valores de los EditText y quitar los espacios en blanco
+                    String nombreUsuario = nombre.getText().toString().trim();
+                    String apellidosUsuario = apellidos.getText().toString().trim();
+                    String dniUsuario = dni.getText().toString().trim();
+                    String telefonoUsuario = telefono.getText().toString().trim();
+                    String correoUsuario = usuario.getText().toString().trim();
+                    String contraseñaUsuario = contrasena.getText().toString().trim();
 
-
-
-
-                    if (bbddController.insertarUsuario(dni.getText().toString(), nombre.getText().toString(), apellidos.getText().toString(), telefono.getText().toString(),
-                            usuario.getText().toString(), hashPassword(contrasena.getText().toString()), nifTienda, false, isVendedor, isReponedor)){
-
+                    if (bbddController.insertarUsuario(dniUsuario, nombreUsuario, apellidosUsuario, telefonoUsuario,
+                            correoUsuario, hashPassword(contraseñaUsuario), nifTienda, false, isVendedor, isReponedor)) {
                         mostrarDialogoCrearOtroUsuario();
-
+                        vaciarCampos();
+                    } else {
+                        mostrarAlertaErrorBBDD();
                     }
-
-                    vaciarCampos();
-
-
 
                 }
             }
@@ -229,10 +232,10 @@ public class CrearUsuario extends AppCompatActivity {
             public void afterTextChanged(Editable s) {
                 // Verificar si el texto contiene solo números y cumple con los criterios adicionales
                 String telefono = s.toString();
-                if (!telefono.matches("[6-9][0-9]{0,8}")) {
+                if (!telefono.matches("[6-9]\\d{8}")) {
                     // Si el texto no cumple con los criterios, mostrar un mensaje de error
                     error.setVisibility(View.VISIBLE);
-                    error.setText("El teléfono debe tener entre 6 y 9 dígitos y empezar por 6, 7 o 9");
+                    error.setText("El teléfono debe tener exactamente 9 dígitos y empezar por 6, 7 u 9");
                     crear.setEnabled(false);
                 } else {
                     // Si el texto cumple con los criterios, eliminar el mensaje de error si estaba presente
@@ -241,6 +244,35 @@ public class CrearUsuario extends AppCompatActivity {
                 }
             }
         });
+
+        usuario.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                // No se requiere acción antes del cambio de texto
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                // No se requiere acción durante el cambio de texto
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                // Verificar si el texto cumple con la estructura de un correo electrónico válido
+                String correoText = s.toString();
+                if (!Patterns.EMAIL_ADDRESS.matcher(correoText).matches()) {
+                    // Si el texto no cumple con los criterios, mostrar un mensaje de error
+                    error.setVisibility(View.VISIBLE);
+                    error.setText("Por favor, introduce un correo electrónico válido");
+                    crear.setEnabled(false);
+                } else {
+                    // Si el texto cumple con los criterios, eliminar el mensaje de error si estaba presente
+                    error.setText(" ");
+                    crear.setEnabled(true);
+                }
+            }
+        });
+
 
         contrasena.addTextChangedListener(new TextWatcher() {
             @Override
@@ -365,7 +397,7 @@ public class CrearUsuario extends AppCompatActivity {
 
         List<String> todosCorreos= bbddController.obtenerListaCorreos();
         if (todosCorreos.contains(usuario.getText().toString())){
-            usuario.setError("El usuario ya existe");
+            usuario.setError("El correo ya existe");
             return false;
         }
 
@@ -409,6 +441,19 @@ public class CrearUsuario extends AppCompatActivity {
 
     public static String hashPassword(String password) {
         return BCrypt.hashpw(password, BCrypt.gensalt());
+    }
+
+    private void mostrarAlertaErrorBBDD() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(CrearUsuario.this);
+        builder.setTitle("Error en la inserccion en BBDD")
+                .setMessage("Hubo un error a la hora de insertar en BBDD. Compruebe los campos que sean ideales. Puede suceder que haya un error interno en la BBDD. Lo sentimos")
+                .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                })
+                .show();
     }
 
 }

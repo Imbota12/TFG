@@ -2,6 +2,7 @@ package com.example.tfg_sistematienda.controladores;
 
 import com.example.tfg_sistematienda.BBDD.ConexionBBDD;
 import com.example.tfg_sistematienda.modelos.TiendaModel;
+import com.example.tfg_sistematienda.modelos.UsuarioModel;
 
 import java.util.List;
 
@@ -26,5 +27,10 @@ public class BBDDController {
     }
 
     public List<String> obtenerListaCorreos() {return conexionBBDD.obtenerListaCorreos();}
+
+    public UsuarioModel buscarUsuario(String nombre, String apellidos, String dni, String telefono) {return conexionBBDD.buscarUsuario(nombre, apellidos, dni, telefono);}
+
+    public boolean actualizarUsuario(UsuarioModel usuarioActualizado) {return conexionBBDD.actualizarUsuario(usuarioActualizado);}
+
 
 }
