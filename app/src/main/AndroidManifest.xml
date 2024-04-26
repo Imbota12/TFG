@@ -22,6 +22,15 @@
         android:theme="@style/Theme.TFG_SistemaTienda"
         tools:targetApi="31">
         <activity
+            android:name=".vistas.GeneralReponedor"
+            android:exported="false" />
+        <activity
+            android:name=".vistas.GeneralVendedor"
+            android:exported="false" />
+        <activity
+            android:name=".vistas.GeneralAdmin"
+            android:exported="false" />
+        <activity
             android:name=".vistas.CrearUsuario"
             android:exported="false" />
         <activity

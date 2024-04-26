@@ -21,6 +21,9 @@ import androidx.core.view.WindowInsetsCompat;
 import com.example.tfg_sistematienda.controladores.BBDDController;
 import com.example.tfg_sistematienda.modelos.UsuarioModel;
 import com.example.tfg_sistematienda.vistas.CrearUsuario;
+import com.example.tfg_sistematienda.vistas.GeneralAdmin;
+import com.example.tfg_sistematienda.vistas.GeneralReponedor;
+import com.example.tfg_sistematienda.vistas.GeneralVendedor;
 
 import org.mindrot.jbcrypt.BCrypt;
 
@@ -28,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
 
     private Button iniciar, recuperar;
     private BBDDController bbddController= new BBDDController();
+    private EditText usuario, contrasena;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,11 +47,48 @@ public class MainActivity extends AppCompatActivity {
         iniciar = findViewById(R.id.iniciar_sesion);
         recuperar = findViewById(R.id.bt_recuperar);
 
+        usuario = findViewById(R.id.usuario);
+        contrasena = findViewById(R.id.contrasena);
+
         iniciar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(MainActivity.this, CrearUsuario.class);
-                startActivity(i);
+
+                String contraseñaIntroducida = contrasena.getText().toString();
+                String contraseñaBBDDHasheada = bbddController.obtenerContraseñaPorCorreo(usuario.getText().toString());
+
+                if (contraseñaBBDDHasheada == null){
+                    usuario.setError("El usuario no existe");
+                    contrasena.setError("El usuario no existe");
+                    return;
+                }
+
+                if (!BCrypt.checkpw(contraseñaIntroducida, contraseñaBBDDHasheada)){
+                    contrasena.setError("La contraseña no es correcta");
+                    return;
+                }else{
+                    UsuarioModel usuarioActual = bbddController.buscarUsuarioPorCorreo(usuario.getText().toString());
+                    if (usuarioActual.isActivo()){
+                        if (usuarioActual.isVendedor()){
+                            Intent i = new Intent(MainActivity.this, GeneralVendedor.class);
+                            i.putExtra("usuarioDNI", usuarioActual.getDni());
+                            startActivity(i);
+                        }else if (usuarioActual.isReponedor()){
+                            Intent i = new Intent(MainActivity.this, GeneralReponedor.class);
+                            i.putExtra("usuarioDNI", usuarioActual.getDni());
+                            startActivity(i);
+                        }else if (usuarioActual.isAdmin()){
+                            Intent i = new Intent(MainActivity.this, GeneralAdmin.class);
+                            i.putExtra("usuarioDNI", usuarioActual.getDni());
+                            startActivity(i);
+                        }
+
+                    }else{
+                        usuario.setError("El usuario no está activo");
+                    }
+
+                }
+
             }
         });
 

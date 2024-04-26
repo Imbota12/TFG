@@ -433,6 +433,83 @@ public class ConexionBBDD {
     }
 
 
+    public String obtenerContraseñaPorCorreo(String correo) {
+        String contraseña = null;
+        conectarBD(); // Supongamos que esta función establece la conexión a la base de datos
+
+        try {
+            // Construir la consulta SQL con el correo proporcionado
+            String query = "SELECT contraseña FROM usuario WHERE correo = ?";
+            PreparedStatement preparedStatement = conexion.prepareStatement(query);
+            preparedStatement.setString(1, correo);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            // Si se encuentra al menos un resultado, se obtiene la contraseña
+            if (resultSet.next()) {
+                contraseña = resultSet.getString("contraseña");
+            }
+
+            resultSet.close();
+            preparedStatement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                cerrarConnection(conexion); // Supongo que tienes un método cerrarConnection() para cerrar la conexión
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        return contraseña;
+    }
+
+    public UsuarioModel buscarUsuarioPorCorreo(String correo) {
+        UsuarioModel usuarioEncontrado = null;
+        conectarBD(); // Supongamos que esta función establece la conexión a la base de datos
+
+        try {
+            // Construir la consulta SQL con el correo proporcionado
+            String query = "SELECT * FROM usuario WHERE correo = ?";
+            PreparedStatement preparedStatement = conexion.prepareStatement(query);
+            preparedStatement.setString(1, correo);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            // Si se encuentra al menos un resultado, el usuario existe
+            if (resultSet.next()) {
+                // Crear un objeto UsuarioModel con los datos del resultado
+                usuarioEncontrado = new UsuarioModel(
+                        resultSet.getString("dni"),
+                        resultSet.getString("nombre"),
+                        resultSet.getString("apellido"),
+                        resultSet.getString("telefono"),
+                        resultSet.getString("correo"),
+                        resultSet.getBoolean("activo"),
+                        resultSet.getString("contraseña"),
+                        resultSet.getString("id_tienda"),
+                        resultSet.getBoolean("is_admin"),
+                        resultSet.getBoolean("is_vendedor"),
+                        resultSet.getBoolean("is_reponedor")
+                );
+            }
+
+            resultSet.close();
+            preparedStatement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                cerrarConnection(conexion); // Supongo que tienes un método cerrarConnection() para cerrar la conexión
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        return usuarioEncontrado;
+    }
+
 
 
 }
