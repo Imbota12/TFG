@@ -20,6 +20,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.tfg_sistematienda.controladores.BBDDController;
 import com.example.tfg_sistematienda.modelos.UsuarioModel;
+import com.example.tfg_sistematienda.vistas.CrearProducto;
 import com.example.tfg_sistematienda.vistas.CrearUsuario;
 import com.example.tfg_sistematienda.vistas.GeneralAdmin;
 import com.example.tfg_sistematienda.vistas.GeneralReponedor;
@@ -30,6 +31,8 @@ import org.mindrot.jbcrypt.BCrypt;
 public class MainActivity extends AppCompatActivity {
 
     private Button iniciar, recuperar;
+
+    private Button irCrearProducto;
     private BBDDController bbddController= new BBDDController();
     private EditText usuario, contrasena;
 
@@ -46,10 +49,18 @@ public class MainActivity extends AppCompatActivity {
 
         iniciar = findViewById(R.id.iniciar_sesion);
         recuperar = findViewById(R.id.bt_recuperar);
+        irCrearProducto = findViewById(R.id.crear_producto_ir);
 
         usuario = findViewById(R.id.usuario);
         contrasena = findViewById(R.id.contrasena);
 
+        irCrearProducto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(MainActivity.this, CrearProducto.class);
+                startActivity(i);
+            }
+        });
         iniciar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

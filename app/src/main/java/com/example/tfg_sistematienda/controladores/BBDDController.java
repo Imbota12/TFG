@@ -4,6 +4,7 @@ import com.example.tfg_sistematienda.BBDD.ConexionBBDD;
 import com.example.tfg_sistematienda.modelos.TiendaModel;
 import com.example.tfg_sistematienda.modelos.UsuarioModel;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public class BBDDController {
@@ -35,6 +36,12 @@ public class BBDDController {
     public String obtenerContraseñaPorCorreo(String correo) { return conexionBBDD.obtenerContraseñaPorCorreo(correo);}
 
     public UsuarioModel buscarUsuarioPorCorreo(String correo) { return conexionBBDD.buscarUsuarioPorCorreo(correo);}
+
+    public boolean insertarProducto(String codigoBarras, String nombre, String descripcion, int cantidadStock,
+                                    BigDecimal precioUnidad, int vecesComprado, int vecesDevuelto, String imagenProducto,
+                                    String idTienda) { return conexionBBDD.insertarProducto(codigoBarras, nombre, descripcion,cantidadStock,precioUnidad, vecesComprado, vecesDevuelto, imagenProducto, idTienda);}
+
+
 
 
 }

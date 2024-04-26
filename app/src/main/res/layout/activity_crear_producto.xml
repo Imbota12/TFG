@@ -7,4 +7,102 @@
     android:layout_height="match_parent"
     tools:context=".vistas.CrearProducto">
 
+    <TextView
+        android:id="@+id/textView13"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="380dp"
+        android:layout_marginBottom="696dp"
+        android:text="FORMULARIO CREAR PRODUCTO"
+        android:textSize="34sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageView
+        android:id="@+id/imagen_producto"
+        android:layout_width="157dp"
+        android:layout_height="177dp"
+        android:layout_marginStart="80dp"
+        android:layout_marginBottom="484dp"
+        android:background="@android:color/transparent"
+        android:scaleType="fitXY"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@mipmap/productosinimagen" />
+
+    <Button
+        android:id="@+id/hacer_foto"
+        android:layout_width="213dp"
+        android:layout_height="71dp"
+        android:layout_marginStart="256dp"
+        android:layout_marginBottom="588dp"
+        android:text="TOMAR FOTO"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/elegir_foto"
+        android:layout_width="213dp"
+        android:layout_height="81dp"
+        android:layout_marginStart="256dp"
+        android:layout_marginBottom="484dp"
+        android:text="ELEGIR FOTO DESDE ALMACENAMIENTO"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/crear_producto"
+        android:layout_width="1169dp"
+        android:layout_height="60dp"
+        android:layout_marginStart="56dp"
+        android:layout_marginBottom="40dp"
+        android:text="CREAR PRODUCTO"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <EditText
+        android:id="@+id/codigobarras_producto"
+        android:layout_width="425dp"
+        android:layout_height="72dp"
+        android:layout_marginStart="620dp"
+        android:layout_marginBottom="600dp"
+        android:ems="10"
+        android:inputType="text"
+        android:text="SIN CODIGO DE BARRAS"
+        android:textAlignment="center"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/generar_cod_barras"
+        android:layout_width="198dp"
+        android:layout_height="96dp"
+        android:layout_marginStart="1048dp"
+        android:layout_marginBottom="588dp"
+        android:text="GENERAR CODIGO BARRAS"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageView
+        android:id="@+id/imagen_cod_barras"
+        android:layout_width="439dp"
+        android:layout_height="141dp"
+        android:layout_marginStart="620dp"
+        android:layout_marginBottom="444dp"
+        android:background="@android:color/transparent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@mipmap/codigobarrasvacio" />
+
+    <Button
+        android:id="@+id/imprimir_cod_barras"
+        android:layout_width="164dp"
+        android:layout_height="105dp"
+        android:layout_marginStart="1068dp"
+        android:layout_marginBottom="460dp"
+        android:text="IMPRIMIR COD BARRAS"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

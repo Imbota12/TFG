@@ -92,6 +92,26 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
+    <TextView
+        android:id="@+id/textView12"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="152dp"
+        android:layout_marginBottom="80dp"
+        android:text="PARA CUALQUIER PROBLEMA, CONTACTE A IOAN MARK BOTA AL CORREO ELECTRONICO ioanbota2002@outlook.es o llamando directamente a 641938476"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/crear_producto_ir"
+        android:layout_width="118dp"
+        android:layout_height="122dp"
+        android:layout_marginStart="964dp"
+        android:layout_marginBottom="512dp"
+        android:text="Crear Producto"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
 
 

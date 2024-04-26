@@ -5,6 +5,7 @@ import android.os.StrictMode;
 import com.example.tfg_sistematienda.modelos.TiendaModel;
 import com.example.tfg_sistematienda.modelos.UsuarioModel;
 
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -245,7 +246,7 @@ public class ConexionBBDD {
     }
 
     public boolean insertarProducto(String codigoBarras, String nombre, String descripcion, int cantidadStock,
-                                    double precioUnidad, int vecesComprado, int vecesDevuelto, String imagenProducto,
+                                    BigDecimal precioUnidad, int vecesComprado, int vecesDevuelto, String imagenProducto,
                                     String idTienda) {
         boolean insertarOK = false;
         conectarBD();
@@ -257,7 +258,7 @@ public class ConexionBBDD {
             preparedStatement.setString(2, nombre);
             preparedStatement.setString(3, descripcion);
             preparedStatement.setInt(4, cantidadStock);
-            preparedStatement.setDouble(5, precioUnidad);
+            preparedStatement.setBigDecimal(5, precioUnidad);
             preparedStatement.setInt(6, vecesComprado);
             preparedStatement.setInt(7, vecesDevuelto);
             preparedStatement.setString(8, imagenProducto);

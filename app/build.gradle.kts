@@ -37,6 +37,8 @@ dependencies {
     implementation("com.google.android.material:material:1.11.0")
     implementation ("org.postgresql:postgresql:42.2.9")
     implementation ("org.mindrot:jbcrypt:0.4")
+    implementation ("com.google.zxing:core:3.4.1")
+    implementation ("com.journeyapps:zxing-android-embedded:4.2.0")
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
