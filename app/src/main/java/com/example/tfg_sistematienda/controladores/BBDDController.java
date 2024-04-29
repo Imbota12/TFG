@@ -1,6 +1,7 @@
 package com.example.tfg_sistematienda.controladores;
 
 import com.example.tfg_sistematienda.BBDD.ConexionBBDD;
+import com.example.tfg_sistematienda.modelos.ProductoModel;
 import com.example.tfg_sistematienda.modelos.TiendaModel;
 import com.example.tfg_sistematienda.modelos.UsuarioModel;
 
@@ -46,5 +47,7 @@ public class BBDDController {
     public List<String> obtenerListaCodigosBarras() {return conexionBBDD.obtenerListaCodigosBarras();}
 
     public List<String> obtenerListaCIF() {return conexionBBDD.obtenerListaCIF();}
+
+    public List<ProductoModel> obtenerListaProductos() {return conexionBBDD.obtenerListaProductos();}
 
 }

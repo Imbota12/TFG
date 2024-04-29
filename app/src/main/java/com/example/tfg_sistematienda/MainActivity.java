@@ -26,6 +26,7 @@ import com.example.tfg_sistematienda.vistas.CrearUsuario;
 import com.example.tfg_sistematienda.vistas.GeneralAdmin;
 import com.example.tfg_sistematienda.vistas.GeneralReponedor;
 import com.example.tfg_sistematienda.vistas.GeneralVendedor;
+import com.example.tfg_sistematienda.vistas.ListaInventario;
 
 import org.mindrot.jbcrypt.BCrypt;
 
@@ -58,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
         irCrearProducto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(MainActivity.this, CrearTienda.class);
+                Intent i = new Intent(MainActivity.this, ListaInventario.class);
                 startActivity(i);
             }
         });

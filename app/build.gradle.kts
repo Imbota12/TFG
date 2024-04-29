@@ -39,6 +39,7 @@ dependencies {
     implementation ("org.mindrot:jbcrypt:0.4")
     implementation ("com.google.zxing:core:3.4.1")
     implementation ("com.journeyapps:zxing-android-embedded:4.2.0")
+    implementation ("androidx.recyclerview:recyclerview:1.3.2")
     implementation(libs.play.services.maps)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)

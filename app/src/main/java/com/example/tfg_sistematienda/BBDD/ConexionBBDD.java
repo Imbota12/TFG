@@ -2,6 +2,7 @@ package com.example.tfg_sistematienda.BBDD;
 
 import android.os.StrictMode;
 
+import com.example.tfg_sistematienda.modelos.ProductoModel;
 import com.example.tfg_sistematienda.modelos.TiendaModel;
 import com.example.tfg_sistematienda.modelos.UsuarioModel;
 
@@ -572,6 +573,50 @@ public class ConexionBBDD {
         return listaCif;
     }
 
+
+
+    public List<ProductoModel> obtenerListaProductos() {
+        List<ProductoModel> listaProductos = new ArrayList<>();
+        conectarBD(); // Supongamos que esta función establece la conexión a la base de datos
+
+        try {
+            String query = "SELECT codigo_barras, nombre, descripcion, cantidad_stock, precio_unidad, veces_comprado, veces_devuelto, imagen_producto, id_tienda FROM producto";
+            PreparedStatement preparedStatement = conexion.prepareStatement(query);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()) {
+                ProductoModel producto = new ProductoModel();
+                producto.setCodigoBarras(resultSet.getString("codigo_barras"));
+                producto.setNombre(resultSet.getString("nombre"));
+                producto.setDescripcion(resultSet.getString("descripcion"));
+                producto.setCantidadStock(resultSet.getInt("cantidad_stock"));
+                producto.setPrecioUnidad(resultSet.getDouble("precio_unidad"));
+                producto.setVecesComprado(resultSet.getInt("veces_comprado"));
+                producto.setVecesDevuelto(resultSet.getInt("veces_devuelto"));
+                producto.setImagenProducto(resultSet.getBytes("imagen_producto"));
+                producto.setIdTienda(resultSet.getString("id_tienda"));
+
+                listaProductos.add(producto);
+            }
+
+            resultSet.close();
+            preparedStatement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                cerrarConnection(conexion); // Supongo que tienes un método cerrarConnection() para cerrar la conexión
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        return listaProductos;
+    }
+
+
 }
+
+
 
 
