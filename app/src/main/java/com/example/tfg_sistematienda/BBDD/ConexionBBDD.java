@@ -246,7 +246,7 @@ public class ConexionBBDD {
     }
 
     public boolean insertarProducto(String codigoBarras, String nombre, String descripcion, int cantidadStock,
-                                    BigDecimal precioUnidad, int vecesComprado, int vecesDevuelto, String imagenProducto,
+                                    double precioUnidad, int vecesComprado, int vecesDevuelto, byte[] imagenProducto,
                                     String idTienda) {
         boolean insertarOK = false;
         conectarBD();
@@ -258,10 +258,10 @@ public class ConexionBBDD {
             preparedStatement.setString(2, nombre);
             preparedStatement.setString(3, descripcion);
             preparedStatement.setInt(4, cantidadStock);
-            preparedStatement.setBigDecimal(5, precioUnidad);
+            preparedStatement.setDouble(5, precioUnidad);
             preparedStatement.setInt(6, vecesComprado);
             preparedStatement.setInt(7, vecesDevuelto);
-            preparedStatement.setString(8, imagenProducto);
+            preparedStatement.setBytes(8, imagenProducto);
             preparedStatement.setString(9, idTienda);
             preparedStatement.executeUpdate();
             preparedStatement.close();
@@ -512,6 +512,34 @@ public class ConexionBBDD {
     }
 
 
+    public List<String> obtenerListaCodigosBarras() {
+        List<String> listaBarras = new ArrayList<>();
+        conectarBD(); // Supongamos que esta función establece la conexión a la base de datos
+
+        try {
+            String query = "SELECT codigo_barras FROM producto";
+            PreparedStatement preparedStatement = conexion.prepareStatement(query);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()) {
+                String codigo = resultSet.getString("codigo_barras");
+                listaBarras.add(codigo);
+            }
+
+            resultSet.close();
+            preparedStatement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                cerrarConnection(conexion); // Supongo que tienes un método cerrarConnection() para cerrar la conexión
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        return listaBarras;
+    }
 
 }
 

@@ -7,14 +7,14 @@ public class ProductoModel {
     private String nombre;
     private String descripcion;
     private int cantidadStock;
-    private BigDecimal precioUnidad;
+    private double precioUnidad;
     private int vecesComprado;
     private int vecesDevuelto;
     private byte[] imagenProducto;
     private String idTienda;
 
     // Constructor
-    public ProductoModel(String codigoBarras, String nombre, String descripcion, int cantidadStock, BigDecimal precioUnidad, int vecesComprado, int vecesDevuelto, byte[] imagenProducto, String idTienda) {
+    public ProductoModel(String codigoBarras, String nombre, String descripcion, int cantidadStock, double precioUnidad, int vecesComprado, int vecesDevuelto, byte[] imagenProducto, String idTienda) {
         this.codigoBarras = codigoBarras;
         this.nombre = nombre;
         this.descripcion = descripcion;
@@ -63,11 +63,11 @@ public class ProductoModel {
         this.cantidadStock = cantidadStock;
     }
 
-    public BigDecimal getPrecioUnidad() {
+    public double getPrecioUnidad() {
         return precioUnidad;
     }
 
-    public void setPrecioUnidad(BigDecimal precioUnidad) {
+    public void setPrecioUnidad(double precioUnidad) {
         this.precioUnidad = precioUnidad;
     }
 

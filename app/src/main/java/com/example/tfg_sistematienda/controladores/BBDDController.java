@@ -38,10 +38,10 @@ public class BBDDController {
     public UsuarioModel buscarUsuarioPorCorreo(String correo) { return conexionBBDD.buscarUsuarioPorCorreo(correo);}
 
     public boolean insertarProducto(String codigoBarras, String nombre, String descripcion, int cantidadStock,
-                                    BigDecimal precioUnidad, int vecesComprado, int vecesDevuelto, String imagenProducto,
+                                    double precioUnidad, int vecesComprado, int vecesDevuelto, byte[] imagenProducto,
                                     String idTienda) { return conexionBBDD.insertarProducto(codigoBarras, nombre, descripcion,cantidadStock,precioUnidad, vecesComprado, vecesDevuelto, imagenProducto, idTienda);}
 
-
+    public List<String> obtenerListaCodigosBarras() {return conexionBBDD.obtenerListaCodigosBarras();}
 
 
 }

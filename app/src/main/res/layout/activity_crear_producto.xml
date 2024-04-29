@@ -105,4 +105,119 @@
         android:text="IMPRIMIR COD BARRAS"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <EditText
+        android:id="@+id/nombre_producto"
+        android:layout_width="293dp"
+        android:layout_height="64dp"
+        android:layout_marginStart="236dp"
+        android:layout_marginBottom="380dp"
+        android:ems="10"
+        android:hint="NOMBRE PRODUCTO"
+        android:inputType="text"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <EditText
+        android:id="@+id/descripcion_producto"
+        android:layout_width="298dp"
+        android:layout_height="223dp"
+        android:layout_marginStart="236dp"
+        android:layout_marginBottom="132dp"
+        android:ems="10"
+        android:gravity="start|top"
+        android:hint="DESCRIPCION DEL PRODUCTO"
+        android:inputType="textMultiLine"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <EditText
+        android:id="@+id/precio_producto"
+        android:layout_width="254dp"
+        android:layout_height="98dp"
+        android:layout_marginStart="888dp"
+        android:layout_marginBottom="172dp"
+        android:ems="10"
+        android:hint="€ / UNIDAD"
+        android:inputType="numberDecimal"
+        android:textAlignment="center"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <EditText
+        android:id="@+id/unidades_producto"
+        android:layout_width="249dp"
+        android:layout_height="101dp"
+        android:layout_marginStart="888dp"
+        android:layout_marginBottom="296dp"
+        android:ems="10"
+        android:hint="UNIDADES DISPONIBLES"
+        android:inputType="number"
+        android:textAlignment="center"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/textView14"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="676dp"
+        android:layout_marginBottom="372dp"
+        android:text="UNIDADES DISPONIBLES:"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/textView15"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="700dp"
+        android:layout_marginBottom="248dp"
+        android:text="PRECIO POR UNIDAD:"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/textView16"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="56dp"
+        android:layout_marginBottom="420dp"
+        android:text="NOMBRE PRODUCTO:"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/textView17"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="332dp"
+        android:text="DESCRIPCIÓN PRODUCTO:"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/textView18"
+        android:layout_width="518dp"
+        android:layout_height="52dp"
+        android:layout_marginStart="728dp"
+        android:layout_marginBottom="120dp"
+        android:text="EL FORMATO DEL PRECIO/UNIDAD DEBE SER DE UN NUMERO + UN PUNTO ( . ) PARA SEPARAR LOS DECIMALES + 2 DECIMALES"
+        android:textAlignment="center"
+        android:textColor="@android:color/holo_red_light"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
