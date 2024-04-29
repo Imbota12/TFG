@@ -21,6 +21,7 @@ import androidx.core.view.WindowInsetsCompat;
 import com.example.tfg_sistematienda.controladores.BBDDController;
 import com.example.tfg_sistematienda.modelos.UsuarioModel;
 import com.example.tfg_sistematienda.vistas.CrearProducto;
+import com.example.tfg_sistematienda.vistas.CrearTienda;
 import com.example.tfg_sistematienda.vistas.CrearUsuario;
 import com.example.tfg_sistematienda.vistas.GeneralAdmin;
 import com.example.tfg_sistematienda.vistas.GeneralReponedor;
@@ -57,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
         irCrearProducto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(MainActivity.this, CrearProducto.class);
+                Intent i = new Intent(MainActivity.this, CrearTienda.class);
                 startActivity(i);
             }
         });

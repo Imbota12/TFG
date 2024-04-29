@@ -278,6 +278,8 @@ public class ConexionBBDD {
         return insertarOK;
     }
 
+
+
     public List<TiendaModel> obtenerListaTiendas() {
         List<TiendaModel> listaTiendas = new ArrayList<>();
         conectarBD();
@@ -539,6 +541,35 @@ public class ConexionBBDD {
         }
 
         return listaBarras;
+    }
+
+    public List<String> obtenerListaCIF() {
+        List<String> listaCif = new ArrayList<>();
+        conectarBD(); // Supongamos que esta función establece la conexión a la base de datos
+
+        try {
+            String query = "SELECT cif FROM tienda";
+            PreparedStatement preparedStatement = conexion.prepareStatement(query);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()) {
+                String CIF = resultSet.getString("cif");
+                listaCif.add(CIF);
+            }
+
+            resultSet.close();
+            preparedStatement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                cerrarConnection(conexion); // Supongo que tienes un método cerrarConnection() para cerrar la conexión
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        return listaCif;
     }
 
 }

@@ -24,6 +24,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.content.Intent;
+import android.widget.Toast;
 
 
 import androidx.activity.EdgeToEdge;
@@ -60,7 +61,7 @@ import java.util.UUID;
 
 public class CrearProducto extends AppCompatActivity {
 
-    Button tomarFoto, subirFoto, crearProducto, generarCodigoBarras, imprimirCodigoBarras;
+    Button tomarFoto, subirFoto, crearProducto, generarCodigoBarras, imprimirCodigoBarras, cancelarCrearProducto;
     ImageView fotoProducto, imagenCodigoBarras;
     EditText codigoBarras, nombre, descripcion, cantidadStock, precioUnidad;
 
@@ -72,10 +73,10 @@ public class CrearProducto extends AppCompatActivity {
     private BluetoothAdapter bluetoothAdapter;
     private BluetoothDevice bluetoothDevice;
     private BluetoothSocket bluetoothSocket;
-    private static final int REQUEST_ENABLE_BT = 1;
-    private static final int REQUEST_EXTERNAL_STORAGE = 1;
+    private static final int REQUEST_ENABLE_BT = 17;
+    private static final int REQUEST_EXTERNAL_STORAGE = 189;
 
-    private static final int REQUEST_IMAGE_GALLERY = 1;
+    private static final int REQUEST_IMAGE_GALLERY = 16;
     private static final int REQUEST_IMAGE_CAMERA = 2;
     private static final int REQUEST_CAMERA_PERMISSION = 123;
 
@@ -118,6 +119,8 @@ public class CrearProducto extends AppCompatActivity {
 
         crearProducto = findViewById(R.id.crear_producto);
 
+        cancelarCrearProducto = findViewById(R.id.cancelar_crear_producto);
+
         fotoProducto.setImageResource(R.mipmap.productosinimagen);
         imagenCodigoBarras.setImageResource(R.mipmap.codigobarrasvacio);
         codigoBarras.setText("SIN CODIGO DE BARRAS");
@@ -156,6 +159,16 @@ public class CrearProducto extends AppCompatActivity {
 
 
         tomarFoto.setOnClickListener(v -> tomarFotoDispositivo());
+
+        cancelarCrearProducto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                confirmarCancelar();
+            }
+        });
+
+
+
 
 
 
@@ -227,7 +240,6 @@ public class CrearProducto extends AppCompatActivity {
                if (comprobarDatosProducto()){
                   insertarProductoBBDD();
                }
-
            }
         });
 
@@ -243,13 +255,13 @@ public class CrearProducto extends AppCompatActivity {
 
         if (imagenenByte==null){
             if (bbddController.insertarProducto(codigoBarrasProducto, nombreProducto, descripcionProducto, cantidadProducto, precioProducto, 0, 0, imagenDefectoByte, "012541689P"  )){
-
+                mostrarDialogoCrearOtroProducto();
             }else{
                 mostrarAlertaErrorBBDD();
             }
         }else{
             if (bbddController.insertarProducto(codigoBarrasProducto, nombreProducto, descripcionProducto, cantidadProducto, precioProducto, 0, 0, imagenenByte, "012541689P" )){
-
+                mostrarDialogoCrearOtroProducto();
             }else{
                 mostrarAlertaErrorBBDD();
             }
@@ -258,30 +270,79 @@ public class CrearProducto extends AppCompatActivity {
 
 
     }
-    private boolean comprobarDatosProducto(){
-        if(nombre.getText().toString().isEmpty()){
-            nombre.setError("Campo vacio");
-            return false;
-        }
-        if (descripcion.getText().toString().isEmpty()){
-            descripcion.setError("Campo vacio");
-            return false;
-        }
-        if (cantidadStock.getText().toString().isEmpty()){
-            cantidadStock.setError("Campo vacio");
-            return false;
-        }
-        if (precioUnidad.getText().toString().isEmpty()){
-            precioUnidad.setError("Campo vacio");
-            return false;
-        }
-        if (codigoBarras.getText().toString().equals("SIN CODIGO DE BARRAS")){
-            codigoBarras.setError("Debes generar un CODIGO DE BARRAS");
-            return false;
-        }
-        return true;
 
+
+    private void confirmarCancelar() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("¿ESTAS SEGURO?");
+        builder.setMessage("¿ESTAS SEGURO QUE QUIERE CANCELAR LA OPERACIÓN Y VOLVER AL MENÚ PRINCIPAL?");
+        builder.setPositiveButton("SI", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                finish();
+            }
+        });
+        builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        builder.setCancelable(false); // Evitar que el diálogo se cierre al tocar fuera de él
+        builder.show();
     }
+
+
+
+    private boolean comprobarDatosProducto() {
+        boolean datosValidos = true;
+
+        // Limpiar los errores previos
+        nombre.setError(null);
+        descripcion.setError(null);
+        cantidadStock.setError(null);
+        precioUnidad.setError(null);
+        codigoBarras.setError(null);
+
+        // Verificar el nombre
+        if (nombre.getText().toString().isEmpty()) {
+            nombre.setError("Campo vacío");
+            datosValidos = false;
+        }
+
+        // Verificar la descripción
+        if (descripcion.getText().toString().isEmpty()) {
+            descripcion.setError("Campo vacío");
+            datosValidos = false;
+        }
+
+        // Verificar la cantidad en stock
+        if (cantidadStock.getText().toString().isEmpty()) {
+            cantidadStock.setError("Campo vacío");
+            datosValidos = false;
+        }
+
+        // Verificar el precio por unidad
+        if (precioUnidad.getText().toString().isEmpty()) {
+            precioUnidad.setError("Campo vacío");
+            datosValidos = false;
+        }
+
+        // Verificar el código de barras
+        if (codigoBarras.getText().toString().equals("SIN CODIGO DE BARRAS")) {
+            codigoBarras.setError("Debes generar un CÓDIGO DE BARRAS");
+            datosValidos = false;
+        }
+
+        // Si hay errores, mostrar un mensaje de advertencia
+        if (!datosValidos) {
+            Toast.makeText(this, "Por favor, corrige los errores", Toast.LENGTH_SHORT).show();
+        }
+
+        return datosValidos;
+    }
+
 
     private void vaciarCampos(){
         nombre.setText("");
@@ -292,6 +353,14 @@ public class CrearProducto extends AppCompatActivity {
         codigoBarras.setEnabled(false);
         fotoProducto.setImageResource(R.mipmap.productosinimagen);
         generarCodigoBarras.setEnabled(true);
+        imagenenByte=null;
+        nombre.setError(null);
+        descripcion.setError(null);
+        cantidadStock.setError(null);
+        precioUnidad.setError(null);
+        codigoBarras.setError(null);
+        imagenCodigoBarras.setImageResource(R.mipmap.codigobarrasvacio);
+
     }
 
 
@@ -324,9 +393,7 @@ public class CrearProducto extends AppCompatActivity {
         builder.setNegativeButton("Volver al menú", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                // Aquí puedes agregar el código para volver al menú principal
-                // Por ejemplo, puedes iniciar una nueva actividad que muestre el menú.
-                //volverAlMenu();
+                finish();
             }
         });
         builder.setCancelable(false); // Evitar que el diálogo se cierre al tocar fuera de él
@@ -355,30 +422,23 @@ public class CrearProducto extends AppCompatActivity {
 
 
     private void requestStoragePermission() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
 
             ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
                     REQUEST_EXTERNAL_STORAGE);
         }
     }
 
 
 
-    public void seleccionarImagen(){
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.READ_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
-            // Si no tienes permiso, solicitarlo al usuario
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                    REQUEST_EXTERNAL_STORAGE);
-        } else {
 
+    public void seleccionarImagen(){
+        requestStoragePermission();
             Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
             startActivityForResult(intent, REQUEST_IMAGE_GALLERY);
-        }
+
 
     }
 

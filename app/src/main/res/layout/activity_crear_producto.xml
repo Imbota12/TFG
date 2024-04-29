@@ -53,10 +53,10 @@
 
     <Button
         android:id="@+id/crear_producto"
-        android:layout_width="1169dp"
-        android:layout_height="60dp"
+        android:layout_width="938dp"
+        android:layout_height="71dp"
         android:layout_marginStart="56dp"
-        android:layout_marginBottom="40dp"
+        android:layout_marginBottom="24dp"
         android:text="CREAR PRODUCTO"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -217,6 +217,16 @@
         android:textAlignment="center"
         android:textColor="@android:color/holo_red_light"
         android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/cancelar_crear_producto"
+        android:layout_width="196dp"
+        android:layout_height="73dp"
+        android:layout_marginStart="1016dp"
+        android:layout_marginBottom="24dp"
+        android:text="CANCELAR"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 

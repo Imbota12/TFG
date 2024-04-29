@@ -17,6 +17,7 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -339,8 +340,6 @@ public class CrearUsuario extends AppCompatActivity {
 
 
 
-
-
     public void vaciarCampos(){
         nombre.setText("");
         apellidos.setText("");
@@ -358,50 +357,57 @@ public class CrearUsuario extends AppCompatActivity {
     }
 
     public boolean comprobarCampos(){
+
+        boolean todoOk=true;
+
         // TODO: 2021-05-27 Añadir validaciones de campos vacíos y validaciones de telefono, nombre, apellidos, contraseña, dni .
         if (nombre.getText().toString().isEmpty()) {
             nombre.setError("Campo vacío");
-            return false;
+            todoOk = false;
         }
         if (apellidos.getText().toString().isEmpty()) {
             apellidos.setError("Campo vacío");
-            return false;
+            todoOk = false;
         }
         if (usuario.getText().toString().isEmpty()) {
             usuario.setError("Campo vacío");
-            return false;
+            todoOk = false;
         }
         if (contrasena.getText().toString().isEmpty()) {
             contrasena.setError("Campo vacío");
-            return false;
+            todoOk = false;
         }
         if (dni.getText().toString().isEmpty()) {
             dni.setError("Campo vacío");
-            return false;
+            todoOk = false;
         }
         if (telefono.getText().toString().isEmpty()) {
             telefono.setError("Campo vacío");
-            return false;
+            todoOk = false;
         }
 
         if (!vendedor.isChecked() && !reponedor.isChecked()){
             error.setText("Debe seleccionar un rol");
-            return false;
+            todoOk = false;
         }
 
         if (!contrasena.getText().toString().equals(veriContra.getText().toString())){
             contrasena.setError("Las contraseñas deben coincidir");
             veriContra.setError("Las contraseñas deben coincidir");
-            return false;
+            todoOk = false;
         }
 
         List<String> todosCorreos= bbddController.obtenerListaCorreos();
         if (todosCorreos.contains(usuario.getText().toString())){
             usuario.setError("El correo ya existe");
-            return false;
+            todoOk = false;
         }
 
-        return true;
+        if (!todoOk) {
+            Toast.makeText(this, "Por favor, corrige los errores", Toast.LENGTH_SHORT).show();
+        }
+
+        return todoOk;
     }
 
     public void rellenarSpinnerTiendas(){

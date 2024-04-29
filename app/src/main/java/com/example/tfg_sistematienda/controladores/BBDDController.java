@@ -21,6 +21,8 @@ public class BBDDController {
 
     public List<TiendaModel> obtenerListaTiendas(){return conexionBBDD.obtenerListaTiendas();}
 
+    public boolean insertarTienda(String cif, String nombre, String direccion, String telefono) {return conexionBBDD.insertarTienda(cif, nombre, direccion, telefono);}
+
     public boolean insertarUsuario(String dni, String nombre, String apellido, String telefono,
                                    String correo, String contrasena, String idTienda,
                                    boolean isAdmin, boolean isVendedor, boolean isReponedor){
@@ -43,5 +45,6 @@ public class BBDDController {
 
     public List<String> obtenerListaCodigosBarras() {return conexionBBDD.obtenerListaCodigosBarras();}
 
+    public List<String> obtenerListaCIF() {return conexionBBDD.obtenerListaCIF();}
 
 }
