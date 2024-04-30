@@ -9,8 +9,8 @@
         android:id="@+id/textView29"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="312dp"
-        android:layout_marginBottom="624dp"
+        android:layout_marginStart="44dp"
+        android:layout_marginBottom="628dp"
         android:text="EDITAR PRODUCTO"
         android:textAlignment="center"
         android:textSize="24sp"
@@ -19,11 +19,11 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <EditText
-        android:id="@+id/editTextTextMultiLine"
-        android:layout_width="694dp"
-        android:layout_height="179dp"
-        android:layout_marginStart="72dp"
-        android:layout_marginBottom="240dp"
+        android:id="@+id/et_descrip_a_editar"
+        android:layout_width="500dp"
+        android:layout_height="187dp"
+        android:layout_marginStart="284dp"
+        android:layout_marginBottom="196dp"
         android:ems="10"
         android:gravity="start|top"
         android:hint="DESCRIPCIÓN DEL PRODUCTO"
@@ -32,11 +32,11 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <EditText
-        android:id="@+id/editTextText"
-        android:layout_width="695dp"
-        android:layout_height="52dp"
-        android:layout_marginStart="72dp"
-        android:layout_marginBottom="488dp"
+        android:id="@+id/et_nombre_a_editar"
+        android:layout_width="426dp"
+        android:layout_height="51dp"
+        android:layout_marginStart="288dp"
+        android:layout_marginBottom="396dp"
         android:ems="10"
         android:hint="NOMBRE DEL PRODUCTO"
         android:inputType="text"
@@ -44,11 +44,11 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <EditText
-        android:id="@+id/editTextNumber"
+        android:id="@+id/et_precio_a_editar"
         android:layout_width="295dp"
         android:layout_height="71dp"
-        android:layout_marginStart="472dp"
-        android:layout_marginBottom="116dp"
+        android:layout_marginStart="284dp"
+        android:layout_marginBottom="112dp"
         android:ems="10"
         android:hint="PRECIO PRODUCTO"
         android:inputType="number"
@@ -59,8 +59,8 @@
         android:id="@+id/textView30"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="72dp"
-        android:layout_marginBottom="560dp"
+        android:layout_marginStart="100dp"
+        android:layout_marginBottom="428dp"
         android:text="NOMBRE DEL PRODUCTO:"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -69,8 +69,8 @@
         android:id="@+id/textView31"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="72dp"
-        android:layout_marginBottom="440dp"
+        android:layout_marginStart="68dp"
+        android:layout_marginBottom="364dp"
         android:text="DESCRIPCIÓN DEL PRODUCTO:"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -79,9 +79,81 @@
         android:id="@+id/textView32"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="236dp"
-        android:layout_marginBottom="140dp"
+        android:layout_marginStart="44dp"
+        android:layout_marginBottom="132dp"
         android:text="PRECIO UNITARIO DEL PRODUCTO:"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageView
+        android:id="@+id/iv_imagen_a_editar"
+        android:layout_width="180dp"
+        android:layout_height="187dp"
+        android:layout_marginStart="628dp"
+        android:layout_marginBottom="480dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@mipmap/productosinimagen" />
+
+    <Button
+        android:id="@+id/bt_editar_foto"
+        android:layout_width="180dp"
+        android:layout_height="59dp"
+        android:layout_marginStart="416dp"
+        android:layout_marginBottom="600dp"
+        android:text="EDITAR FOTO"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/bt_tomar_foto"
+        android:layout_width="174dp"
+        android:layout_height="52dp"
+        android:layout_marginStart="44dp"
+        android:layout_marginBottom="496dp"
+        android:text="TOMAR FOTO"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/bt_seleccionar_foto"
+        android:layout_width="181dp"
+        android:layout_height="56dp"
+        android:layout_marginStart="232dp"
+        android:layout_marginBottom="492dp"
+        android:text="SELECCIONAR FOTO"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/bt_cancelar_foto"
+        android:layout_width="171dp"
+        android:layout_height="55dp"
+        android:layout_marginStart="424dp"
+        android:layout_marginBottom="492dp"
+        android:text="CANCELAR"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/bt_guardar_cambios"
+        android:layout_width="463dp"
+        android:layout_height="72dp"
+        android:layout_marginStart="52dp"
+        android:layout_marginBottom="24dp"
+        android:text="GUARDAR CAMBIOS"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/bt_cancelar_cambios"
+        android:layout_width="251dp"
+        android:layout_height="73dp"
+        android:layout_marginStart="540dp"
+        android:layout_marginBottom="24dp"
+        android:text="NO GUARDAR"
+        android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

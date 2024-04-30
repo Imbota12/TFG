@@ -4,6 +4,7 @@ package com.example.tfg_sistematienda.vistas;
 import android.os.Bundle;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -67,7 +68,7 @@ public class ListaInventario extends AppCompatActivity {
 
         cargarProductos();
 
-        adaptadorProducto = new AdaptadorProducto(listaProductos);
+        adaptadorProducto = new AdaptadorProducto(this, listaProductos);
         recyclerView.setAdapter(adaptadorProducto);
 
 
@@ -105,6 +106,12 @@ public class ListaInventario extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        // Manejar el resultado de la captura de foto o selección de galería
+        adaptadorProducto.onActivityResult(requestCode, resultCode, data);
+
+        // Manejar el resultado del escaneo de código de barras
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
         if (result != null) {
             if (result.getContents() == null) {
@@ -114,10 +121,9 @@ public class ListaInventario extends AppCompatActivity {
                 Log.d(TAG, "Código de barras escaneado: " + codigoEscaneado);
                 codigoBuscar.setText(codigoEscaneado);
             }
-        } else {
-            super.onActivityResult(requestCode, resultCode, data);
         }
     }
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
@@ -131,8 +137,6 @@ public class ListaInventario extends AppCompatActivity {
             }
         }
     }
-
-
 
 
 }
