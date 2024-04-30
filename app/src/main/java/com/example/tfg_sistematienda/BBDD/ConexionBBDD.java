@@ -20,7 +20,7 @@ public class ConexionBBDD {
 
     private Connection conexion = null;
     private static final String DRIVER = "org.postgresql.Driver";
-    private static final String URL = "jdbc:postgresql://10.0.2.2:5432/TiendaInfo";
+    private static final String URL = "jdbc:postgresql://192.168.10.150:5432/TiendaInfo";
     private static final String USUARIO = "postgres";
     private static final String PASSWORD = "admin";
 
