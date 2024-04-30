@@ -281,6 +281,87 @@ public class ConexionBBDD {
 
 
 
+    public boolean modificarProducto(String nombreNuevo, String descripcionNueva,
+                                     double precioUnidadNuevo, byte[] imagenNueva, String codigoBarras) {
+        boolean modificarOK = false;
+        conectarBD();
+        try {
+            String query = "UPDATE producto SET nombre = ?, descripcion = ?, precio_unidad = ?, imagen_producto = ? WHERE codigo_barras = ?";
+            PreparedStatement preparedStatement = conexion.prepareStatement(query);
+            preparedStatement.setString(1, nombreNuevo);
+            preparedStatement.setString(2, descripcionNueva);
+            preparedStatement.setDouble(3, precioUnidadNuevo);
+            preparedStatement.setBytes(4, imagenNueva);
+            preparedStatement.setString(5, codigoBarras);
+            int filasModificadas = preparedStatement.executeUpdate();
+            preparedStatement.close();
+            if (filasModificadas > 0) {
+                modificarOK = true;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                cerrarConnection(conexion);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return modificarOK;
+    }
+
+    public boolean incrementarCantidadStock(String codigoBarras) {
+        boolean modificarOK = false;
+        conectarBD();
+        try {
+            // Consulta SQL para incrementar la cantidad de stock en 1 unidad
+            String query = "UPDATE producto SET cantidad_stock = cantidad_stock + 1 WHERE codigo_barras = ?";
+            PreparedStatement preparedStatement = conexion.prepareStatement(query);
+            preparedStatement.setString(1, codigoBarras);
+            int filasModificadas = preparedStatement.executeUpdate();
+            preparedStatement.close();
+            if (filasModificadas > 0) {
+                modificarOK = true;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                cerrarConnection(conexion);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return modificarOK;
+    }
+
+    public boolean decrementarCantidadStock(String codigoBarras) {
+        boolean modificarOK = false;
+        conectarBD();
+        try {
+            // Consulta SQL para decrementar la cantidad de stock en 1 unidad
+            String query = "UPDATE producto SET cantidad_stock = cantidad_stock - 1 WHERE codigo_barras = ?";
+            PreparedStatement preparedStatement = conexion.prepareStatement(query);
+            preparedStatement.setString(1, codigoBarras);
+            int filasModificadas = preparedStatement.executeUpdate();
+            preparedStatement.close();
+            if (filasModificadas > 0) {
+                modificarOK = true;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                cerrarConnection(conexion);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return modificarOK;
+    }
+
+
+
     public List<TiendaModel> obtenerListaTiendas() {
         List<TiendaModel> listaTiendas = new ArrayList<>();
         conectarBD();

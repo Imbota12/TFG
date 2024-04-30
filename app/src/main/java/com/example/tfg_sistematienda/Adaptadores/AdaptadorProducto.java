@@ -15,14 +15,15 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.tfg_sistematienda.MainActivity;
 import com.example.tfg_sistematienda.R;
+import com.example.tfg_sistematienda.controladores.BBDDController;
 import com.example.tfg_sistematienda.modelos.ProductoModel;
-import com.example.tfg_sistematienda.vistas.ListaInventario;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -31,7 +32,8 @@ import java.util.List;
 public class AdaptadorProducto extends RecyclerView.Adapter<ViewHolderProducto> {
     private List<ProductoModel> listaProductos;
     private Context context;
-    private ProductoModel producto;
+    private ProductoModel productoSeleccionado;
+    private BBDDController bbddController = new BBDDController();
 
     public AdaptadorProducto(Context context, List<ProductoModel> listaProductos) {
         this.listaProductos = listaProductos;
@@ -46,32 +48,39 @@ public class AdaptadorProducto extends RecyclerView.Adapter<ViewHolderProducto> 
 
     @Override
     public void onBindViewHolder(ViewHolderProducto holder, int position) {
-        producto = listaProductos.get(position);
+        ProductoModel producto = listaProductos.get(position);
         holder.nombreProducto.setText(producto.getNombre());
         holder.stockProducto.setText(String.valueOf(producto.getCantidadStock()));
-        // Suponiendo que tienes un array de bytes llamado imagenProductoBytes
         byte[] imagenProductoBytes = producto.getImagenProducto();
 
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
+        holder.editarStockProducto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Aquí puedes hacer lo que quieras con el producto seleccionado
-            abrirDialogoEditar(producto);
+                // Actualizar el producto seleccionado
+                productoSeleccionado = producto;
+                // Abrir el diálogo de edición con el producto seleccionado
+                abrirDialogoStock(productoSeleccionado);
             }
         });
 
-// Si la imagenProductoBytes no es nula
-        if (imagenProductoBytes != null) {
-            // Convierte el array de bytes en un objeto Bitmap
-            Bitmap bitmap = BitmapFactory.decodeByteArray(imagenProductoBytes, 0, imagenProductoBytes.length);
+        // Configurar el clic en el elemento del RecyclerView
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Actualizar el producto seleccionado
+                productoSeleccionado = producto;
+                // Abrir el diálogo de edición con el producto seleccionado
+                abrirDialogoEditar(productoSeleccionado);
+            }
+        });
 
-            // Establece el Bitmap en el ImageView
+        // Mostrar la imagen del producto en el ImageView
+        if (imagenProductoBytes != null) {
+            Bitmap bitmap = BitmapFactory.decodeByteArray(imagenProductoBytes, 0, imagenProductoBytes.length);
             holder.imagenProducto.setImageBitmap(bitmap);
         } else {
-            // Si la imagenProductoBytes es nula, puedes establecer una imagen de fallback o dejar el ImageView vacío
             holder.imagenProducto.setImageResource(R.mipmap.productosinimagen);
         }
-
     }
 
     @Override
@@ -79,8 +88,108 @@ public class AdaptadorProducto extends RecyclerView.Adapter<ViewHolderProducto> 
         return listaProductos.size();
     }
 
-    private void abrirDialogoEditar(ProductoModel producto){
-        AlertDialog.Builder builder = new AlertDialog.Builder(context); // context es el contexto de la actividad o fragmento donde se encuentra el RecyclerView
+    private void abrirDialogoStock(ProductoModel productoSeleccionado){
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle("Editar Stock");
+
+        // Inflar el diseño del diálogo de edición de producto
+        View dialogView = LayoutInflater.from(context).inflate(R.layout.popup_modificarstock, null);
+        builder.setView(dialogView);
+
+        // Obtener referencias a las vistas del diálogo
+        EditText stock = dialogView.findViewById(R.id.et_stock);
+        TextView nombre = dialogView.findViewById(R.id.tv_nombreproducto);
+        ImageView imagen = dialogView.findViewById(R.id.iv_producto);
+        Button bt_mas = dialogView.findViewById(R.id.bt_mas_stock);
+        Button bt_menos = dialogView.findViewById(R.id.bt_menos_stock);
+
+        // Establecer los datos del producto en las vistas del diálogo
+
+        nombre.setText(productoSeleccionado.getNombre());
+
+        byte[] imagenProductoBytes = productoSeleccionado.getImagenProducto();
+        if (imagenProductoBytes != null) {
+            Bitmap bitmap = BitmapFactory.decodeByteArray(imagenProductoBytes, 0, imagenProductoBytes.length);
+            imagen.setImageBitmap(bitmap);
+        } else {
+            imagen.setImageResource(R.mipmap.productosinimagen);
+        }
+
+        int cantidadActual= productoSeleccionado.getCantidadStock();
+
+        stock.setText(String.valueOf(cantidadActual));
+        bt_mas.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int cantidadActual= productoSeleccionado.getCantidadStock();
+                if (cantidadActual>0){
+                    cantidadActual++;
+                    stock.setText(String.valueOf(cantidadActual));
+                    productoSeleccionado.setCantidadStock(cantidadActual);
+                    bbddController.incrementarCantidadStock(productoSeleccionado.getCodigoBarras());
+                    notifyDataSetChanged();
+                }
+            }
+        });
+
+        bt_menos.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int cantidadActual= productoSeleccionado.getCantidadStock();
+                if(cantidadActual>0){
+                    cantidadActual--;
+                    if (cantidadActual==0){
+                        boolean confirmacion = mostrarDialogoConfirmacion();
+                        if (confirmacion){
+
+                        }
+                    }else{
+                        stock.setText(String.valueOf(cantidadActual));
+                        productoSeleccionado.setCantidadStock(cantidadActual);
+                        bbddController.decrementarCantidadStock(productoSeleccionado.getCodigoBarras());
+                        notifyDataSetChanged();
+                    }
+                }else if (cantidadActual==0){
+                    Toast.makeText(context, "No se puede reducir el stock a menos de 0", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        builder.show();
+    }
+
+    private boolean mostrarDialogoConfirmacion() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle("Confirmar");
+        builder.setMessage("¿Estás seguro de que quieres dejar este producto sin stock?");
+        final boolean[] confirmacion = new boolean[1];
+        // Configurar el botón positivo (Sí)
+        builder.setPositiveButton("Sí", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                // Devolver true si el usuario selecciona "Sí"
+                 confirmacion[0] = true;
+            }
+        });
+
+        // Configurar el botón negativo (No)
+
+        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                // Devolver false si el usuario selecciona "No"
+                confirmacion[0] = false;
+            }
+        });
+
+        // Mostrar el diálogo
+        builder.show();
+
+        return confirmacion[0];
+    }
+
+
+
+    private void abrirDialogoEditar(ProductoModel productoSeleccionado){
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle("Editar Producto");
 
         // Inflar el diseño del diálogo de edición de producto
@@ -98,38 +207,31 @@ public class AdaptadorProducto extends RecyclerView.Adapter<ViewHolderProducto> 
         Button seleccionarFoto = dialogView.findViewById(R.id.bt_seleccionar_foto);
         Button cancelar = dialogView.findViewById(R.id.bt_cancelar_foto);
 
-        Button guardar = dialogView.findViewById(R.id.bt_guardar_cambios);
-        Button noGuardar = dialogView.findViewById(R.id.bt_cancelar_cambios);
-
         tomarFoto.setVisibility(View.INVISIBLE);
         seleccionarFoto.setVisibility(View.INVISIBLE);
         cancelar.setVisibility(View.INVISIBLE);
 
         // Establecer los datos del producto en las vistas del diálogo
-        nombre.setText(producto.getNombre());
-        descripcion.setText(String.valueOf(producto.getDescripcion()));
-        precioUni.setText(String.valueOf(producto.getPrecioUnidad()));
-        // Suponiendo que tienes un array de bytes llamado imagenProductoBytes
-        byte[] imagenProductoBytes = producto.getImagenProducto();
+        nombre.setText(productoSeleccionado.getNombre());
+        descripcion.setText(productoSeleccionado.getDescripcion());
+        precioUni.setText(String.valueOf(productoSeleccionado.getPrecioUnidad()));
+        byte[] imagenProductoBytes = productoSeleccionado.getImagenProducto();
         if (imagenProductoBytes != null) {
-            // Convierte el array de bytes en un objeto Bitmap
             Bitmap bitmap = BitmapFactory.decodeByteArray(imagenProductoBytes, 0, imagenProductoBytes.length);
-
-            // Establece el Bitmap en el ImageView
             imagenEditar.setImageBitmap(bitmap);
         } else {
-            // Si la imagenProductoBytes es nula, puedes establecer una imagen de fallback o dejar el ImageView vacío
             imagenEditar.setImageResource(R.mipmap.productosinimagen);
         }
 
+        // Configurar el clic en el botón de editar foto
         editarFoto.setOnClickListener(new View.OnClickListener() {
-           @Override
-           public void onClick(View v) {
-               editarFoto.setEnabled(false);
-               tomarFoto.setVisibility(View.VISIBLE);
-               seleccionarFoto.setVisibility(View.VISIBLE);
-               cancelar.setVisibility(View.VISIBLE);
-           }
+            @Override
+            public void onClick(View v) {
+                editarFoto.setEnabled(false);
+                tomarFoto.setVisibility(View.VISIBLE);
+                seleccionarFoto.setVisibility(View.VISIBLE);
+                cancelar.setVisibility(View.VISIBLE);
+            }
         });
 
         tomarFoto.setOnClickListener(new View.OnClickListener() {
@@ -159,22 +261,26 @@ public class AdaptadorProducto extends RecyclerView.Adapter<ViewHolderProducto> 
         });
 
         // Configurar el botón de guardar del diálogo
-        builder.setPositiveButton("Guardar", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton("Guardar Cambios", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 String nuevoNombre = nombre.getText().toString();
                 String nuevaDescripcion = descripcion.getText().toString();
                 double nuevoPrecioUnidad = Double.parseDouble(precioUni.getText().toString());
-                byte[] nuevaImagen= producto.getImagenProducto();
+                byte[] nuevaImagen = productoSeleccionado.getImagenProducto();
 
                 // Actualizar los datos del producto en la BBDD
-
+                if (bbddController.modificarProducto(nuevoNombre, nuevaDescripcion, nuevoPrecioUnidad, nuevaImagen, productoSeleccionado.getCodigoBarras())) {
+                    Toast.makeText(context, "Producto modificado correctamente", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(context, "Error al modificar el producto", Toast.LENGTH_SHORT).show();
+                }
 
                 // Actualizar los datos del producto en la lista
-                producto.setNombre(nuevoNombre);
-                producto.setDescripcion(nuevaDescripcion);
-                producto.setPrecioUnidad(nuevoPrecioUnidad);
-                producto.setImagenProducto(nuevaImagen);
+                productoSeleccionado.setNombre(nuevoNombre);
+                productoSeleccionado.setDescripcion(nuevaDescripcion);
+                productoSeleccionado.setPrecioUnidad(nuevoPrecioUnidad);
+                productoSeleccionado.setImagenProducto(nuevaImagen);
 
                 // Notificar al adaptador que los datos han cambiado
                 notifyDataSetChanged();
@@ -184,10 +290,20 @@ public class AdaptadorProducto extends RecyclerView.Adapter<ViewHolderProducto> 
             }
         });
 
+        // Configurar el botón de cancelar del diálogo
+        builder.setNegativeButton("Cancelar Cambios", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // Cerrar el diálogo
+                dialog.dismiss();
+            }
+        });
+
         // Mostrar el diálogo
         builder.show();
-
+        builder.setCancelable(false);
     }
+
 
     private byte[] bitmapToByteArray(Bitmap bitmap) {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
@@ -202,7 +318,7 @@ public class AdaptadorProducto extends RecyclerView.Adapter<ViewHolderProducto> 
                 // Manejar la captura de la foto
                 Bitmap bitmap = (Bitmap) data.getExtras().get("data");
                 // Actualizar la imagen del producto con la foto capturada
-                producto.setImagenProducto(bitmapToByteArray(bitmap));
+                productoSeleccionado.setImagenProducto(bitmapToByteArray(bitmap));
                 // Notificar cambios al adaptador
                 notifyDataSetChanged();
             } else if (requestCode == 2) { // Código para la selección de la galería
@@ -211,7 +327,7 @@ public class AdaptadorProducto extends RecyclerView.Adapter<ViewHolderProducto> 
                 try {
                     Bitmap bitmap = MediaStore.Images.Media.getBitmap(context.getContentResolver(), uri);
                     // Actualizar la imagen del producto con la imagen seleccionada
-                    producto.setImagenProducto(bitmapToByteArray(bitmap));
+                    productoSeleccionado.setImagenProducto(bitmapToByteArray(bitmap));
                     // Notificar cambios al adaptador
                     notifyDataSetChanged();
                 } catch (IOException e) {

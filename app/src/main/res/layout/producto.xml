@@ -27,61 +27,52 @@
                 android:id="@+id/nombreProducto"
                 android:layout_width="200dp"
                 android:layout_height="50dp"
-                android:textSize="18sp"/>
+                android:textSize="22sp"/>
 
-            <TextView
-                android:id="@+id/stockProducto"
-                android:layout_width="50dp"
+            <LinearLayout
+                android:layout_width="190dp"
                 android:layout_height="50dp"
-                android:textSize="18sp"/>
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="130dp"
+                    android:layout_height="40dp"
+                    android:textSize="24dp"
+                    android:text="EN STOCK:"
+                    />
+
+                <TextView
+                    android:id="@+id/stockProducto"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:textSize="22sp"/>
+
+            </LinearLayout>
 
         </LinearLayout>
 
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="280dp"
+        android:layout_height="100dp"
         android:orientation="horizontal">
 
         <Button
             android:id="@+id/modificarCantidad"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Modif cant."
+            android:layout_height="80dp"
+            android:text="Modificar stock"
             android:layout_marginStart="8dp" />
 
         <Button
-            android:id="@+id/modificarProducto"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Modif producto"
-            android:layout_marginStart="8dp" />
-
-
-
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-        <Button
-            android:id="@+id/borrar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Borrar"
-            android:layout_marginStart="8dp" />
-
-
-    </LinearLayout>
-
-
+            android:id="@+id/borrarProducto"
+            android:layout_width="113dp"
+            android:layout_height="80dp"
+            android:layout_marginStart="8dp"
+            android:text="Borrar" />
 
 
 

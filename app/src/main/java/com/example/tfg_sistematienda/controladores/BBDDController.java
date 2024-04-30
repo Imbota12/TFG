@@ -50,4 +50,12 @@ public class BBDDController {
 
     public List<ProductoModel> obtenerListaProductos() {return conexionBBDD.obtenerListaProductos();}
 
-}
+    public boolean modificarProducto(String nombreNuevo, String descripcionNueva,
+                                     double precioUnidadNuevo, byte[] imagenNueva, String codigoBarras) {
+        return conexionBBDD.modificarProducto(nombreNuevo, descripcionNueva, precioUnidadNuevo, imagenNueva, codigoBarras);}
+
+    public boolean incrementarCantidadStock(String codigoBarras) {return conexionBBDD.incrementarCantidadStock(codigoBarras);}
+
+    public boolean decrementarCantidadStock(String codigoBarras) {return conexionBBDD.decrementarCantidadStock(codigoBarras);}
+
+    }
