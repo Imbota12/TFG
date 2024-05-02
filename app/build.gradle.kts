@@ -29,20 +29,22 @@ android {
 }
 
 dependencies {
-
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)
     implementation(libs.constraintlayout)
     implementation("com.google.android.material:material:1.11.0")
-    implementation ("org.postgresql:postgresql:42.2.9")
-    implementation ("org.mindrot:jbcrypt:0.4")
-    implementation ("com.google.zxing:core:3.4.1")
-    implementation ("com.journeyapps:zxing-android-embedded:4.2.0")
-    implementation ("androidx.recyclerview:recyclerview:1.3.2")
+    implementation("org.postgresql:postgresql:42.2.9")
+    implementation("org.mindrot:jbcrypt:0.4")
+    implementation("com.google.zxing:core:3.4.1")
+    implementation("com.journeyapps:zxing-android-embedded:4.2.0")
+    implementation("androidx.recyclerview:recyclerview:1.3.2")
+    implementation("com.github.DantSu:ESCPOS-ThermalPrinter-Android:3.3.0")
     implementation(libs.play.services.maps)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
-
 }
+
+
+

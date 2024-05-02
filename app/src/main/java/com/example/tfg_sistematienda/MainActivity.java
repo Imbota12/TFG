@@ -1,9 +1,11 @@
 package com.example.tfg_sistematienda;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +16,8 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -34,10 +38,14 @@ public class MainActivity extends AppCompatActivity {
 
     private Button iniciar, recuperar;
 
-    private Button irCrearProducto;
+    private Button irCrearProducto, listaProductos;
     private BBDDController bbddController= new BBDDController();
     private EditText usuario, contrasena;
 
+    public static final int PERMISSION_BLUETOOTH = 1;
+    public static final int PERMISSION_BLUETOOTH_ADMIN = 2;
+    public static final int PERMISSION_BLUETOOTH_CONNECT = 3;
+    public static final int PERMISSION_BLUETOOTH_SCAN = 4;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,11 +60,20 @@ public class MainActivity extends AppCompatActivity {
         iniciar = findViewById(R.id.iniciar_sesion);
         recuperar = findViewById(R.id.bt_recuperar);
         irCrearProducto = findViewById(R.id.crear_producto_ir);
+        listaProductos = findViewById(R.id.bt_lista);
 
         usuario = findViewById(R.id.usuario);
         contrasena = findViewById(R.id.contrasena);
 
         irCrearProducto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(MainActivity.this, CrearProducto.class);
+                startActivity(i);
+            }
+        });
+
+        listaProductos.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(MainActivity.this, ListaInventario.class);
@@ -220,6 +237,9 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
+
+
+
     private void mostrarAlertaUsuarioNoEncontrado() {
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
         builder.setTitle("Usuario no encontrado")

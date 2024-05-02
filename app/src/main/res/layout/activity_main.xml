@@ -64,8 +64,8 @@
         android:id="@+id/tx_inicio"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="448dp"
-        android:layout_marginBottom="612dp"
+        android:layout_marginStart="408dp"
+        android:layout_marginBottom="608dp"
         android:text="INICIO DE SESION"
         android:textAlignment="center"
         android:textSize="48sp"
@@ -76,8 +76,8 @@
         android:id="@+id/tx_olvido"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="776dp"
-        android:layout_marginBottom="428dp"
+        android:layout_marginStart="692dp"
+        android:layout_marginBottom="388dp"
         android:text="¿SE LE OLVIDÓ EL CORREO Y/O CONTRASEÑA?"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -86,8 +86,8 @@
         android:id="@+id/bt_recuperar"
         android:layout_width="306dp"
         android:layout_height="72dp"
-        android:layout_marginStart="776dp"
-        android:layout_marginBottom="300dp"
+        android:layout_marginStart="692dp"
+        android:layout_marginBottom="296dp"
         android:text="RECUPERAR CREDENCIALES"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -96,7 +96,7 @@
         android:id="@+id/textView12"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="152dp"
+        android:layout_marginStart="104dp"
         android:layout_marginBottom="80dp"
         android:text="PARA CUALQUIER PROBLEMA, CONTACTE A IOAN MARK BOTA AL CORREO ELECTRONICO ioanbota2002@outlook.es o llamando directamente a 641938476"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -106,9 +106,19 @@
         android:id="@+id/crear_producto_ir"
         android:layout_width="118dp"
         android:layout_height="122dp"
-        android:layout_marginStart="964dp"
-        android:layout_marginBottom="512dp"
+        android:layout_marginStart="724dp"
+        android:layout_marginBottom="464dp"
         android:text="Crear Producto"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/bt_lista"
+        android:layout_width="125dp"
+        android:layout_height="125dp"
+        android:layout_marginStart="872dp"
+        android:layout_marginBottom="464dp"
+        android:text="Lista Producto"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 

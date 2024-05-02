@@ -14,6 +14,8 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
@@ -34,6 +36,7 @@ import com.google.zxing.integration.android.IntentResult;
 import com.example.tfg_sistematienda.R;
 import com.journeyapps.barcodescanner.CaptureActivity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ListaInventario extends AppCompatActivity {
@@ -76,6 +79,19 @@ public class ListaInventario extends AppCompatActivity {
         codigoBuscar = findViewById(R.id.et_codigo_buscar);
         botonEscaneo = findViewById(R.id.escanear_producto);
 
+        codigoBuscar.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                filtrarProductosPorCodigo(s.toString());
+            }
+        });
+
         botonEscaneo.setOnClickListener(v -> {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
                     != PackageManager.PERMISSION_GRANTED) {
@@ -93,6 +109,20 @@ public class ListaInventario extends AppCompatActivity {
     }
 
 
+    private void filtrarProductosPorCodigo(String codigo) {
+        if (codigo.isEmpty()) {
+            cargarProductos(); // Cargar todos los productos nuevamente
+            adaptadorProducto.actualizarLista(listaProductos);
+        } else {
+            List<ProductoModel> productosFiltrados = new ArrayList<>();
+            for (ProductoModel producto : listaProductos) {
+                if (producto.getCodigoBarras().startsWith(codigo)) {
+                    productosFiltrados.add(producto);
+                }
+            }
+            adaptadorProducto.actualizarLista(productosFiltrados);
+        }
+    }
 
 
     private void iniciarEscaner() {
@@ -120,6 +150,7 @@ public class ListaInventario extends AppCompatActivity {
                 codigoEscaneado = result.getContents();
                 Log.d(TAG, "Código de barras escaneado: " + codigoEscaneado);
                 codigoBuscar.setText(codigoEscaneado);
+                filtrarProductosPorCodigo(codigoEscaneado);
             }
         }
     }

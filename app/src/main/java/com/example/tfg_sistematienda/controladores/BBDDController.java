@@ -58,4 +58,8 @@ public class BBDDController {
 
     public boolean decrementarCantidadStock(String codigoBarras) {return conexionBBDD.decrementarCantidadStock(codigoBarras);}
 
+
+    public boolean borrarProducto(String codigoBarras) {return conexionBBDD.borrarProducto(codigoBarras);}
+
+
     }

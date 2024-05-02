@@ -12,6 +12,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Bundle;
@@ -19,6 +21,7 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.InputFilter;
 import android.text.Spanned;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -37,6 +40,16 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.dantsu.escposprinter.EscPosPrinter;
+import com.dantsu.escposprinter.connection.bluetooth.BluetoothConnection;
+import com.dantsu.escposprinter.connection.bluetooth.BluetoothConnections;
+import com.dantsu.escposprinter.connection.bluetooth.BluetoothPrintersConnections;
+import com.dantsu.escposprinter.exceptions.EscPosBarcodeException;
+import com.dantsu.escposprinter.exceptions.EscPosConnectionException;
+import com.dantsu.escposprinter.exceptions.EscPosEncodingException;
+import com.dantsu.escposprinter.exceptions.EscPosParserException;
+import com.dantsu.escposprinter.textparser.PrinterTextParserImg;
+import com.example.tfg_sistematienda.MainActivity;
 import com.example.tfg_sistematienda.R;
 import com.example.tfg_sistematienda.controladores.BBDDController;
 import com.google.zxing.BarcodeFormat;
@@ -80,13 +93,21 @@ public class CrearProducto extends AppCompatActivity {
     private static final int REQUEST_IMAGE_CAMERA = 2;
     private static final int REQUEST_CAMERA_PERMISSION = 123;
 
-    private Bitmap bitmap;
+    private static final int REQUEST_BLUETOOTH_CONNECT_PERMISSION = 22;
+
+
+    private static final int WRITE_EXTERNAL_STORAGE_PERMISSION_REQUEST_CODE = 1;
+
+
+    private Bitmap bitmap, codigoBarrasBitmap;
 
     private byte[] imagenenByte=null;
 
      private byte[] imagenDefectoByte;
 
 
+    private BluetoothConnection connection;
+    private EscPosPrinter printer;
 
 
 
@@ -129,6 +150,9 @@ public class CrearProducto extends AppCompatActivity {
 
         Bitmap imagenDefecto = BitmapFactory.decodeResource(getResources(), R.mipmap.productosinimagen);
         imagenDefectoByte = bitmapToByteArray(imagenDefecto);
+
+        connection = null;
+        printer = null;
 
         requestStoragePermission();
 
@@ -175,11 +199,11 @@ public class CrearProducto extends AppCompatActivity {
         imprimirCodigoBarras.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                conectarImpresora();
-                //imprimirCodigoBarras();
-                desconectarImpresora();
-
+                try {
+                    checkBluetoothConnectPermission();
+                } catch (EscPosEncodingException | EscPosBarcodeException | EscPosParserException | EscPosConnectionException e) {
+                    throw new RuntimeException(e);
+                }
             }
 
         });
@@ -485,16 +509,46 @@ public class CrearProducto extends AppCompatActivity {
     }
 
 
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == REQUEST_CAMERA_PERMISSION) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Permiso de la cámara concedido, puedes abrir la cámara
-            } else {
-                // Permiso de la cámara denegado, muestra un mensaje o toma otra acción adecuada.
-            }
+        switch (requestCode) {
+            case REQUEST_CAMERA_PERMISSION:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // Permiso de la cámara concedido, puedes abrir la cámara
+                } else {
+                    // Permiso de la cámara denegado, muestra un mensaje o toma otra acción adecuada.
+                }
+                break;
+            case WRITE_EXTERNAL_STORAGE_PERMISSION_REQUEST_CODE:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // Permiso de escritura en almacenamiento externo concedido, procede con el guardado de la imagen
+                    guardarImagen(bitmap); // Aquí llama al método para guardar la imagen
+                } else {
+                    // Permiso de escritura en almacenamiento externo denegado, muestra un mensaje o toma otra acción adecuada.
+                }
+                break;
+            case REQUEST_BLUETOOTH_CONNECT_PERMISSION:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // Permiso de conexión Bluetooth concedido, puedes proceder con la funcionalidad Bluetooth
+                    try {
+                        conectarImpresora();
+                    } catch (EscPosEncodingException e) {
+                        throw new RuntimeException(e);
+                    } catch (EscPosBarcodeException e) {
+                        throw new RuntimeException(e);
+                    } catch (EscPosParserException e) {
+                        throw new RuntimeException(e);
+                    } catch (EscPosConnectionException e) {
+                        throw new RuntimeException(e);
+                    }
+                } else {
+                    // Permiso de conexión Bluetooth denegado, muestra un mensaje o toma otra acción adecuada.
+                }
+                break;
+            // Agrega más casos si necesitas manejar más códigos de solicitud de permisos
         }
     }
 
@@ -524,6 +578,18 @@ public class CrearProducto extends AppCompatActivity {
 
             // Establecer la imagen combinada en el ImageView
             imagenCodigoBarras.setImageBitmap(combinedBitmap);
+            codigoBarrasBitmap=combinedBitmap;
+
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    != PackageManager.PERMISSION_GRANTED) {
+                // Si el permiso no ha sido concedido, solicitarlo
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                        WRITE_EXTERNAL_STORAGE_PERMISSION_REQUEST_CODE);
+            } else {
+                // Si el permiso ha sido concedido, guardar la imagen
+                guardarImagen(combinedBitmap);
+            }
 
             guardarImagen(combinedBitmap);
 
@@ -540,18 +606,18 @@ public class CrearProducto extends AppCompatActivity {
     private void guardarImagen(Bitmap bitmap) {
         requestStoragePermission();
 
-        File directory = new File(Environment.getExternalStorageDirectory(), "MiCarpeta");
+        File directory = new File(getExternalFilesDir(null), "MiCarpeta");
         if (!directory.exists()) {
             directory.mkdirs();
         }
 
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
-        String fileName = "codigo_barras_" + timeStamp + ".jpg";
+        String fileName = "codigo_barras_" + timeStamp + ".png";
         File file = new File(directory, fileName);
 
         try {
             FileOutputStream outputStream = new FileOutputStream(file);
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
             outputStream.flush();
             outputStream.close();
         } catch (Exception e) {
@@ -566,7 +632,8 @@ public class CrearProducto extends AppCompatActivity {
 
 
 
-    private void conectarImpresora() {
+    private void conectarImpresora() throws EscPosEncodingException, EscPosBarcodeException, EscPosParserException, EscPosConnectionException {
+
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (bluetoothAdapter == null) {
             // El dispositivo no soporta Bluetooth
@@ -590,28 +657,69 @@ public class CrearProducto extends AppCompatActivity {
             return;
         }
 
+        if (connection == null || printer == null) {
+        BluetoothDevice targetDevice = null;
         Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();
-        if (pairedDevices.size() > 0) {
+        if (pairedDevices != null) {
             for (BluetoothDevice device : pairedDevices) {
-                if (device.getName().equals("NombreDeTuImpresora")) {
-                    bluetoothDevice = device;
+                if (device.getAddress() != null && device.getAddress().equals("DC:0D:51:9B:69:D0")) {
+                    targetDevice = device;
                     break;
                 }
             }
-        }
 
-        if (bluetoothDevice != null) {
+        }
+        if (targetDevice != null) {
+            connection = new BluetoothConnection(targetDevice);
+            printer = new EscPosPrinter(connection, 200, 50f, 35);
+        } else {
+            // Manejar el caso en que el dispositivo específico no esté emparejado
+            return;
+        }
+        }
+        printer.printFormattedText("[C]<barcode type='128' height='10'>"+codigoBarrasProducto+"</barcode>\n");
+
+    }
+
+/*
+        if (targetDevice != null) {
             try {
-                bluetoothSocket = bluetoothDevice.createRfcommSocketToServiceRecord(UUID.fromString("Tu_UUID"));
+                // Obtener el socket Bluetooth
+                bluetoothSocket = bluetoothDevice.createInsecureRfcommSocketToServiceRecord(UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"));
+
+                // Establecer la conexión Bluetooth
                 bluetoothSocket.connect();
+
+                // Obtener el OutputStream para enviar comandos ESC/POS
+                OutputStream outputStream = bluetoothSocket.getOutputStream();
+
+                // Enviar comandos ESC/POS a la impresora
+                String textToPrint = "Hello, ESC/POS!";
+                byte[] bytesToPrint = textToPrint.getBytes("UTF-8");
+                outputStream.write(bytesToPrint);
+
+                // Finalizar la conexión Bluetooth
+                bluetoothSocket.close();
             } catch (IOException e) {
                 e.printStackTrace();
                 // Manejar el error de conexión
             }
         }
+*/
+
+    private void checkBluetoothConnectPermission() throws EscPosEncodingException, EscPosBarcodeException, EscPosParserException, EscPosConnectionException {
+        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.S && ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.BLUETOOTH}, MainActivity.PERMISSION_BLUETOOTH);
+        } else if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.S && ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_ADMIN) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.BLUETOOTH_ADMIN}, MainActivity.PERMISSION_BLUETOOTH_ADMIN);
+        } else if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S && ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.BLUETOOTH_CONNECT}, MainActivity.PERMISSION_BLUETOOTH_CONNECT);
+        } else if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S && ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.BLUETOOTH_SCAN}, MainActivity.PERMISSION_BLUETOOTH_SCAN);
+        } else {
+            conectarImpresora();
+        }
     }
-
-
 
 
     private void desconectarImpresora() {
@@ -628,7 +736,7 @@ public class CrearProducto extends AppCompatActivity {
 
 
 
-
+/*
     private void imprimirCodigoBarras(Bitmap bitmap) {
         // Verificar si el socket Bluetooth está disponible y conectado
         if (bluetoothSocket == null || !bluetoothSocket.isConnected()) {
@@ -649,6 +757,8 @@ public class CrearProducto extends AppCompatActivity {
             // Manejar errores de impresión
         }
     }
+ */
+
 
     private byte[] convertirImagenAFormatoImprimible(Bitmap bitmap) {
         // Aquí deberías implementar la conversión de la imagen del código de barras a un formato imprimible
@@ -660,8 +770,8 @@ public class CrearProducto extends AppCompatActivity {
     }
 
 
-
 /*
+
     private void imprimirCodigoBarras(Bitmap bitmap) {
         // Verificar si el socket Bluetooth está disponible y conectado
         if (bluetoothSocket == null || !bluetoothSocket.isConnected()) {
@@ -719,7 +829,7 @@ public class CrearProducto extends AppCompatActivity {
         // Consulta el manual de tu impresora para obtener más detalles sobre el formato de los datos de impresión
         return null;
     }
-*/
+
 
 
     private void imprimirImagen(File file) {
@@ -747,7 +857,7 @@ public class CrearProducto extends AppCompatActivity {
             }
         }
     }
-
+*/
 
 
 }

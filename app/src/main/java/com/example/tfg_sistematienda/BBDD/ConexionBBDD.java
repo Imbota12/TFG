@@ -20,7 +20,7 @@ public class ConexionBBDD {
 
     private Connection conexion = null;
     private static final String DRIVER = "org.postgresql.Driver";
-    private static final String URL = "jdbc:postgresql://10.0.2.2:5432/TiendaInfo";
+    private static final String URL = "jdbc:postgresql://192.168.10.150:5432/TiendaInfo";
     private static final String USUARIO = "postgres";
     private static final String PASSWORD = "admin";
 
@@ -53,7 +53,7 @@ public class ConexionBBDD {
     public void crearBaseDeDatosSiNoExiste() {
         Connection conexion = null;
         final String DRIVER1 = "org.postgresql.Driver";
-        final String URL1 = "jdbc:postgresql://10.0.2.2:5432/";
+        final String URL1 = "jdbc:postgresql://192.168.10.150:5432/";
         final String DATABASE_NAME1 = "TFG";
         final String USUARIO1 = "postgres";
         final String PASSWORD1 = "admin";
@@ -309,6 +309,32 @@ public class ConexionBBDD {
         }
         return modificarOK;
     }
+
+
+    public boolean borrarProducto(String codigoBarras) {
+        boolean borrarOK = false;
+        conectarBD();
+        try {
+            String query = "DELETE FROM producto WHERE codigo_barras = ?";
+            PreparedStatement preparedStatement = conexion.prepareStatement(query);
+            preparedStatement.setString(1, codigoBarras);
+            int filasBorradas = preparedStatement.executeUpdate();
+            preparedStatement.close();
+            if (filasBorradas > 0) {
+                borrarOK = true;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                cerrarConnection(conexion);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return borrarOK;
+    }
+
 
     public boolean incrementarCantidadStock(String codigoBarras) {
         boolean modificarOK = false;

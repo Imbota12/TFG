@@ -20,8 +20,8 @@
 
     <EditText
         android:id="@+id/et_descrip_a_editar"
-        android:layout_width="500dp"
-        android:layout_height="187dp"
+        android:layout_width="319dp"
+        android:layout_height="168dp"
         android:layout_marginStart="288dp"
         android:layout_marginBottom="136dp"
         android:ems="10"
@@ -34,7 +34,7 @@
 
     <EditText
         android:id="@+id/et_nombre_a_editar"
-        android:layout_width="426dp"
+        android:layout_width="316dp"
         android:layout_height="51dp"
         android:layout_marginStart="288dp"
         android:layout_marginBottom="336dp"
@@ -47,8 +47,8 @@
 
     <EditText
         android:id="@+id/et_precio_a_editar"
-        android:layout_width="295dp"
-        android:layout_height="71dp"
+        android:layout_width="233dp"
+        android:layout_height="68dp"
         android:layout_marginStart="288dp"
         android:layout_marginBottom="52dp"
         android:ems="10"
@@ -62,8 +62,8 @@
         android:id="@+id/textView30"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="96dp"
-        android:layout_marginBottom="368dp"
+        android:layout_marginStart="88dp"
+        android:layout_marginBottom="360dp"
         android:text="NOMBRE DEL PRODUCTO:"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -82,7 +82,7 @@
         android:id="@+id/textView32"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="40dp"
+        android:layout_marginStart="60dp"
         android:layout_marginBottom="104dp"
         android:text="PRECIO UNITARIO DEL PRODUCTO:"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -92,8 +92,8 @@
         android:id="@+id/iv_imagen_a_editar"
         android:layout_width="180dp"
         android:layout_height="187dp"
-        android:layout_marginStart="628dp"
-        android:layout_marginBottom="424dp"
+        android:layout_marginStart="412dp"
+        android:layout_marginBottom="396dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:srcCompat="@mipmap/productosinimagen" />
@@ -102,8 +102,8 @@
         android:id="@+id/bt_editar_foto"
         android:layout_width="180dp"
         android:layout_height="59dp"
-        android:layout_marginStart="424dp"
-        android:layout_marginBottom="536dp"
+        android:layout_marginStart="216dp"
+        android:layout_marginBottom="484dp"
         android:text="EDITAR FOTO"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -112,8 +112,8 @@
         android:id="@+id/bt_tomar_foto"
         android:layout_width="174dp"
         android:layout_height="52dp"
-        android:layout_marginStart="44dp"
-        android:layout_marginBottom="428dp"
+        android:layout_marginStart="28dp"
+        android:layout_marginBottom="492dp"
         android:text="TOMAR FOTO"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -122,8 +122,8 @@
         android:id="@+id/bt_seleccionar_foto"
         android:layout_width="181dp"
         android:layout_height="56dp"
-        android:layout_marginStart="232dp"
-        android:layout_marginBottom="424dp"
+        android:layout_marginStart="28dp"
+        android:layout_marginBottom="420dp"
         android:text="SELECCIONAR FOTO"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -132,8 +132,8 @@
         android:id="@+id/bt_cancelar_foto"
         android:layout_width="171dp"
         android:layout_height="55dp"
-        android:layout_marginStart="424dp"
-        android:layout_marginBottom="424dp"
+        android:layout_marginStart="216dp"
+        android:layout_marginBottom="420dp"
         android:text="CANCELAR"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
