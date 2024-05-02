@@ -65,6 +65,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -633,7 +634,6 @@ public class CrearProducto extends AppCompatActivity {
 
 
     private void conectarImpresora() throws EscPosEncodingException, EscPosBarcodeException, EscPosParserException, EscPosConnectionException {
-
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (bluetoothAdapter == null) {
             // El dispositivo no soporta Bluetooth
@@ -644,13 +644,7 @@ public class CrearProducto extends AppCompatActivity {
             // El Bluetooth no está activado, solicita al usuario que lo active
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
-                // TODO: Consider calling
-                //    ActivityCompat#requestPermissionss
-                // here to request the missing permissions, and then overriding
-                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                //                                          int[] grantResults)
-                // to handle the case where the user grants the permission. See the documentation
-                // for ActivityCompat#requestPermissions for more details.
+                // Manejar el caso en que los permisos no estén concedidos
                 return;
             }
             startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
@@ -658,28 +652,44 @@ public class CrearProducto extends AppCompatActivity {
         }
 
         if (connection == null || printer == null) {
-        BluetoothDevice targetDevice = null;
-        Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();
-        if (pairedDevices != null) {
-            for (BluetoothDevice device : pairedDevices) {
-                if (device.getAddress() != null && device.getAddress().equals("DC:0D:51:9B:69:D0")) {
-                    targetDevice = device;
-                    break;
+            // Obtener la lista de dispositivos emparejados
+            Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();
+            if (pairedDevices != null && !pairedDevices.isEmpty()) {
+                // Crear una lista de nombres de dispositivos para el diálogo
+                List<String> deviceNames = new ArrayList<>();
+                final List<BluetoothDevice> devices = new ArrayList<>();
+                for (BluetoothDevice device : pairedDevices) {
+                    deviceNames.add(device.getName());
+                    devices.add(device);
                 }
+
+                // Mostrar un cuadro de diálogo para que el usuario elija el dispositivo
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("Selecciona un dispositivo Bluetooth");
+                builder.setItems(deviceNames.toArray(new String[0]), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Conectar al dispositivo seleccionado
+                        BluetoothDevice selectedDevice = devices.get(which);
+                        try {
+                            connection = new BluetoothConnection(selectedDevice);
+                            printer = new EscPosPrinter(connection, 200, 50f, 35);
+                            // Imprimir
+                            printer.printFormattedText("[C]<barcode type='128' height='10'>"+codigoBarrasProducto+"</barcode>\n");
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            // Manejar cualquier error de conexión o impresión aquí
+                        }
+                    }
+                });
+                builder.show();
+            } else {
+                // Manejar el caso en que no haya dispositivos emparejados
+                return;
             }
-
         }
-        if (targetDevice != null) {
-            connection = new BluetoothConnection(targetDevice);
-            printer = new EscPosPrinter(connection, 200, 50f, 35);
-        } else {
-            // Manejar el caso en que el dispositivo específico no esté emparejado
-            return;
-        }
-        }
-        printer.printFormattedText("[C]<barcode type='128' height='10'>"+codigoBarrasProducto+"</barcode>\n");
-
     }
+
 
 /*
         if (targetDevice != null) {

@@ -12,9 +12,12 @@ import com.example.tfg_sistematienda.R;
 public class ViewHolderProducto extends RecyclerView.ViewHolder {
     public TextView nombreProducto;
     public TextView stockProducto;
+    public TextView codBarras;
     public ImageView imagenProducto;
     public Button eliminarProducto;
     public Button editarStockProducto;
+
+    public Button imprimirCodigoBarras;
 
     public ViewHolderProducto(View itemView) {
         super(itemView);
@@ -23,6 +26,8 @@ public class ViewHolderProducto extends RecyclerView.ViewHolder {
         imagenProducto = itemView.findViewById(R.id.imagenProducto);
         eliminarProducto = itemView.findViewById(R.id.borrarProducto);
         editarStockProducto = itemView.findViewById(R.id.modificarCantidad);
+        codBarras = itemView.findViewById(R.id.codBarras);
+        imprimirCodigoBarras = itemView.findViewById(R.id.ImprimirCodigoBarras);
     }
 
 }

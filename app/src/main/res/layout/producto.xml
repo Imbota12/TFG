@@ -18,25 +18,25 @@
             />
 
         <LinearLayout
-            android:layout_width="200dp"
-            android:layout_height="110dp"
+            android:layout_width="210dp"
+            android:layout_height="118dp"
             android:orientation="vertical">
 
 
             <TextView
                 android:id="@+id/nombreProducto"
                 android:layout_width="200dp"
-                android:layout_height="50dp"
+                android:layout_height="35dp"
                 android:textSize="22sp"/>
 
             <LinearLayout
                 android:layout_width="190dp"
-                android:layout_height="50dp"
+                android:layout_height="30dp"
                 android:orientation="horizontal">
 
                 <TextView
                     android:layout_width="130dp"
-                    android:layout_height="40dp"
+                    android:layout_height="28dp"
                     android:textSize="24dp"
                     android:text="EN STOCK:"
                     />
@@ -44,10 +44,16 @@
                 <TextView
                     android:id="@+id/stockProducto"
                     android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:textSize="22sp"/>
+                    android:layout_height="28dp"
+                    android:textSize="20sp"/>
 
             </LinearLayout>
+
+            <TextView
+                android:id="@+id/codBarras"
+                android:layout_width="200dp"
+                android:layout_height="35dp"
+                android:textSize="20dp"/>
 
         </LinearLayout>
 
@@ -56,26 +62,42 @@
 
 
     <LinearLayout
-        android:layout_width="280dp"
-        android:layout_height="100dp"
-        android:orientation="horizontal">
+        android:layout_width="300dp"
+        android:layout_height="120dp"
+        android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="300dp"
+            android:layout_height="60dp"
+            android:orientation="horizontal">
 
-        <Button
-            android:id="@+id/modificarCantidad"
-            android:layout_width="wrap_content"
-            android:layout_height="80dp"
-            android:text="Modificar stock"
-            android:layout_marginStart="8dp" />
+            <Button
+                android:id="@+id/modificarCantidad"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:text="Modificar stock"
+                android:layout_marginStart="8dp" />
 
-        <Button
-            android:id="@+id/borrarProducto"
-            android:layout_width="113dp"
-            android:layout_height="80dp"
-            android:layout_marginStart="8dp"
-            android:text="Borrar" />
+            <Button
+                android:id="@+id/borrarProducto"
+                android:layout_width="113dp"
+                android:layout_height="50dp"
+                android:layout_marginStart="8dp"
+                android:text="Borrar" />
+        </LinearLayout>
 
+        <LinearLayout
+            android:layout_width="300dp"
+            android:layout_height="55dp"
+            android:orientation="horizontal">
 
+            <Button
+                android:id="@+id/ImprimirCodigoBarras"
+                android:layout_width="270dp"
+                android:layout_height="50dp"
+                android:text="IMPRIMIR CODIGO BARRAS"
+                android:layout_marginStart="8dp" />
 
+        </LinearLayout>
 
     </LinearLayout>
 </LinearLayout>
