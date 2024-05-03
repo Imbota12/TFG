@@ -252,6 +252,11 @@ public class CrearProducto extends AppCompatActivity {
                             return ""; // Si no cumple con el formato, eliminar la entrada
                         }
 
+                        // Verificar si el texto resultante tiene más de 7 dígitos en total
+                        if (builder.length() > 7) {
+                            return ""; // Si tiene más de 7 dígitos, eliminar la entrada
+                        }
+
                         return null; // Aceptar este cambio de texto
                     }
                 }

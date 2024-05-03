@@ -16,6 +16,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.text.InputFilter;
+import android.text.Spanned;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -53,6 +55,10 @@ public class AdaptadorProducto extends RecyclerView.Adapter<ViewHolderProducto> 
     private ProductoModel productoSeleccionado;
     private BBDDController bbddController = new BBDDController();
     private ImageView imagenEditar;
+
+    private EditText nombre;
+    private EditText descripcion;
+    private EditText precioUni;
 
     private static final int REQUEST_ENABLE_BT = 7;
 
@@ -354,10 +360,13 @@ public class AdaptadorProducto extends RecyclerView.Adapter<ViewHolderProducto> 
                 builder.setView(dialogView);
 
                 // Obtener referencias a las vistas del diálogo
-                EditText nombre = dialogView.findViewById(R.id.et_nombre_a_editar);
-                EditText descripcion = dialogView.findViewById(R.id.et_descrip_a_editar);
-                EditText precioUni = dialogView.findViewById(R.id.et_precio_a_editar);
+                nombre = dialogView.findViewById(R.id.et_nombre_a_editar);
+                descripcion = dialogView.findViewById(R.id.et_descrip_a_editar);
+                precioUni = dialogView.findViewById(R.id.et_precio_a_editar);
                 imagenEditar = dialogView.findViewById(R.id.iv_imagen_a_editar);
+
+
+
 
                 Button editarFoto = dialogView.findViewById(R.id.bt_editar_foto);
                 Button tomarFoto = dialogView.findViewById(R.id.bt_tomar_foto);
@@ -379,6 +388,45 @@ public class AdaptadorProducto extends RecyclerView.Adapter<ViewHolderProducto> 
                 } else {
                     imagenEditar.setImageResource(R.mipmap.productosinimagen);
                 }
+
+
+
+
+                precioUni.setFilters(new InputFilter[] {
+                        new InputFilter() {
+                            boolean isDecimalInserted = false;
+
+                            public CharSequence filter(CharSequence source, int start, int end,
+                                                       Spanned dest, int dstart, int dend) {
+                                StringBuilder builder = new StringBuilder(dest);
+                                builder.replace(dstart, dend, source.subSequence(start, end).toString());
+
+                                // Verificar si se está eliminando texto
+                                if (source.length() == 0 && dstart > 0 && dest.charAt(dstart - 1) == '.') {
+                                    // Si se está eliminando un carácter y el carácter anterior es un punto, permitir la eliminación
+                                    isDecimalInserted = false; // Restablecer el indicador de punto decimal
+                                }
+
+                                // Verificar si se insertó un punto o coma decimal
+                                if (source.equals(".") || source.equals(",")) {
+                                    // Verificar si ya se ha insertado un punto o coma
+                                    if (isDecimalInserted || dstart == 0) {
+                                        return ""; // Evitar que se introduzca más de un punto o coma o que esté al principio
+                                    } else {
+                                        isDecimalInserted = true;
+                                    }
+                                }
+
+                                // Verificar si el texto resultante cumple con el formato numérico deseado
+                                if (!builder.toString().matches("^\\d{0,4}(\\.\\d{0,2})?$")) {
+                                    return ""; // Si no cumple con el formato, eliminar la entrada
+                                }
+
+                                return null; // Aceptar este cambio de texto
+                            }
+                        }
+                });
+
 
                 // Configurar el clic en el botón de editar foto
                 editarFoto.setOnClickListener(new View.OnClickListener() {
@@ -426,24 +474,27 @@ public class AdaptadorProducto extends RecyclerView.Adapter<ViewHolderProducto> 
                         double nuevoPrecioUnidad = Double.parseDouble(precioUni.getText().toString());
                         byte[] nuevaImagen = productoSeleccionado.getImagenProducto();
 
-                        // Actualizar los datos del producto en la BBDD
-                        if (bbddController.modificarProducto(nuevoNombre, nuevaDescripcion, nuevoPrecioUnidad, nuevaImagen, productoSeleccionado.getCodigoBarras())) {
-                            Toast.makeText(context, "Producto modificado correctamente", Toast.LENGTH_SHORT).show();
-                        } else {
-                            Toast.makeText(context, "Error al modificar el producto", Toast.LENGTH_SHORT).show();
+                        if(comprobarDatosProducto()){
+                            // Actualizar los datos del producto en la BBDD
+                            if (bbddController.modificarProducto(nuevoNombre, nuevaDescripcion, nuevoPrecioUnidad, nuevaImagen, productoSeleccionado.getCodigoBarras())) {
+                                Toast.makeText(context, "Producto modificado correctamente", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(context, "Error al modificar el producto", Toast.LENGTH_SHORT).show();
+                            }
+
+                            // Actualizar los datos del producto en la lista
+                            productoSeleccionado.setNombre(nuevoNombre);
+                            productoSeleccionado.setDescripcion(nuevaDescripcion);
+                            productoSeleccionado.setPrecioUnidad(nuevoPrecioUnidad);
+                            productoSeleccionado.setImagenProducto(nuevaImagen);
+
+                            // Notificar al adaptador que los datos han cambiado
+                            notifyDataSetChanged();
+
+                            // Cerrar el diálogo
+                            dialog.dismiss();
                         }
 
-                        // Actualizar los datos del producto en la lista
-                        productoSeleccionado.setNombre(nuevoNombre);
-                        productoSeleccionado.setDescripcion(nuevaDescripcion);
-                        productoSeleccionado.setPrecioUnidad(nuevoPrecioUnidad);
-                        productoSeleccionado.setImagenProducto(nuevaImagen);
-
-                        // Notificar al adaptador que los datos han cambiado
-                        notifyDataSetChanged();
-
-                        // Cerrar el diálogo
-                        dialog.dismiss();
                     }
                 });
 
@@ -462,6 +513,40 @@ public class AdaptadorProducto extends RecyclerView.Adapter<ViewHolderProducto> 
             }
 
 
+    private boolean comprobarDatosProducto() {
+        boolean datosValidos = true;
+
+        // Limpiar los errores previos
+        nombre.setError(null);
+        descripcion.setError(null);
+        precioUni.setError(null);
+
+        // Verificar el nombre
+        if (nombre.getText().toString().isEmpty()) {
+            nombre.setError("Campo vacío");
+            datosValidos = false;
+        }
+
+        // Verificar la descripción
+        if (descripcion.getText().toString().isEmpty()) {
+            descripcion.setError("Campo vacío");
+            datosValidos = false;
+        }
+
+        // Verificar el precio por unidad
+        if (precioUni.getText().toString().isEmpty()) {
+            precioUni.setError("Campo vacío");
+            datosValidos = false;
+        }
+
+
+        // Si hay errores, mostrar un mensaje de advertencia
+        if (!datosValidos) {
+            Toast.makeText(context, "Por favor, corrige los errores", Toast.LENGTH_SHORT).show();
+        }
+
+        return datosValidos;
+    }
 
 
 

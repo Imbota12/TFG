@@ -147,6 +147,7 @@ public class ListaInventario extends AppCompatActivity {
             if (result.getContents() == null) {
                 Log.d(TAG, "Escaneo cancelado");
             } else {
+                codigoBuscar.setText("");
                 codigoEscaneado = result.getContents();
                 Log.d(TAG, "Código de barras escaneado: " + codigoEscaneado);
                 codigoBuscar.setText(codigoEscaneado);
