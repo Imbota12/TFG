@@ -54,6 +54,7 @@ public class ListaInventario extends AppCompatActivity {
     private AdaptadorProducto adaptadorProducto;
     private List<ProductoModel> listaProductos;
 
+
     private BBDDController bbddController= new BBDDController();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,8 +74,6 @@ public class ListaInventario extends AppCompatActivity {
 
         adaptadorProducto = new AdaptadorProducto(this, listaProductos);
         recyclerView.setAdapter(adaptadorProducto);
-
-
 
         codigoBuscar = findViewById(R.id.et_codigo_buscar);
         botonEscaneo = findViewById(R.id.escanear_producto);

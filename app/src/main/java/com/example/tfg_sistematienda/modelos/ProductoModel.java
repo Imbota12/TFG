@@ -12,6 +12,7 @@ public class ProductoModel {
     private int vecesDevuelto;
     private byte[] imagenProducto;
     private String idTienda;
+    private int cantidad;
 
     // Constructor
     public ProductoModel(String codigoBarras, String nombre, String descripcion, int cantidadStock, double precioUnidad, int vecesComprado, int vecesDevuelto, byte[] imagenProducto, String idTienda) {
@@ -24,10 +25,12 @@ public class ProductoModel {
         this.vecesDevuelto = vecesDevuelto;
         this.imagenProducto = imagenProducto;
         this.idTienda = idTienda;
+        this.cantidad = 1;
     }
 
     public ProductoModel(){
         // Constructor vacío
+        this.cantidad = 1;
     }
 
     // Getters y setters
@@ -101,5 +104,13 @@ public class ProductoModel {
 
     public void setIdTienda(String idTienda) {
         this.idTienda = idTienda;
+    }
+
+    public int getCantidad() {
+        return cantidad;
+    }
+
+    public void setCantidad(int cantidad) {
+        this.cantidad = cantidad;
     }
 }

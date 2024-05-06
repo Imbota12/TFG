@@ -21,12 +21,12 @@ public class ViewHolderProducto extends RecyclerView.ViewHolder {
 
     public ViewHolderProducto(View itemView) {
         super(itemView);
-        nombreProducto = itemView.findViewById(R.id.nombreProducto);
+        nombreProducto = itemView.findViewById(R.id.n_produ_todos);
         stockProducto = itemView.findViewById(R.id.stockProducto);
-        imagenProducto = itemView.findViewById(R.id.imagenProducto);
+        imagenProducto = itemView.findViewById(R.id.im_produ_todos);
         eliminarProducto = itemView.findViewById(R.id.borrarProducto);
         editarStockProducto = itemView.findViewById(R.id.modificarCantidad);
-        codBarras = itemView.findViewById(R.id.codBarras);
+        codBarras = itemView.findViewById(R.id.cod_produ_todos);
         imprimirCodigoBarras = itemView.findViewById(R.id.ImprimirCodigoBarras);
     }
 

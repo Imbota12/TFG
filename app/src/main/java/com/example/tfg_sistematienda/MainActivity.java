@@ -31,6 +31,7 @@ import com.example.tfg_sistematienda.vistas.GeneralAdmin;
 import com.example.tfg_sistematienda.vistas.GeneralReponedor;
 import com.example.tfg_sistematienda.vistas.GeneralVendedor;
 import com.example.tfg_sistematienda.vistas.ListaInventario;
+import com.example.tfg_sistematienda.vistas.RealizaVenta;
 
 import org.mindrot.jbcrypt.BCrypt;
 
@@ -38,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
 
     private Button iniciar, recuperar;
 
-    private Button irCrearProducto, listaProductos;
+    private Button irCrearProducto, listaProductos, irVenta;
     private BBDDController bbddController= new BBDDController();
     private EditText usuario, contrasena;
 
@@ -61,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
         recuperar = findViewById(R.id.bt_recuperar);
         irCrearProducto = findViewById(R.id.crear_producto_ir);
         listaProductos = findViewById(R.id.bt_lista);
+        irVenta = findViewById(R.id.bt_ventas);
 
         usuario = findViewById(R.id.usuario);
         contrasena = findViewById(R.id.contrasena);
@@ -69,6 +71,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(MainActivity.this, CrearProducto.class);
+                startActivity(i);
+            }
+        });
+
+        irVenta.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(MainActivity.this, RealizaVenta.class);
                 startActivity(i);
             }
         });

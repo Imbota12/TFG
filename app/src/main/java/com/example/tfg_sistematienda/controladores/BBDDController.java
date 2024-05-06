@@ -45,6 +45,7 @@ public class BBDDController {
                                     String idTienda) { return conexionBBDD.insertarProducto(codigoBarras, nombre, descripcion,cantidadStock,precioUnidad, vecesComprado, vecesDevuelto, imagenProducto, idTienda);}
 
     public List<String> obtenerListaCodigosBarras() {return conexionBBDD.obtenerListaCodigosBarras();}
+    public List<String> obtenerListaIds() {return conexionBBDD.obtenerListaIds();}
 
     public List<String> obtenerListaCIF() {return conexionBBDD.obtenerListaCIF();}
 

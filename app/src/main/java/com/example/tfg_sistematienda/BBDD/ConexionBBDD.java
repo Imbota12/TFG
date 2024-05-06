@@ -20,7 +20,8 @@ public class ConexionBBDD {
 
     private Connection conexion = null;
     private static final String DRIVER = "org.postgresql.Driver";
-    private static final String URL = "jdbc:postgresql://192.168.10.150:5432/TiendaInfo";
+    //private static final String URL = "jdbc:postgresql://localhost:5432/TiendaInfo";
+    private static final String URL = "jdbc:postgresql://10.0.2.2:5432/TiendaInfo";
     private static final String USUARIO = "postgres";
     private static final String PASSWORD = "admin";
 
@@ -53,7 +54,7 @@ public class ConexionBBDD {
     public void crearBaseDeDatosSiNoExiste() {
         Connection conexion = null;
         final String DRIVER1 = "org.postgresql.Driver";
-        final String URL1 = "jdbc:postgresql://192.168.10.150:5432/";
+        final String URL1 = "jdbc:postgresql://10.0.2.2:5432/";
         final String DATABASE_NAME1 = "TFG";
         final String USUARIO1 = "postgres";
         final String PASSWORD1 = "admin";
@@ -650,6 +651,39 @@ public class ConexionBBDD {
 
         return listaBarras;
     }
+
+
+
+    public List<String> obtenerListaIds() {
+        List<String> listaIds = new ArrayList<>();
+        conectarBD(); // Supongamos que esta función establece la conexión a la base de datos
+
+        try {
+            String query = "SELECT id_ticket FROM ticket_producto";
+            PreparedStatement preparedStatement = conexion.prepareStatement(query);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()) {
+                String id = resultSet.getString("id_ticket");
+                listaIds.add(id);
+            }
+
+            resultSet.close();
+            preparedStatement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                cerrarConnection(conexion); // Supongo que tienes un método cerrarConnection() para cerrar la conexión
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        return listaIds;
+    }
+
+
 
     public List<String> obtenerListaCIF() {
         List<String> listaCif = new ArrayList<>();

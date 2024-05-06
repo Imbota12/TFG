@@ -1,103 +1,99 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="700dp"
-    android:layout_height="150dp"
-    android:orientation="horizontal"
-    android:padding="16dp"
-    android:gravity="center_vertical">
 
-    <LinearLayout
-        android:layout_width="350dp"
-        android:layout_height="120dp"
-        android:orientation="horizontal">
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="750dp"
+    android:layout_height="250dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:padding="5dp"
+    android:background="@drawable/border_black">
 
-        <ImageView
-            android:id="@+id/imagenProducto"
-            android:layout_width="130dp"
-            android:layout_height="110dp"
-            />
+    <ImageView
+        android:id="@+id/im_produ_todos"
+        android:layout_width="130dp"
+        android:layout_height="160dp"
+        android:layout_marginEnd="11dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginStart="5dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-        <LinearLayout
-            android:layout_width="210dp"
-            android:layout_height="118dp"
-            android:orientation="vertical">
+    <TextView
+        android:id="@+id/n_produ_todos"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textSize="22sp"
+        android:textAlignment="center"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/im_produ_todos"
+        app:layout_constraintTop_toTopOf="@id/im_produ_todos" />
 
+    <TextView
+        android:id="@+id/cod_produ_todos"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:textAlignment="center"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginStart="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/im_produ_todos"
+        app:layout_constraintTop_toBottomOf="@id/n_produ_todos" />
 
-            <TextView
-                android:id="@+id/nombreProducto"
-                android:layout_width="200dp"
-                android:layout_height="35dp"
-                android:textSize="22sp"/>
+    <TextView
+        android:id="@+id/tx_stock"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:text="CANTIDAD EN STOCK:"
+        android:textAlignment="center"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="20dp"
+        app:layout_constraintEnd_toStartOf="@id/stockProducto"
+        app:layout_constraintStart_toEndOf="@id/im_produ_todos"
+        app:layout_constraintTop_toBottomOf="@id/cod_produ_todos"
+        />
 
-            <LinearLayout
-                android:layout_width="190dp"
-                android:layout_height="30dp"
-                android:orientation="horizontal">
+    <TextView
+        android:id="@+id/stockProducto"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/tx_stock"
+        app:layout_constraintTop_toBottomOf="@id/cod_produ_todos"
+         />
 
-                <TextView
-                    android:layout_width="130dp"
-                    android:layout_height="28dp"
-                    android:textSize="24dp"
-                    android:text="EN STOCK:"
-                    />
+    <Button
+        android:id="@+id/modificarCantidad"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:text="Modificar stock"
+        android:layout_marginStart="60dp"
+        android:layout_marginTop="10dp"
+        app:layout_constraintStart_toEndOf="@id/im_produ_todos"
+        app:layout_constraintTop_toBottomOf="@id/stockProducto" />
 
-                <TextView
-                    android:id="@+id/stockProducto"
-                    android:layout_width="50dp"
-                    android:layout_height="28dp"
-                    android:textSize="20sp"/>
+    <Button
+        android:id="@+id/borrarProducto"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:text="Borrar"
+        android:layout_marginStart="60dp"
+        app:layout_constraintStart_toEndOf="@id/modificarCantidad"
+        app:layout_constraintTop_toTopOf="@id/modificarCantidad" />
 
-            </LinearLayout>
+    <Button
+        android:id="@+id/ImprimirCodigoBarras"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="IMPRIMIR CODIGO BARRAS"
+        android:layout_marginTop="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/modificarCantidad" />
 
-            <TextView
-                android:id="@+id/codBarras"
-                android:layout_width="200dp"
-                android:layout_height="35dp"
-                android:textSize="20dp"/>
-
-        </LinearLayout>
-
-    </LinearLayout>
-
-
-
-    <LinearLayout
-        android:layout_width="300dp"
-        android:layout_height="120dp"
-        android:orientation="vertical">
-        <LinearLayout
-            android:layout_width="300dp"
-            android:layout_height="60dp"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/modificarCantidad"
-                android:layout_width="wrap_content"
-                android:layout_height="50dp"
-                android:text="Modificar stock"
-                android:layout_marginStart="8dp" />
-
-            <Button
-                android:id="@+id/borrarProducto"
-                android:layout_width="113dp"
-                android:layout_height="50dp"
-                android:layout_marginStart="8dp"
-                android:text="Borrar" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="300dp"
-            android:layout_height="55dp"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/ImprimirCodigoBarras"
-                android:layout_width="270dp"
-                android:layout_height="50dp"
-                android:text="IMPRIMIR CODIGO BARRAS"
-                android:layout_marginStart="8dp" />
-
-        </LinearLayout>
-
-    </LinearLayout>
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
