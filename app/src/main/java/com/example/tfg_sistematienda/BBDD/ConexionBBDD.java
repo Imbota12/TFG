@@ -3,6 +3,8 @@ package com.example.tfg_sistematienda.BBDD;
 import android.os.StrictMode;
 
 import com.example.tfg_sistematienda.modelos.ProductoModel;
+import com.example.tfg_sistematienda.modelos.Producto_TicketModel;
+import com.example.tfg_sistematienda.modelos.TicketModel;
 import com.example.tfg_sistematienda.modelos.TiendaModel;
 import com.example.tfg_sistematienda.modelos.UsuarioModel;
 
@@ -280,6 +282,92 @@ public class ConexionBBDD {
         }
         return insertarOK;
     }
+
+    public boolean modificarStockProducto(String codigoBarras, int cantidad) {
+        boolean modificacionOK = false;
+        conectarBD();
+        try {
+            // Construir la consulta SQL para actualizar el stock del producto
+            String query = "UPDATE Producto SET cantidad_stock = cantidad_stock - ? WHERE codigo_barras = ?";
+            PreparedStatement preparedStatement = conexion.prepareStatement(query);
+            preparedStatement.setInt(1, cantidad); // La cantidad puede ser positiva (para incrementar el stock) o negativa (para reducir el stock)
+            preparedStatement.setString(2, codigoBarras);
+            preparedStatement.executeUpdate();
+            preparedStatement.close();
+            modificacionOK = true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                cerrarConnection(conexion);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return modificacionOK;
+    }
+
+
+
+    public boolean insertarTicket(TicketModel ticket) {
+        boolean insertarOK = false;
+        conectarBD(); // Supongamos que esta función establece la conexión a la base de datos
+
+        try {
+            // Construir la consulta SQL para insertar un nuevo ticket
+            String query = "INSERT INTO ticket (codigo_barras_ticket, total_precio, fecha_ticket, fecha_limite_devolucion, isdevolucion, isventa, entregado, devuelto) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+            PreparedStatement preparedStatement = conexion.prepareStatement(query);
+            preparedStatement.setString(1, ticket.getCodigo_barras_ticket());
+            preparedStatement.setDouble(2, ticket.getTotal_precio());
+            preparedStatement.setDate(3, java.sql.Date.valueOf(String.valueOf(ticket.getFecha_ticket())));
+            preparedStatement.setDate(4, java.sql.Date.valueOf(String.valueOf(ticket.getFecha_limite_devolucion())));
+            preparedStatement.setBoolean(5, ticket.isDevolucion());
+            preparedStatement.setBoolean(6, ticket.isVenta());
+            preparedStatement.setDouble(7, ticket.getEntregado());
+            preparedStatement.setDouble(8, ticket.getDevuelto());
+
+            preparedStatement.executeUpdate();
+            preparedStatement.close();
+            insertarOK = true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                cerrarConnection(conexion); // Supongo que tienes un método cerrarConnection() para cerrar la conexión
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return insertarOK;
+    }
+
+    public boolean insertarProductoTicket(Producto_TicketModel productoTicket) {
+        boolean insertarOK = false;
+        conectarBD(); // Supongamos que esta función establece la conexión a la base de datos
+
+        try {
+            // Construir la consulta SQL para insertar un nuevo producto en el ticket
+            String query = "INSERT INTO ticket_producto (codigo_barras, codigo_barras_ticket, cantidad) VALUES (?, ?, ?)";
+            PreparedStatement preparedStatement = conexion.prepareStatement(query);
+            preparedStatement.setString(1, productoTicket.getCodigoBarras_producto());
+            preparedStatement.setString(2, productoTicket.getCodigoBarras_ticket());
+            preparedStatement.setInt(3, productoTicket.getCantidad());
+
+            preparedStatement.executeUpdate();
+            preparedStatement.close();
+            insertarOK = true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                cerrarConnection(conexion); // Supongo que tienes un método cerrarConnection() para cerrar la conexión
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return insertarOK;
+    }
+
 
 
 

@@ -2,6 +2,8 @@ package com.example.tfg_sistematienda.controladores;
 
 import com.example.tfg_sistematienda.BBDD.ConexionBBDD;
 import com.example.tfg_sistematienda.modelos.ProductoModel;
+import com.example.tfg_sistematienda.modelos.Producto_TicketModel;
+import com.example.tfg_sistematienda.modelos.TicketModel;
 import com.example.tfg_sistematienda.modelos.TiendaModel;
 import com.example.tfg_sistematienda.modelos.UsuarioModel;
 
@@ -65,5 +67,9 @@ public class BBDDController {
     public double obtenerPrecioUnidadporCodigo(String codigoBarras) {return conexionBBDD.obtenerPrecioUnidadporCodigo(codigoBarras);}
 
     public int obtenerStockporCodigo(String codigoBarras) {return conexionBBDD.obtenerStockporCodigo(codigoBarras);}
+
+    public boolean insertarTicket(TicketModel ticket) {return conexionBBDD.insertarTicket(ticket);}
+    public boolean insertarProductoTicket(Producto_TicketModel productoTicket) {return conexionBBDD.insertarProductoTicket(productoTicket);}
+    public boolean modificarStockProducto(String codigoBarras, int cantidad) {return conexionBBDD.modificarStockProducto(codigoBarras, cantidad);}
 
     }

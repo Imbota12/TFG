@@ -1,41 +1,39 @@
 package com.example.tfg_sistematienda.modelos;
 
-import java.util.*;
+import java.time.LocalDate;
 
 public class TicketModel {
 
     private String codigo_barras_ticket;
     private double total_precio;
-    private Date fecha_ticket;
-    private Date fecha_limite_devolucion;
-    private boolean isdevolucion;
-    private boolean isventa;
+    private LocalDate fecha_ticket;
+    private LocalDate fecha_limite_devolucion;
+    private boolean devolucion;
+    private boolean venta;
     private double entregado;
     private double devuelto;
 
-
-    public TicketModel(String codigo_barras_ticket, double total_precio, boolean isdevolucion, boolean isventa, double entregado, double devuelto) {
+    public TicketModel(String codigo_barras_ticket, double total_precio, boolean devolucion, boolean venta, double entregado, double devuelto) {
         this.codigo_barras_ticket = codigo_barras_ticket;
         this.total_precio = total_precio;
-        this.isdevolucion = isdevolucion;
-        this.isventa = isventa;
+        this.devolucion = devolucion;
+        this.venta = venta;
         this.entregado = entregado;
         this.devuelto = devuelto;
-        this.fecha_ticket = new Date(); // Establecer la fecha actual como fecha de ticket
+        this.fecha_ticket = LocalDate.now(); // Establecer la fecha actual como fecha de ticket
         this.fecha_limite_devolucion = calcularFechaLimiteDevolucion(); // Calcular la fecha límite de devolución
     }
 
     public TicketModel() {
-        this.fecha_ticket = new Date(); // Establecer la fecha actual como fecha de ticket
+        this.fecha_ticket = LocalDate.now(); // Establecer la fecha actual como fecha de ticket
         this.fecha_limite_devolucion = calcularFechaLimiteDevolucion(); // Calcular la fecha límite de devolución
     }
 
-    private Date calcularFechaLimiteDevolucion() {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(fecha_ticket);
-        calendar.add(Calendar.DATE, 15); // Agregar 15 días a la fecha de ticket
-        return calendar.getTime();
+    private LocalDate calcularFechaLimiteDevolucion() {
+        return fecha_ticket.plusDays(15); // Agregar 15 días a la fecha de ticket
     }
+
+    // Getters y setters
 
     public String getCodigo_barras_ticket() {
         return codigo_barras_ticket;
@@ -53,36 +51,36 @@ public class TicketModel {
         this.total_precio = total_precio;
     }
 
-    public Date getFecha_ticket() {
+    public LocalDate getFecha_ticket() {
         return fecha_ticket;
     }
 
-    public void setFecha_ticket(Date fecha_ticket) {
+    public void setFecha_ticket(LocalDate fecha_ticket) {
         this.fecha_ticket = fecha_ticket;
     }
 
-    public Date getFecha_limite_devolucion() {
+    public LocalDate getFecha_limite_devolucion() {
         return fecha_limite_devolucion;
     }
 
-    public void setFecha_limite_devolucion(Date fecha_limite_devolucion) {
+    public void setFecha_limite_devolucion(LocalDate fecha_limite_devolucion) {
         this.fecha_limite_devolucion = fecha_limite_devolucion;
     }
 
-    public boolean isIsdevolucion() {
-        return isdevolucion;
+    public boolean isDevolucion() {
+        return devolucion;
     }
 
-    public void setIsdevolucion(boolean isdevolucion) {
-        this.isdevolucion = isdevolucion;
+    public void setDevolucion(boolean devolucion) {
+        this.devolucion = devolucion;
     }
 
-    public boolean isIsventa() {
-        return isventa;
+    public boolean isVenta() {
+        return venta;
     }
 
-    public void setIsventa(boolean isventa) {
-        this.isventa = isventa;
+    public void setVenta(boolean venta) {
+        this.venta = venta;
     }
 
     public double getEntregado() {

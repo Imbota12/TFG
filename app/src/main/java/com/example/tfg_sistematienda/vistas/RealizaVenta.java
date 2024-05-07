@@ -12,6 +12,8 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -28,7 +30,6 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.tfg_sistematienda.Adaptadores.AdaptadorProducto;
 import com.example.tfg_sistematienda.Adaptadores.AdaptadorProductosComprados;
 import com.example.tfg_sistematienda.Adaptadores.AdaptadorProductosVenta;
 import com.example.tfg_sistematienda.MainActivity;
@@ -58,11 +59,15 @@ public class RealizaVenta extends AppCompatActivity implements AdaptadorProducto
     private List<ProductoModel> listaTodosProductos;
     private AdaptadorProductosVenta adaptadorTodos;
     private List<ProductoModel> listaProductosComprados;
-    private List<Producto_TicketModel> listaCantidades= new ArrayList<>();
+    private List<Producto_TicketModel> listaCantidades = new ArrayList<>();
     private BBDDController bbddController = new BBDDController();
     private TicketModel ticket;
-    private double totalVenta = 0.0;
+    private double totalVenta;
 
+    private double entregado, devuelto;
+    private EditText aPagar, aRecoger, aDevolver;
+    private Button tarjeta, efectivo, realizarPago, comprobar;
+    private TextView tx_Pagar, tx_Recoger, tx_Devolver, eu_Pagar, eu_Recoger, eu_Devolver;
     private static final int CAMERA_PERMISSION_REQUEST_CODE = 150;
 
     @Override
@@ -80,7 +85,7 @@ public class RealizaVenta extends AppCompatActivity implements AdaptadorProducto
         productosComprados = findViewById(R.id.rv_comprados);
         idTicket = findViewById(R.id.id_ticket);
         idTicket.setEnabled(false);
-        precioTotal=findViewById(R.id.tv_total);
+        precioTotal = findViewById(R.id.tv_total);
         precioTotal.setText("0");
 
         listaProductosComprados = new ArrayList<>();
@@ -97,8 +102,8 @@ public class RealizaVenta extends AppCompatActivity implements AdaptadorProducto
         adaptadorComprados = new AdaptadorProductosComprados(this, listaProductosComprados, listaCantidades, listaTodosProductos, this, this, this, this);
         productosComprados.setAdapter(adaptadorComprados);
 
-        escanearProducto= findViewById(R.id.leer_producto_venta);
-        codigoBuscar= findViewById(R.id.cod_barras_producto);
+        escanearProducto = findViewById(R.id.leer_producto_venta);
+        codigoBuscar = findViewById(R.id.cod_barras_producto);
         cancelarVenta = findViewById(R.id.bt_cancelar_venta);
         realizarVenta = findViewById(R.id.bt_realizar_venta);
 
@@ -117,10 +122,12 @@ public class RealizaVenta extends AppCompatActivity implements AdaptadorProducto
 
         codigoBuscar.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
 
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
 
             @Override
             public void afterTextChanged(Editable s) {
@@ -146,17 +153,225 @@ public class RealizaVenta extends AppCompatActivity implements AdaptadorProducto
         });
 
         realizarVenta.setOnClickListener(v -> {
-            crearTicketconCodigo();
+            totalVenta = calcularPrecioTotal(listaCantidades);
+            abrirDialogoPago(totalVenta);
         });
 
 
+
+
     }
 
-    private void crearTicketconCodigo(){
-       ticket=new TicketModel(id_ticket, totalVenta, false, true, 0,0);
-
-       ;
+    private void crearTicketconCodigo() {
+        ticket = new TicketModel(id_ticket, totalVenta, false, true, entregado, devuelto);
+        if (bbddController.insertarTicket(ticket)) {
+            for (Producto_TicketModel productoTicket : listaCantidades) {
+                // Crear un nuevo objeto Producto_TicketModel con el código de ticket actual
+                Producto_TicketModel nuevoProductoTicket = new Producto_TicketModel(productoTicket.getCodigoBarras_producto(), id_ticket, productoTicket.getCantidad());
+                // Insertar el producto en la base de datos
+                if (bbddController.insertarProductoTicket(nuevoProductoTicket)) {
+                    // Modificar el stock del producto en la base de datos
+                    if (bbddController.modificarStockProducto(nuevoProductoTicket.getCodigoBarras_producto(), nuevoProductoTicket.getCantidad())) {
+                        Log.d(TAG, "Stock del producto actualizado: " + nuevoProductoTicket.getCodigoBarras_producto());
+                    } else {
+                        Log.e(TAG, "Error al actualizar el stock del producto: " + nuevoProductoTicket.getCodigoBarras_producto());
+                    }
+                } else {
+                    Log.e(TAG, "Error al insertar el producto en ticket_producto: " + nuevoProductoTicket.toString());
+                }
+            }
+            mostrarDialogoVentaExitosa();
+        } else {
+            Toast.makeText(this, "Error al crear el ticket", Toast.LENGTH_SHORT).show();
+        }
     }
+
+
+    private void mostrarDialogoVentaExitosa() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Venta Exitosa");
+        builder.setMessage("La venta se ha registrado correctamente.");
+
+        // Agregar botones
+        builder.setPositiveButton("Volver al Menú", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // Implementa lo que deseas hacer cuando se presiona el botón "Volver al Menú"
+                // Por ejemplo, puedes iniciar la actividad del menú principal
+                Intent intent = new Intent(RealizaVenta.this, MainActivity.class);
+                startActivity(intent);
+                finish(); // Esto evita que el usuario pueda volver atrás al menú principal desde esta actividad
+            }
+        });
+
+        builder.setNegativeButton("Realizar Otra Venta", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // Implementa lo que deseas hacer cuando se presiona el botón "Realizar Otra Venta"
+                // Por ejemplo, puedes iniciar la actividad de realizar venta sin datos
+                Intent intent = new Intent(RealizaVenta.this, RealizaVenta.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK); // Limpiar el historial de actividades
+                startActivity(intent);
+            }
+        });
+
+        // Mostrar el diálogo
+        builder.setCancelable(false);
+        builder.show();
+    }
+
+
+
+    private void abrirDialogoPago(double totalVenta){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("REALIZAR PAGO");
+
+        // Inflar el diseño del diálogo de edición de producto
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.pago, null);
+        builder.setView(dialogView);
+
+        aPagar=dialogView.findViewById(R.id.a_pagar);
+        aRecoger=dialogView.findViewById(R.id.entregado);
+        aDevolver=dialogView.findViewById(R.id.a_devolver);
+
+        tarjeta=dialogView.findViewById(R.id.pago_tarjeta);
+        efectivo=dialogView.findViewById(R.id.pago_efectivo);
+
+        realizarPago=dialogView.findViewById(R.id.tramitar_pago);
+        realizarPago.setVisibility(View.INVISIBLE);
+
+        tx_Pagar=dialogView.findViewById(R.id.tx_apagar);
+        tx_Recoger=dialogView.findViewById(R.id.tx_entregado);
+        tx_Devolver=dialogView.findViewById(R.id.tx_adevolver);
+
+        eu_Pagar=dialogView.findViewById(R.id.eu_pagar);
+        eu_Recoger=dialogView.findViewById(R.id.eu_entre);
+        eu_Devolver=dialogView.findViewById(R.id.eu_devo);
+        comprobar=dialogView.findViewById(R.id.comprobar);
+
+
+        aPagar.setText(String.valueOf(totalVenta));
+        aPagar.setEnabled(false);
+        comprobar.setVisibility(View.INVISIBLE);
+
+
+        eu_Devolver.setVisibility(View.INVISIBLE);
+        eu_Recoger.setVisibility(View.INVISIBLE);
+        tx_Devolver.setVisibility(View.INVISIBLE);
+        tx_Recoger.setVisibility(View.INVISIBLE);
+        aRecoger.setVisibility(View.INVISIBLE);
+        aDevolver.setVisibility(View.INVISIBLE);
+
+        tarjeta.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                tx_Pagar.setVisibility(View.INVISIBLE);
+                tx_Recoger.setVisibility(View.VISIBLE);
+                tx_Devolver.setVisibility(View.VISIBLE);
+
+                eu_Pagar.setVisibility(View.INVISIBLE);
+                eu_Recoger.setVisibility(View.VISIBLE);
+                eu_Devolver.setVisibility(View.VISIBLE);
+
+                aRecoger.setEnabled(false);
+                aDevolver.setEnabled(false);
+
+                aPagar.setVisibility(View.INVISIBLE);
+                aRecoger.setVisibility(View.VISIBLE);
+                aDevolver.setVisibility(View.VISIBLE);
+                realizarPago.setVisibility(View.VISIBLE);
+
+                aRecoger.setText(String.valueOf(totalVenta));
+                aDevolver.setText("0,00");
+
+                entregado=Double.valueOf(aRecoger.getText().toString());
+                devuelto=0.00;
+            }
+        });
+
+        efectivo.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View v) {
+               tx_Recoger.setVisibility(View.VISIBLE);
+               tx_Devolver.setVisibility(View.VISIBLE);
+               eu_Recoger.setVisibility(View.VISIBLE);
+               eu_Devolver.setVisibility(View.VISIBLE);
+               aDevolver.setEnabled(false);
+               aRecoger.setVisibility(View.VISIBLE);
+               aDevolver.setVisibility(View.VISIBLE);
+
+
+               aRecoger.addTextChangedListener(new TextWatcher() {
+                   @Override
+                   public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                       // No necesitas implementar nada aquí
+                   }
+
+                   @Override
+                   public void onTextChanged(CharSequence s, int start, int before, int count) {
+                       // No necesitas implementar nada aquí
+                   }
+
+                   @Override
+                   public void afterTextChanged(Editable s) {
+                      comprobar.setVisibility(View.VISIBLE);
+                   }
+               });
+
+               comprobar.setOnClickListener(new View.OnClickListener() {
+                   @Override
+                   public void onClick(View v) {
+                       entregado=Double.valueOf(aRecoger.getText().toString());
+                       calcularCambio(totalVenta, entregado);
+
+                   }
+               });
+
+
+
+
+
+
+           }
+        });
+
+        realizarPago.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                crearTicketconCodigo();
+            }
+
+        });
+
+// Mostrar el diálogo
+        builder.show();
+        builder.setCancelable(false);
+
+    }
+
+    private void calcularCambio(double totalVenta, double entregado) {
+        try {
+
+            if (entregado < totalVenta) {
+                showPaymentAlert();
+                aDevolver.setText("");
+            } else {
+                devuelto = entregado - totalVenta;
+                aDevolver.setText(String.valueOf(devuelto));
+                realizarPago.setVisibility(View.VISIBLE);
+            }
+        } catch (NumberFormatException e) {
+            // Manejar la excepción si los campos no contienen números válidos
+        }
+    }
+
+    private void showPaymentAlert() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("La cantidad entregada es menor que la cantidad total. El cliente todavía debe pagar más.")
+                .setPositiveButton("Aceptar", null)
+                .show();
+    }
+
 
     private void iniciarEscaner() {
         IntentIntegrator integrator = new IntentIntegrator(this);
@@ -248,7 +463,6 @@ public class RealizaVenta extends AppCompatActivity implements AdaptadorProducto
     }
 
 
-
     private void filtrarProductosPorCodigo(String codigo) {
         if (codigo.isEmpty()) {
             cargarProductos(); // Cargar todos los productos nuevamente
@@ -263,7 +477,6 @@ public class RealizaVenta extends AppCompatActivity implements AdaptadorProducto
             adaptadorTodos.actualizarListaTodos(productosFiltrados);
         }
     }
-
 
 
     private List<String> obtenerListaCodigosTicketDesdeBD() {
@@ -340,10 +553,8 @@ public class RealizaVenta extends AppCompatActivity implements AdaptadorProducto
     }
 
 
-
-
     private double calcularPrecioTotal(List<Producto_TicketModel> listaCantidades) {
-
+        double totalVentaa = 0.0;
 
         // Recorre la lista de productos
         for (Producto_TicketModel producto : listaCantidades) {
@@ -353,10 +564,10 @@ public class RealizaVenta extends AppCompatActivity implements AdaptadorProducto
             int cantidad = producto.getCantidad();
 
             // Calcula el subtotal para este producto y lo suma al total de la venta
-            totalVenta += precioPorUnidad * cantidad;
+            totalVentaa += precioPorUnidad * cantidad;
         }
 
-        return totalVenta;
+        return totalVentaa;
     }
 
     @Override
@@ -393,7 +604,7 @@ public class RealizaVenta extends AppCompatActivity implements AdaptadorProducto
 
     @Override
     public void onPriceUpdated(double newPrice) {
-       precioTotal.setText(String.valueOf(newPrice));
+        precioTotal.setText(String.valueOf(newPrice));
     }
 
     @Override
@@ -401,7 +612,7 @@ public class RealizaVenta extends AppCompatActivity implements AdaptadorProducto
         // Actualizar el stock disponible en la lista de todos los productos
         for (ProductoModel productoModel : listaTodosProductos) {
             if (productoModel.getCodigoBarras() == producto.getCodigoBarras_producto()) {
-                productoModel.setCantidad(productoModel.getCantidad() - 1 ); // Incrementar el stock disponible
+                productoModel.setCantidad(productoModel.getCantidad() - 1); // Incrementar el stock disponible
                 break;
             }
         }
@@ -415,7 +626,7 @@ public class RealizaVenta extends AppCompatActivity implements AdaptadorProducto
         }
 
         // Eliminar el producto de la lista de compras si la cantidad es cero
-        for (Iterator<ProductoModel> iterator = listaProductosComprados.iterator(); iterator.hasNext();) {
+        for (Iterator<ProductoModel> iterator = listaProductosComprados.iterator(); iterator.hasNext(); ) {
             ProductoModel productoModel = iterator.next();
             if (productoModel.getCodigoBarras() == producto.getCodigoBarras_producto() && producto.getCantidad() == 0) {
                 iterator.remove(); // Eliminar el producto de la lista de compras
@@ -431,12 +642,11 @@ public class RealizaVenta extends AppCompatActivity implements AdaptadorProducto
     }
 
 
-
     @Override
     public void onQuantityChangedListenerUp(Producto_TicketModel producto) {
         for (ProductoModel productoModel : listaTodosProductos) {
             if (productoModel.getCodigoBarras() == producto.getCodigoBarras_producto()) {
-                productoModel.setCantidad(productoModel.getCantidad() + 1 ); // Incrementar el stock disponible
+                productoModel.setCantidad(productoModel.getCantidad() + 1); // Incrementar el stock disponible
                 break;
             }
 
