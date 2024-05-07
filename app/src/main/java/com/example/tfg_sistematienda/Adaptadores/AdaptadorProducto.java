@@ -298,7 +298,7 @@ public class AdaptadorProducto extends RecyclerView.Adapter<ViewHolderProducto> 
             @Override
             public void onClick(View v) {
                 int cantidadActual= productoSeleccionado.getCantidadStock();
-                if (cantidadActual>0){
+                if (cantidadActual>=0){
                     cantidadActual++;
                     stock.setText(String.valueOf(cantidadActual));
                     productoSeleccionado.setCantidadStock(cantidadActual);

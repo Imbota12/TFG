@@ -56,6 +56,7 @@ public class AdaptadorProductosVenta extends RecyclerView.Adapter<ViewHolderProd
         ProductoModel producto = listaProductos.get(position);
         holder.nombreProducto.setText(producto.getNombre());
         holder.codigoProducto.setText(String.valueOf(producto.getCodigoBarras()));
+        holder.stockProducto.setText(String.valueOf(producto.getCantidadStock()));
         byte[] imagenProductoBytes = producto.getImagenProducto();
 
 

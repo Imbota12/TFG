@@ -25,12 +25,18 @@ public class ProductoModel {
         this.vecesDevuelto = vecesDevuelto;
         this.imagenProducto = imagenProducto;
         this.idTienda = idTienda;
-        this.cantidad = 1;
+        this.cantidad = 0;
     }
 
     public ProductoModel(){
         // Constructor vacío
-        this.cantidad = 1;
+        this.cantidad = 0;
+    }
+
+    public ProductoModel(String codigoBarras, String nombre, int cantidad){
+        this.codigoBarras = codigoBarras;
+        this.nombre = nombre;
+        this.cantidad = cantidad;
     }
 
     // Getters y setters

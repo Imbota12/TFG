@@ -194,9 +194,6 @@ public class CrearProducto extends AppCompatActivity {
 
 
 
-
-
-
         imprimirCodigoBarras.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

@@ -5,6 +5,8 @@ import static com.example.tfg_sistematienda.vistas.ListaInventario.TAG;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -30,6 +32,12 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.dantsu.escposprinter.EscPosPrinter;
+import com.dantsu.escposprinter.connection.bluetooth.BluetoothConnection;
+import com.dantsu.escposprinter.exceptions.EscPosBarcodeException;
+import com.dantsu.escposprinter.exceptions.EscPosConnectionException;
+import com.dantsu.escposprinter.exceptions.EscPosEncodingException;
+import com.dantsu.escposprinter.exceptions.EscPosParserException;
 import com.example.tfg_sistematienda.Adaptadores.AdaptadorProductosComprados;
 import com.example.tfg_sistematienda.Adaptadores.AdaptadorProductosVenta;
 import com.example.tfg_sistematienda.MainActivity;
@@ -42,18 +50,22 @@ import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 import com.journeyapps.barcodescanner.CaptureActivity;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 public class RealizaVenta extends AppCompatActivity implements AdaptadorProductosVenta.OnProductoSeleccionadoListener, AdaptadorProductosComprados.OnProductRemovedListener, AdaptadorProductosComprados.OnPriceUpdateListener, AdaptadorProductosComprados.OnQuantityChangedListener, AdaptadorProductosComprados.OnQuantityChangedListenerUp {
 
+    private static final int REQUEST_ENABLE_BT = 27;
     private RecyclerView todosProductos, productosComprados;
     private EditText codigoBuscar, idTicket;
     private Button escanearProducto, realizarVenta, cancelarVenta;
     private TextView precioTotal;
-
+    private static boolean primeraVez=true;
     private String id_ticket, codigoEscaneado;
     private AdaptadorProductosComprados adaptadorComprados;
     private List<ProductoModel> listaTodosProductos;
@@ -69,6 +81,10 @@ public class RealizaVenta extends AppCompatActivity implements AdaptadorProducto
     private Button tarjeta, efectivo, realizarPago, comprobar;
     private TextView tx_Pagar, tx_Recoger, tx_Devolver, eu_Pagar, eu_Recoger, eu_Devolver;
     private static final int CAMERA_PERMISSION_REQUEST_CODE = 150;
+
+    private BluetoothConnection connection;
+    private EscPosPrinter printer;
+    private BluetoothAdapter bluetoothAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,6 +103,10 @@ public class RealizaVenta extends AppCompatActivity implements AdaptadorProducto
         idTicket.setEnabled(false);
         precioTotal = findViewById(R.id.tv_total);
         precioTotal.setText("0");
+
+
+        connection = null;
+        printer = null;
 
         listaProductosComprados = new ArrayList<>();
 
@@ -180,10 +200,108 @@ public class RealizaVenta extends AppCompatActivity implements AdaptadorProducto
                     Log.e(TAG, "Error al insertar el producto en ticket_producto: " + nuevoProductoTicket.toString());
                 }
             }
-            mostrarDialogoVentaExitosa();
+            try {
+                checkBluetoothConnectPermission();
+            } catch (EscPosEncodingException | EscPosBarcodeException | EscPosParserException |
+                     EscPosConnectionException e) {
+                throw new RuntimeException(e);
+            }
         } else {
             Toast.makeText(this, "Error al crear el ticket", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void checkBluetoothConnectPermission() throws EscPosEncodingException, EscPosBarcodeException, EscPosParserException, EscPosConnectionException {
+        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.S && ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.BLUETOOTH}, MainActivity.PERMISSION_BLUETOOTH);
+        } else if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.S && ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_ADMIN) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.BLUETOOTH_ADMIN}, MainActivity.PERMISSION_BLUETOOTH_ADMIN);
+        } else if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S && ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.BLUETOOTH_CONNECT}, MainActivity.PERMISSION_BLUETOOTH_CONNECT);
+        } else if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S && ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.BLUETOOTH_SCAN}, MainActivity.PERMISSION_BLUETOOTH_SCAN);
+        } else {
+            // Ya se tienen todos los permisos necesarios
+            conectarImpresora(); // Intenta conectar la impresora
+        }
+    }
+
+    private boolean conectarImpresora() {
+        bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        if (bluetoothAdapter == null) {
+            // El dispositivo no soporta Bluetooth
+            return false;
+        }
+
+        if (!bluetoothAdapter.isEnabled()) {
+            // El Bluetooth no está activado, solicita al usuario que lo active
+            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+                // Manejar el caso en que los permisos no estén concedidos
+                return false;
+            }
+            startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+            return false;
+        }
+
+        if (connection == null || printer == null) {
+            // Obtener la lista de dispositivos emparejados
+            Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();
+            if (pairedDevices != null && !pairedDevices.isEmpty()) {
+                // Crear una lista de nombres de dispositivos para el diálogo
+                List<String> deviceNames = new ArrayList<>();
+                final List<BluetoothDevice> devices = new ArrayList<>();
+                for (BluetoothDevice device : pairedDevices) {
+                    deviceNames.add(device.getName());
+                    devices.add(device);
+                }
+
+                // Mostrar un cuadro de diálogo para que el usuario elija el dispositivo
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("Selecciona un dispositivo Bluetooth");
+                builder.setItems(deviceNames.toArray(new String[0]), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Conectar al dispositivo seleccionado
+                        BluetoothDevice selectedDevice = devices.get(which);
+                        try {
+                            connection = new BluetoothConnection(selectedDevice);
+                            printer = new EscPosPrinter(connection, 200, 50f, 45);
+
+                            String textoTicket = "[C]\n";
+
+                            for (ProductoModel producto : listaProductosComprados) {
+                                for (Producto_TicketModel prod : listaCantidades) {
+                                    if (producto.getCodigoBarras().equals(prod.getCodigoBarras_producto())) {
+                                        textoTicket += "[L]<b>" + producto.getNombre() + "</b>[L] " + producto.getPrecioUnidad() + "e/Uni[L] " + prod.getCantidad() +"\n";
+                                        textoTicket+= "[L] PRECIO TOTAL PRODUCTO: " + producto.getPrecioUnidad()*prod.getCantidad() + "e\n";
+                                        textoTicket += "[L]  Cod Producto : " + producto.getCodigoBarras() + "\n";
+                                        textoTicket += "[L]===========================\n";
+                                        break; // Romper el bucle interior cuando se encuentre la coincidencia
+                                    }
+                                }
+                            }
+                                        textoTicket+= "[L] TOTAL A PAGAR:"+totalVenta+"\n";
+                                        textoTicket+= "[L] ENTREGADO: " + entregado+"\n";
+                                        textoTicket+= "[L] DEVUELTO: " + devuelto+"\n";
+                                        textoTicket += "[C]<barcode type='128' height='10'>" + id_ticket + "</barcode>\n";
+                            printer.printFormattedText(textoTicket);
+                            // Después de imprimir, muestra el diálogo de venta exitosa
+                            mostrarDialogoVentaExitosa();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            // Manejar cualquier error de conexión o impresión aquí
+                        }
+                    }
+                });
+                builder.show();
+                return true; // Impresora conectada con éxito
+            } else {
+                // Manejar el caso en que no haya dispositivos emparejados
+                return false;
+            }
+        }
+        return false; // La impresora ya está conectada
     }
 
 
@@ -327,11 +445,6 @@ public class RealizaVenta extends AppCompatActivity implements AdaptadorProducto
                    }
                });
 
-
-
-
-
-
            }
         });
 
@@ -351,19 +464,28 @@ public class RealizaVenta extends AppCompatActivity implements AdaptadorProducto
 
     private void calcularCambio(double totalVenta, double entregado) {
         try {
-
             if (entregado < totalVenta) {
                 showPaymentAlert();
                 aDevolver.setText("");
             } else {
+                // Calcular el cambio
                 devuelto = entregado - totalVenta;
-                aDevolver.setText(String.valueOf(devuelto));
+                // Formatear el valor de devuelto para mostrar solo dos decimales
+                DecimalFormat df = new DecimalFormat("#.##");
+                df.setMinimumFractionDigits(2); // Establecer el mínimo de dos decimales
+                df.setMaximumFractionDigits(2);
+                String devueltoFormateado = df.format(devuelto);
+                // Establecer el texto formateado en el TextView
+                aDevolver.setText(devueltoFormateado);
                 realizarPago.setVisibility(View.VISIBLE);
+                // Actualizar el valor de devuelto como double
+                devuelto = Double.parseDouble(devueltoFormateado);
             }
         } catch (NumberFormatException e) {
             // Manejar la excepción si los campos no contienen números válidos
         }
     }
+
 
     private void showPaymentAlert() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -396,11 +518,17 @@ public class RealizaVenta extends AppCompatActivity implements AdaptadorProducto
                 codigoEscaneado = result.getContents();
                 Log.d(TAG, "Código de barras escaneado: " + codigoEscaneado);
 
-                // Buscar el producto correspondiente al código de barras escaneado
-                ProductoModel productoEscaneado = buscarProductoPorCodigoBarras(codigoEscaneado);
+
+                ProductoModel productoEscaneado = null;
+                for (ProductoModel producto : listaTodosProductos) {
+                    if (producto.getCodigoBarras().equals(codigoEscaneado)) {
+                        productoEscaneado = producto;
+                        break; // Salir del bucle una vez que se haya encontrado el producto
+                    }
+                }
                 if (productoEscaneado != null) {
                     // Verificar si hay suficiente stock disponible
-                    if (productoEscaneado.getCantidad() >= productoEscaneado.getCantidadStock()) {
+                    if ( productoEscaneado.getCantidadStock() <= productoEscaneado.getCantidad() ) {
                         // Mostrar un AlertDialog de advertencia
                         AlertDialog.Builder builder = new AlertDialog.Builder(this);
                         builder.setTitle("Alerta");
@@ -418,25 +546,47 @@ public class RealizaVenta extends AppCompatActivity implements AdaptadorProducto
                     boolean productoExistente = false;
                     for (ProductoModel p : listaProductosComprados) {
                         if (p.getCodigoBarras().equals(productoEscaneado.getCodigoBarras())) {
-                            // Aumentar la cantidad del producto existente
-                            p.setCantidad(p.getCantidad() + 1);
-                            adaptadorComprados.notifyDataSetChanged();
-                            // Buscar el Producto_TicketModel correspondiente y aumentar su cantidad
-                            for (Producto_TicketModel productoTicket : listaCantidades) {
-                                if (productoTicket.getCodigoBarras_producto().equals(productoEscaneado.getCodigoBarras())) {
-                                    productoTicket.setCantidad(productoTicket.getCantidad() + 1);
-                                    adaptadorComprados.notifyDataSetChanged();
-                                    break;
+                            if (p.getCantidadStock() <= p.getCantidad()) {
+                                // Mostrar un AlertDialog de advertencia
+                                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                                builder.setTitle("Alerta");
+                                builder.setMessage("No hay suficiente stock disponible para este producto.");
+                                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        // Cerrar el diálogo o ejecutar alguna acción adicional si es necesario
+                                    }
+                                });
+                                builder.show();
+                                return; // Detener el proceso
+                            } else {
+                                // Aumentar la cantidad del producto existente
+                                p.setCantidad(p.getCantidad() + 1);
+                                adaptadorComprados.notifyDataSetChanged();
+                                // Buscar el Producto_TicketModel correspondiente y aumentar su cantidad
+                                for (Producto_TicketModel productoTicket : listaCantidades) {
+                                    if (productoTicket.getCodigoBarras_producto().equals(productoEscaneado.getCodigoBarras())) {
+                                        productoTicket.setCantidad(productoTicket.getCantidad() + 1);
+                                        adaptadorComprados.notifyDataSetChanged();
+                                        break;
+                                    }
                                 }
+                                productoExistente = true;
+                                break;
                             }
-                            productoExistente = true;
-                            break;
                         }
                     }
 
                     // Si el producto no está en la lista de productos comprados, agregarlo
                     if (!productoExistente) {
+                        productoEscaneado.setCantidad(productoEscaneado.getCantidad() + 1);
                         listaProductosComprados.add(productoEscaneado);
+                        // Actualizar la cantidad en listaTodosProductos
+                        for (ProductoModel producto : listaTodosProductos) {
+                            if (producto.getCodigoBarras().equals(productoEscaneado.getCodigoBarras())) {
+                                producto.setCantidad(productoEscaneado.getCantidad());
+                                break;
+                            }
+                        }
                         adaptadorComprados.notifyDataSetChanged();
                         listaCantidades.add(new Producto_TicketModel(productoEscaneado.getCodigoBarras(), id_ticket, 1)); // Iniciar cantidad en 1
                         adaptadorComprados.notifyDataSetChanged();
@@ -501,20 +651,22 @@ public class RealizaVenta extends AppCompatActivity implements AdaptadorProducto
 
     @Override
     public void onProductoSeleccionado(ProductoModel producto) {
+
         // Verificar si hay suficiente stock disponible
-        if (producto.getCantidad() >= producto.getCantidadStock()) {
-            // Mostrar un AlertDialog de advertencia
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle("Alerta");
-            builder.setMessage("No hay suficiente stock disponible para este producto.");
-            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                    // Cerrar el diálogo o ejecutar alguna acción adicional si es necesario
-                }
-            });
-            builder.show();
-            return; // Detener el proceso
-        }
+        if ( producto.getCantidadStock() <= producto.getCantidad() ) {
+                // Mostrar un AlertDialog de advertencia
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("Alerta");
+                builder.setMessage("No hay suficiente stock disponible para este producto.");
+                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Cerrar el diálogo o ejecutar alguna acción adicional si es necesario
+                    }
+                });
+                builder.show();
+                return; // Detener el proceso
+            }
+
 
         // Buscar si el producto ya está en la lista de productos comprados
         boolean productoExistente = false;
@@ -540,6 +692,7 @@ public class RealizaVenta extends AppCompatActivity implements AdaptadorProducto
 
         // Si el producto no está en la lista de productos comprados, agregarlo
         if (!productoExistente) {
+            producto.setCantidad(producto.getCantidad() + 1);
             listaProductosComprados.add(producto);
             adaptadorComprados.notifyDataSetChanged();
             listaCantidades.add(new Producto_TicketModel(producto.getCodigoBarras(), id_ticket, 1)); // Iniciar cantidad en 1
@@ -547,28 +700,37 @@ public class RealizaVenta extends AppCompatActivity implements AdaptadorProducto
 
         }
 
+
         // Notificar al adaptador de productos comprados de los cambios
         adaptadorComprados.notifyDataSetChanged();
         precioTotal.setText(Double.toString(calcularPrecioTotal(listaCantidades)));
     }
 
 
+
     private double calcularPrecioTotal(List<Producto_TicketModel> listaCantidades) {
-        double totalVentaa = 0.0;
+        double totalVenta = 0.0;
 
         // Recorre la lista de productos
         for (Producto_TicketModel producto : listaCantidades) {
             // Obtiene el precio por unidad del producto y la cantidad
-
             double precioPorUnidad = bbddController.obtenerPrecioUnidadporCodigo(producto.getCodigoBarras_producto());
             int cantidad = producto.getCantidad();
 
             // Calcula el subtotal para este producto y lo suma al total de la venta
-            totalVentaa += precioPorUnidad * cantidad;
+            totalVenta += precioPorUnidad * cantidad;
         }
 
-        return totalVentaa;
+        // Formatear el totalVenta para mostrar solo dos decimales con punto decimal
+        DecimalFormatSymbols symbols = new DecimalFormatSymbols();
+        symbols.setDecimalSeparator('.');
+        DecimalFormat df = new DecimalFormat("#.##", symbols);
+        String totalVentaFormateado = df.format(totalVenta);
+
+        // Convertir el totalVenta formateado de nuevo a double
+        return Double.parseDouble(totalVentaFormateado);
     }
+
 
     @Override
     public void onProductRemoved(int position) {
