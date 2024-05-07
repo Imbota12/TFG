@@ -43,7 +43,7 @@ public class ListaInventario extends AppCompatActivity {
 
 
     private static final int CAMERA_PERMISSION_REQUEST_CODE = 100;
-    private static final String TAG = "ScanBarcodeActivity";
+    static final String TAG = "ScanBarcodeActivity";
 
     private Button botonEscaneo;
     private String codigoEscaneado;

@@ -45,7 +45,7 @@ public class BBDDController {
                                     String idTienda) { return conexionBBDD.insertarProducto(codigoBarras, nombre, descripcion,cantidadStock,precioUnidad, vecesComprado, vecesDevuelto, imagenProducto, idTienda);}
 
     public List<String> obtenerListaCodigosBarras() {return conexionBBDD.obtenerListaCodigosBarras();}
-    public List<String> obtenerListaIds() {return conexionBBDD.obtenerListaIds();}
+    public List<String> obtenerListaCodigosTicket() {return conexionBBDD.obtenerListaCodigosTicket();}
 
     public List<String> obtenerListaCIF() {return conexionBBDD.obtenerListaCIF();}
 
@@ -62,5 +62,8 @@ public class BBDDController {
 
     public boolean borrarProducto(String codigoBarras) {return conexionBBDD.borrarProducto(codigoBarras);}
 
+    public double obtenerPrecioUnidadporCodigo(String codigoBarras) {return conexionBBDD.obtenerPrecioUnidadporCodigo(codigoBarras);}
+
+    public int obtenerStockporCodigo(String codigoBarras) {return conexionBBDD.obtenerStockporCodigo(codigoBarras);}
 
     }

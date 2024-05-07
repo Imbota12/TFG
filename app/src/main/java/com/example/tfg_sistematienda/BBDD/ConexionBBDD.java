@@ -20,8 +20,8 @@ public class ConexionBBDD {
 
     private Connection conexion = null;
     private static final String DRIVER = "org.postgresql.Driver";
-    //private static final String URL = "jdbc:postgresql://localhost:5432/TiendaInfo";
-    private static final String URL = "jdbc:postgresql://10.0.2.2:5432/TiendaInfo";
+    private static final String URL = "jdbc:postgresql://192.168.129.244:5432/TiendaInfo";
+    //private static final String URL = "jdbc:postgresql://10.0.2.2:5432/TiendaInfo";
     private static final String USUARIO = "postgres";
     private static final String PASSWORD = "admin";
 
@@ -54,7 +54,8 @@ public class ConexionBBDD {
     public void crearBaseDeDatosSiNoExiste() {
         Connection conexion = null;
         final String DRIVER1 = "org.postgresql.Driver";
-        final String URL1 = "jdbc:postgresql://10.0.2.2:5432/";
+        //final String URL1 = "jdbc:postgresql://10.0.2.2:5432/";
+        final String URL1 = "jdbc:postgresql://192.168.129.244:5432/";
         final String DATABASE_NAME1 = "TFG";
         final String USUARIO1 = "postgres";
         final String PASSWORD1 = "admin";
@@ -654,18 +655,18 @@ public class ConexionBBDD {
 
 
 
-    public List<String> obtenerListaIds() {
-        List<String> listaIds = new ArrayList<>();
+    public List<String> obtenerListaCodigosTicket() {
+        List<String> listaCodigosTicket = new ArrayList<>();
         conectarBD(); // Supongamos que esta función establece la conexión a la base de datos
 
         try {
-            String query = "SELECT id_ticket FROM ticket_producto";
+            String query = "SELECT codigo_barras_ticket FROM ticket_producto";
             PreparedStatement preparedStatement = conexion.prepareStatement(query);
             ResultSet resultSet = preparedStatement.executeQuery();
 
             while (resultSet.next()) {
-                String id = resultSet.getString("id_ticket");
-                listaIds.add(id);
+                String id = resultSet.getString("codigo_barras_ticket");
+                listaCodigosTicket.add(id);
             }
 
             resultSet.close();
@@ -680,9 +681,68 @@ public class ConexionBBDD {
             }
         }
 
-        return listaIds;
+        return listaCodigosTicket;
     }
 
+    public double obtenerPrecioUnidadporCodigo(String codigoBarras) {
+        double precioUnidad = 0;
+        conectarBD(); // Supongamos que esta función establece la conexión a la base de datos
+
+        try {
+            String query = "SELECT precio_unidad FROM producto WHERE codigo_barras = ?";
+            PreparedStatement preparedStatement = conexion.prepareStatement(query);
+            preparedStatement.setString(1, codigoBarras); // Establece el código de barras en la consulta
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            // Verifica si se encontró un resultado
+            if (resultSet.next()) {
+                precioUnidad = resultSet.getDouble("precio_unidad");
+            }
+
+            resultSet.close();
+            preparedStatement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                cerrarConnection(conexion); // Supongo que tienes un método cerrarConnection() para cerrar la conexión
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        return precioUnidad;
+    }
+
+    public int obtenerStockporCodigo(String codigoBarras) {
+        int cantidadStock = 0;
+        conectarBD(); // Supongamos que esta función establece la conexión a la base de datos
+
+        try {
+            String query = "SELECT cantidad_stock FROM producto WHERE codigo_barras = ?";
+            PreparedStatement preparedStatement = conexion.prepareStatement(query);
+            preparedStatement.setString(1, codigoBarras); // Establece el código de barras en la consulta
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            // Verifica si se encontró un resultado
+            if (resultSet.next()) {
+                cantidadStock = resultSet.getInt("cantidad_stock");
+            }
+
+            resultSet.close();
+            preparedStatement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                cerrarConnection(conexion); // Supongo que tienes un método cerrarConnection() para cerrar la conexión
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        return cantidadStock;
+    }
 
 
     public List<String> obtenerListaCIF() {

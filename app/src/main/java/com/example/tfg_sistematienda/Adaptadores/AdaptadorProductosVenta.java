@@ -81,6 +81,13 @@ public class AdaptadorProductosVenta extends RecyclerView.Adapter<ViewHolderProd
             });
     }
 
+    public void actualizarListaTodos(List<ProductoModel> nuevaLista) {
+        listaProductos.clear();
+        listaProductos.addAll(nuevaLista);
+        notifyDataSetChanged();
+    }
+
+
     @Override
     public int getItemCount() {
         return listaProductos.size();

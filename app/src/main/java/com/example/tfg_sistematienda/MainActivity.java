@@ -15,6 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -37,6 +38,7 @@ import org.mindrot.jbcrypt.BCrypt;
 
 public class MainActivity extends AppCompatActivity {
 
+    public static final int PERMISSION_BLUETOOTH_SCAN = 9;
     private Button iniciar, recuperar;
 
     private Button irCrearProducto, listaProductos, irVenta;
@@ -46,7 +48,11 @@ public class MainActivity extends AppCompatActivity {
     public static final int PERMISSION_BLUETOOTH = 1;
     public static final int PERMISSION_BLUETOOTH_ADMIN = 2;
     public static final int PERMISSION_BLUETOOTH_CONNECT = 3;
-    public static final int PERMISSION_BLUETOOTH_SCAN = 4;
+
+
+    private static final int REQUEST_CODE_STORAGE = 5;
+    private static final int REQUEST_CODE_CAMERA = 6;
+    private static final int REQUEST_CODE_BLUETOOTH = 7;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,6 +72,22 @@ public class MainActivity extends AppCompatActivity {
 
         usuario = findViewById(R.id.usuario);
         contrasena = findViewById(R.id.contrasena);
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_CODE_STORAGE);
+        }
+
+        // Verificar y solicitar permiso para la cámara
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, REQUEST_CODE_CAMERA);
+        }
+
+        // Verificar y solicitar permiso para Bluetooth
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.BLUETOOTH}, REQUEST_CODE_BLUETOOTH);
+        }
+
 
         irCrearProducto.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -248,6 +270,27 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_CODE_STORAGE || requestCode == REQUEST_CODE_CAMERA || requestCode == REQUEST_CODE_BLUETOOTH) {
+            // Verificar si se concedieron todos los permisos solicitados
+            boolean allGranted = true;
+            for (int result : grantResults) {
+                if (result != PackageManager.PERMISSION_GRANTED) {
+                    allGranted = false;
+                    break;
+                }
+            }
+            if (allGranted) {
+                // Todos los permisos fueron concedidos, puedes realizar las operaciones necesarias aquí
+            } else {
+                // Al menos uno de los permisos fue denegado, puedes mostrar un mensaje al usuario o deshabilitar ciertas funcionalidades
+            }
+        }
+    }
 
 
     private void mostrarAlertaUsuarioNoEncontrado() {
