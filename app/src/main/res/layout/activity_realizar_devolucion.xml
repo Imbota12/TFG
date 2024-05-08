@@ -7,4 +7,172 @@
     android:layout_height="match_parent"
     tools:context=".vistas.RealizarDevolucion">
 
+    <TextView
+        android:id="@+id/textView37"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="180dp"
+        android:layout_marginBottom="748dp"
+        android:text="REALIZAR DEVOLUCIÓN"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_productos_ticket"
+        android:layout_width="450dp"
+        android:layout_height="400dp"
+        android:layout_marginStart="44dp"
+        android:layout_marginBottom="132dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_productos_a_devolver"
+        android:layout_width="450dp"
+        android:layout_height="400dp"
+        android:layout_marginStart="540dp"
+        android:layout_marginBottom="132dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <EditText
+        android:id="@+id/cod_barras_ticket"
+        android:layout_width="342dp"
+        android:layout_height="52dp"
+        android:layout_marginStart="44dp"
+        android:layout_marginBottom="660dp"
+        android:ems="10"
+        android:hint="CODIGO BARRAS TICKET"
+        android:inputType="text"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/escanear_ticket"
+        android:layout_width="264dp"
+        android:layout_height="55dp"
+        android:layout_marginStart="84dp"
+        android:layout_marginBottom="604dp"
+        android:text="ESCANEAR TICKET COMPRA"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/escanear_prod_devo"
+        android:layout_width="267dp"
+        android:layout_height="56dp"
+        android:layout_marginStart="648dp"
+        android:layout_marginBottom="604dp"
+        android:text="ESCANEAR PRODUCTO"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <EditText
+        android:id="@+id/cod_produ_devo"
+        android:layout_width="341dp"
+        android:layout_height="49dp"
+        android:layout_marginStart="600dp"
+        android:layout_marginBottom="660dp"
+        android:ems="10"
+        android:hint="CODIGO BARRAS PRODUCTO"
+        android:inputType="text"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/textView39"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="44dp"
+        android:layout_marginBottom="544dp"
+        android:text="PRODUCTOS DEL TICKET"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/textView40"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="540dp"
+        android:layout_marginBottom="540dp"
+        android:text="PRODUCTOS A DEVOLVER"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/textView41"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="516dp"
+        android:layout_marginBottom="60dp"
+        android:text="TOTAL A DEVOLVER:"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <EditText
+        android:id="@+id/total_a_devolver"
+        android:layout_width="226dp"
+        android:layout_height="64dp"
+        android:layout_marginStart="648dp"
+        android:layout_marginBottom="40dp"
+        android:ems="10"
+        android:hint="A devolver"
+        android:inputType="numberDecimal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/realizar_devolucion"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="28dp"
+        android:text="CONFIRMAR DEVOLUCION"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/cancelar_devolucion"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="264dp"
+        android:layout_marginBottom="28dp"
+        android:text="CANCELAR DEVOLUCION"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/textView42"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="428dp"
+        android:layout_marginBottom="740dp"
+        android:text="CODIGO DEVOLUCIÓN:"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/tx_ticket_devo"
+        android:layout_width="365dp"
+        android:layout_height="45dp"
+        android:layout_marginStart="576dp"
+        android:layout_marginBottom="720dp"
+        android:text="TextView"
+        android:textAlignment="center"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/textView44"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="880dp"
+        android:layout_marginBottom="48dp"
+        android:text="€"
+        android:textSize="34sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

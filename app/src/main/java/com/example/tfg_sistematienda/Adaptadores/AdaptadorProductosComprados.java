@@ -26,14 +26,9 @@ public class AdaptadorProductosComprados extends RecyclerView.Adapter<ViewHolder
 
     private List<ProductoModel> listaProductos;
     private Context context;
-    private ProductoModel productoSeleccionado;
     private BBDDController bbddController = new BBDDController();
-    private ImageView imagenEditar;
-
-    private EditText nombre;
     private List<Producto_TicketModel> listaCantidades;
     private List<ProductoModel> listaTodosProductos;
-    private EditText descripcion;
     private OnProductRemovedListener onProductRemovedListener;
     private OnPriceUpdateListener onPriceUpdateListener;
     private OnQuantityChangedListener onQuantityChangedListenerDown;
@@ -46,7 +41,6 @@ public class AdaptadorProductosComprados extends RecyclerView.Adapter<ViewHolder
     public interface OnQuantityChangedListener {
         void onQuantityChangedDown(Producto_TicketModel producto);
     }
-
 
     public interface OnProductRemovedListener {
         void onProductRemoved(int position);

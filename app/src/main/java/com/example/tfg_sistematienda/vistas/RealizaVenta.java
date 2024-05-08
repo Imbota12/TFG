@@ -65,7 +65,6 @@ public class RealizaVenta extends AppCompatActivity implements AdaptadorProducto
     private EditText codigoBuscar, idTicket;
     private Button escanearProducto, realizarVenta, cancelarVenta;
     private TextView precioTotal;
-    private static boolean primeraVez=true;
     private String id_ticket, codigoEscaneado;
     private AdaptadorProductosComprados adaptadorComprados;
     private List<ProductoModel> listaTodosProductos;
@@ -281,9 +280,9 @@ public class RealizaVenta extends AppCompatActivity implements AdaptadorProducto
                                     }
                                 }
                             }
-                                        textoTicket+= "[L] TOTAL A PAGAR:"+totalVenta+"\n";
-                                        textoTicket+= "[L] ENTREGADO: " + entregado+"\n";
-                                        textoTicket+= "[L] DEVUELTO: " + devuelto+"\n";
+                                        textoTicket+= "[L]<b> TOTAL A PAGAR:<b> "+totalVenta+"\n";
+                                        textoTicket+= "[L]<b> ENTREGADO:<b> " + entregado+"\n";
+                                        textoTicket+= "[L] DEVUELTO:<b> " + devuelto+"\n";
                                         textoTicket += "[C]<barcode type='128' height='10'>" + id_ticket + "</barcode>\n";
                             printer.printFormattedText(textoTicket);
                             // Después de imprimir, muestra el diálogo de venta exitosa
@@ -601,15 +600,6 @@ public class RealizaVenta extends AppCompatActivity implements AdaptadorProducto
                 }
             }
         }
-    }
-
-    private ProductoModel buscarProductoPorCodigoBarras(String codigoBarras) {
-        for (ProductoModel producto : listaTodosProductos) {
-            if (producto.getCodigoBarras().equals(codigoBarras)) {
-                return producto;
-            }
-        }
-        return null; // Si no se encuentra ningún producto con el código de barras especificado
     }
 
 
