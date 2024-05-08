@@ -72,4 +72,8 @@ public class BBDDController {
     public boolean insertarProductoTicket(Producto_TicketModel productoTicket) {return conexionBBDD.insertarProductoTicket(productoTicket);}
     public boolean modificarStockProducto(String codigoBarras, int cantidad) {return conexionBBDD.modificarStockProducto(codigoBarras, cantidad);}
 
+    public List<ProductoModel> obtenerListaProductosparaDevo(String codigoTicket) {return conexionBBDD.obtenerListaProductosparaDevo(codigoTicket);}
+
+    public boolean verificarExistenciaTicket(String codigoTicket) {return conexionBBDD.verificarExistenciaTicket(codigoTicket);}
+
     }

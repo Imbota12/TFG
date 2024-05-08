@@ -132,6 +132,16 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
+    <Button
+        android:id="@+id/ir_devolucion"
+        android:layout_width="135dp"
+        android:layout_height="120dp"
+        android:layout_marginStart="432dp"
+        android:layout_marginBottom="460dp"
+        android:text="IR DEVOLUCION"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
 
 

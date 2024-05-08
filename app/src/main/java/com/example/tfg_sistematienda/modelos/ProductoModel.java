@@ -27,6 +27,18 @@ public class ProductoModel {
         this.idTienda = idTienda;
         this.cantidad = 0;
     }
+    public ProductoModel(String codigoBarras, String nombre, String descripcion, int cantidadStock, double precioUnidad, int vecesComprado, int vecesDevuelto, byte[] imagenProducto, String idTienda, int cantidad) {
+        this.codigoBarras = codigoBarras;
+        this.nombre = nombre;
+        this.descripcion = descripcion;
+        this.cantidadStock = cantidadStock;
+        this.precioUnidad = precioUnidad;
+        this.vecesComprado = vecesComprado;
+        this.vecesDevuelto = vecesDevuelto;
+        this.imagenProducto = imagenProducto;
+        this.idTienda = idTienda;
+        this.cantidad = cantidad;
+    }
 
     public ProductoModel(){
         // Constructor vacío

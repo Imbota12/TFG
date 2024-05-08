@@ -22,14 +22,14 @@ public class AdaptadorProductoTicket  extends RecyclerView.Adapter<ViewHolderPro
     private Context context;
     private ProductoModel productoSeleccionado;
     private BBDDController bbddController = new BBDDController();
-    private AdaptadorProductosVenta.OnProductoSeleccionadoListener productoSeleccionadoListener;
+    private OnProductoSeleccionadoListener productoSeleccionadoListener;
 
     public interface OnProductoSeleccionadoListener {
         void onProductoSeleccionado(ProductoModel producto);
     }
 
 
-    public AdaptadorProductoTicket(Context context, List<ProductoModel> listaProductos, AdaptadorProductosVenta.OnProductoSeleccionadoListener listener) {
+    public AdaptadorProductoTicket(Context context, List<ProductoModel> listaProductos, OnProductoSeleccionadoListener listener) {
         this.listaProductos = listaProductos;
         this.context = context;
         this.productoSeleccionadoListener = listener;
@@ -75,6 +75,6 @@ public class AdaptadorProductoTicket  extends RecyclerView.Adapter<ViewHolderPro
 
     @Override
     public int getItemCount() {
-        return 0;
+        return listaProductos.size();
     }
 }

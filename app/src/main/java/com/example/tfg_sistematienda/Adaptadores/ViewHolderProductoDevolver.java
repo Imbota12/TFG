@@ -20,9 +20,9 @@ public class ViewHolderProductoDevolver extends RecyclerView.ViewHolder {
 
     public ViewHolderProductoDevolver(@NonNull View itemView) {
         super(itemView);
-        imagenProducto_devuelto = itemView.findViewById(R.id.im_produ_todos);
-        nombreProducto_devuelto = itemView.findViewById(R.id.n_produ_todos);
-        codigoProducto_devuelto = itemView.findViewById(R.id.cod_produ_todos);
+        imagenProducto_devuelto = itemView.findViewById(R.id.im_produ_devuelto);
+        nombreProducto_devuelto = itemView.findViewById(R.id.n_produ_devuelto);
+        codigoProducto_devuelto = itemView.findViewById(R.id.cod_produ_devuelto);
         precioProducto_devuelto = itemView.findViewById(R.id.precioUnidad_devuelto);
         cantidadProducto_devuelto= itemView.findViewById(R.id.cantidad_devuelto);
         aumentarProducto_devuelto= itemView.findViewById(R.id.aumentarCantidad_devuelto);

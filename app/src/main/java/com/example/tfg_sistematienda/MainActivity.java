@@ -33,6 +33,7 @@ import com.example.tfg_sistematienda.vistas.GeneralReponedor;
 import com.example.tfg_sistematienda.vistas.GeneralVendedor;
 import com.example.tfg_sistematienda.vistas.ListaInventario;
 import com.example.tfg_sistematienda.vistas.RealizaVenta;
+import com.example.tfg_sistematienda.vistas.RealizarDevolucion;
 
 import org.mindrot.jbcrypt.BCrypt;
 
@@ -41,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
     public static final int PERMISSION_BLUETOOTH_SCAN = 9;
     private Button iniciar, recuperar;
 
-    private Button irCrearProducto, listaProductos, irVenta;
+    private Button irCrearProducto, listaProductos, irVenta, irDevolucion;
     private BBDDController bbddController= new BBDDController();
     private EditText usuario, contrasena;
 
@@ -69,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
         irCrearProducto = findViewById(R.id.crear_producto_ir);
         listaProductos = findViewById(R.id.bt_lista);
         irVenta = findViewById(R.id.bt_ventas);
+        irDevolucion = findViewById(R.id.ir_devolucion);
 
         usuario = findViewById(R.id.usuario);
         contrasena = findViewById(R.id.contrasena);
@@ -88,6 +90,13 @@ public class MainActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.BLUETOOTH}, REQUEST_CODE_BLUETOOTH);
         }
 
+        irDevolucion.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(MainActivity.this, RealizarDevolucion.class);
+                startActivity(i);
+            }
+        });
 
         irCrearProducto.setOnClickListener(new View.OnClickListener() {
             @Override

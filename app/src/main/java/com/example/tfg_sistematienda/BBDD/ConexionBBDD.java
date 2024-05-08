@@ -748,7 +748,7 @@ public class ConexionBBDD {
         conectarBD(); // Supongamos que esta función establece la conexión a la base de datos
 
         try {
-            String query = "SELECT codigo_barras_ticket FROM ticket_producto";
+            String query = "SELECT DISTINCT codigo_barras_ticket FROM ticket";
             PreparedStatement preparedStatement = conexion.prepareStatement(query);
             ResultSet resultSet = preparedStatement.executeQuery();
 
@@ -902,6 +902,85 @@ public class ConexionBBDD {
 
         return listaProductos;
     }
+    public List<ProductoModel> obtenerListaProductosparaDevo(String codigoTicket) {
+        List<ProductoModel> listaProductos = new ArrayList<>();
+        conectarBD(); // Supongamos que esta función establece la conexión a la base de datos
+
+        try {
+            String query = "SELECT p.codigo_barras, p.nombre, p.descripcion, p.cantidad_stock, p.precio_unidad, " +
+                    "p.veces_comprado, p.veces_devuelto, p.imagen_producto, p.id_tienda, " +
+                    "pt.cantidad " +
+                    "FROM producto p " +
+                    "LEFT JOIN ticket_producto pt ON p.codigo_barras = pt.codigo_barras " +
+                    "WHERE pt.codigo_barras_ticket = ?";
+            PreparedStatement preparedStatement = conexion.prepareStatement(query);
+            preparedStatement.setString(1, codigoTicket);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()) {
+                ProductoModel producto = new ProductoModel();
+                producto.setCodigoBarras(resultSet.getString("codigo_barras"));
+                producto.setNombre(resultSet.getString("nombre"));
+                producto.setDescripcion(resultSet.getString("descripcion"));
+                producto.setCantidadStock(resultSet.getInt("cantidad_stock"));
+                producto.setPrecioUnidad(resultSet.getDouble("precio_unidad"));
+                producto.setVecesComprado(resultSet.getInt("veces_comprado"));
+                producto.setVecesDevuelto(resultSet.getInt("veces_devuelto"));
+                producto.setImagenProducto(resultSet.getBytes("imagen_producto"));
+                producto.setIdTienda(resultSet.getString("id_tienda"));
+                producto.setCantidad(resultSet.getInt("cantidad"));
+
+                listaProductos.add(producto);
+            }
+
+            resultSet.close();
+            preparedStatement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                cerrarConnection(conexion); // Supongo que tienes un método cerrarConnection() para cerrar la conexión
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        return listaProductos;
+    }
+
+    public boolean verificarExistenciaTicket(String codigoTicket) {
+        conectarBD(); // Supongamos que esta función establece la conexión a la base de datos
+
+        boolean existe = false;
+
+        try {
+            String query = "SELECT COUNT(*) FROM ticket WHERE codigo_barras_ticket = ?";
+            PreparedStatement preparedStatement = conexion.prepareStatement(query);
+            preparedStatement.setString(1, codigoTicket);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                int count = resultSet.getInt(1);
+                existe = count > 0;
+            }
+
+            resultSet.close();
+            preparedStatement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                cerrarConnection(conexion); // Supongo que tienes un método cerrarConnection() para cerrar la conexión
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        return existe;
+    }
+
+
+
 
 
 }

@@ -19,8 +19,8 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_productos_ticket"
-        android:layout_width="450dp"
-        android:layout_height="400dp"
+        android:layout_width="439dp"
+        android:layout_height="356dp"
         android:layout_marginStart="44dp"
         android:layout_marginBottom="132dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -28,31 +28,19 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_productos_a_devolver"
-        android:layout_width="450dp"
-        android:layout_height="400dp"
-        android:layout_marginStart="540dp"
-        android:layout_marginBottom="132dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <EditText
-        android:id="@+id/cod_barras_ticket"
-        android:layout_width="342dp"
-        android:layout_height="52dp"
-        android:layout_marginStart="44dp"
-        android:layout_marginBottom="660dp"
-        android:ems="10"
-        android:hint="CODIGO BARRAS TICKET"
-        android:inputType="text"
+        android:layout_width="484dp"
+        android:layout_height="374dp"
+        android:layout_marginStart="620dp"
+        android:layout_marginBottom="124dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/escanear_ticket"
-        android:layout_width="264dp"
-        android:layout_height="55dp"
-        android:layout_marginStart="84dp"
-        android:layout_marginBottom="604dp"
+        android:layout_width="198dp"
+        android:layout_height="54dp"
+        android:layout_marginStart="132dp"
+        android:layout_marginBottom="548dp"
         android:text="ESCANEAR TICKET COMPRA"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -61,8 +49,8 @@
         android:id="@+id/escanear_prod_devo"
         android:layout_width="267dp"
         android:layout_height="56dp"
-        android:layout_marginStart="648dp"
-        android:layout_marginBottom="604dp"
+        android:layout_marginStart="704dp"
+        android:layout_marginBottom="548dp"
         android:text="ESCANEAR PRODUCTO"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -71,8 +59,8 @@
         android:id="@+id/cod_produ_devo"
         android:layout_width="341dp"
         android:layout_height="49dp"
-        android:layout_marginStart="600dp"
-        android:layout_marginBottom="660dp"
+        android:layout_marginStart="668dp"
+        android:layout_marginBottom="604dp"
         android:ems="10"
         android:hint="CODIGO BARRAS PRODUCTO"
         android:inputType="text"
@@ -84,7 +72,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="44dp"
-        android:layout_marginBottom="544dp"
+        android:layout_marginBottom="504dp"
         android:text="PRODUCTOS DEL TICKET"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -93,8 +81,8 @@
         android:id="@+id/textView40"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="540dp"
-        android:layout_marginBottom="540dp"
+        android:layout_marginStart="620dp"
+        android:layout_marginBottom="504dp"
         android:text="PRODUCTOS A DEVOLVER"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -173,6 +161,26 @@
         android:text="€"
         android:textSize="34sp"
         android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <AutoCompleteTextView
+        android:id="@+id/cod_barras_ticket"
+        android:layout_width="327dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="64dp"
+        android:layout_marginBottom="604dp"
+        android:hint="CODIGO BARRAS TICKET COMPRA"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/buscar_ticket"
+        android:layout_width="145dp"
+        android:layout_height="58dp"
+        android:layout_marginStart="404dp"
+        android:layout_marginBottom="600dp"
+        android:text="BUSCAR TICKET"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
