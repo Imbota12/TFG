@@ -50,6 +50,7 @@ import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 import com.journeyapps.barcodescanner.CaptureActivity;
 
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
@@ -173,7 +174,11 @@ public class RealizaVenta extends AppCompatActivity implements AdaptadorProducto
 
         realizarVenta.setOnClickListener(v -> {
             totalVenta = calcularPrecioTotal(listaCantidades);
-            abrirDialogoPago(totalVenta);
+            if (totalVenta > 0) {
+                abrirDialogoPago(totalVenta);
+            } else {
+                Toast.makeText(this, "No hay ningún producto seleccionado", Toast.LENGTH_SHORT).show();
+            }
         });
 
 
@@ -224,6 +229,13 @@ public class RealizaVenta extends AppCompatActivity implements AdaptadorProducto
             conectarImpresora(); // Intenta conectar la impresora
         }
     }
+
+    private void desconectarImpresora() {
+        if (connection != null) {
+            connection.disconnect(); // Cierra la conexión Bluetooth
+        }
+    }
+
 
     private boolean conectarImpresora() {
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -285,6 +297,7 @@ public class RealizaVenta extends AppCompatActivity implements AdaptadorProducto
                                         textoTicket+= "[L] DEVUELTO:<b> " + devuelto+"\n";
                                         textoTicket += "[C]<barcode type='128' height='10'>" + id_ticket + "</barcode>\n";
                             printer.printFormattedText(textoTicket);
+                            desconectarImpresora();
                             // Después de imprimir, muestra el diálogo de venta exitosa
                             mostrarDialogoVentaExitosa();
                         } catch (Exception e) {

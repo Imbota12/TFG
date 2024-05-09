@@ -678,6 +678,7 @@ public class CrearProducto extends AppCompatActivity {
                             printer = new EscPosPrinter(connection, 200, 50f, 35);
                             // Imprimir
                             printer.printFormattedText("[C]<barcode type='128' height='10'>"+codigoBarrasProducto+"</barcode>\n");
+                            desconectarImpresora();
                         } catch (Exception e) {
                             e.printStackTrace();
                             // Manejar cualquier error de conexión o impresión aquí
@@ -735,12 +736,8 @@ public class CrearProducto extends AppCompatActivity {
 
 
     private void desconectarImpresora() {
-        if (bluetoothSocket != null) {
-            try {
-                bluetoothSocket.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        if (connection != null) {
+            connection.disconnect(); // Cierra la conexión Bluetooth
         }
     }
 

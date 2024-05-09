@@ -979,6 +979,29 @@ public class ConexionBBDD {
         return existe;
     }
 
+    public void actualizarCantidadProducto(String codigoBarrasProducto, String codigoBarrasTicket, int nuevaCantidad) {
+        conectarBD(); // Supongamos que esta función establece la conexión a la base de datos
+
+        try {
+            String query = "UPDATE ticket_producto SET cantidad = ? WHERE codigo_barras = ? AND codigo_barras_ticket = ?";
+            PreparedStatement preparedStatement = conexion.prepareStatement(query);
+            preparedStatement.setInt(1, nuevaCantidad);
+            preparedStatement.setString(2, codigoBarrasProducto);
+            preparedStatement.setString(3, codigoBarrasTicket);
+            preparedStatement.executeUpdate();
+
+            preparedStatement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                cerrarConnection(conexion); // Supongo que tienes un método cerrarConnection() para cerrar la conexión
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
 
 
 

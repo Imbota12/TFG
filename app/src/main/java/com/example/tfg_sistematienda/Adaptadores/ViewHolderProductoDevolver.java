@@ -15,7 +15,7 @@ public class ViewHolderProductoDevolver extends RecyclerView.ViewHolder {
     public ImageView imagenProducto_devuelto;
     public TextView nombreProducto_devuelto, codigoProducto_devuelto, precioProducto_devuelto;
     public EditText cantidadProducto_devuelto;
-    public Button aumentarProducto_devuelto, disminuirProducto_devuelto;
+    public Button quitarProducto_devuelto;
 
 
     public ViewHolderProductoDevolver(@NonNull View itemView) {
@@ -24,8 +24,7 @@ public class ViewHolderProductoDevolver extends RecyclerView.ViewHolder {
         nombreProducto_devuelto = itemView.findViewById(R.id.n_produ_devuelto);
         codigoProducto_devuelto = itemView.findViewById(R.id.cod_produ_devuelto);
         precioProducto_devuelto = itemView.findViewById(R.id.precioUnidad_devuelto);
-        cantidadProducto_devuelto= itemView.findViewById(R.id.cantidad_devuelto);
-        aumentarProducto_devuelto= itemView.findViewById(R.id.aumentarCantidad_devuelto);
-        disminuirProducto_devuelto = itemView.findViewById(R.id.disminuirCantidad_devuelto);
+        cantidadProducto_devuelto = itemView.findViewById(R.id.cantidad_devuelto);
+        quitarProducto_devuelto = itemView.findViewById(R.id.quitar_devuelto);
     }
 }

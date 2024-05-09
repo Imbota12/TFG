@@ -40,6 +40,19 @@ public class ProductoModel {
         this.cantidad = cantidad;
     }
 
+    public ProductoModel(ProductoModel productoModel){
+        this.codigoBarras = productoModel.getCodigoBarras();
+        this.nombre = productoModel.getNombre();
+        this.descripcion = productoModel.getDescripcion();
+        this.cantidadStock = productoModel.getCantidadStock();
+        this.precioUnidad = productoModel.getPrecioUnidad();
+        this.vecesComprado = productoModel.getVecesComprado();
+        this.vecesDevuelto = productoModel.getVecesDevuelto();
+        this.imagenProducto = productoModel.getImagenProducto();
+        this.idTienda = productoModel.getIdTienda();
+        this.cantidad = productoModel.getCantidad();
+    }
+
     public ProductoModel(){
         // Constructor vacío
         this.cantidad = 0;
