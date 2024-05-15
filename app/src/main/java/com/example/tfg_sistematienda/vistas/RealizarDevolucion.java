@@ -227,6 +227,9 @@ public class RealizarDevolucion extends AppCompatActivity implements AdaptadorPr
                     } else {
                         Log.e(TAG, "Error al actualizar el stock del producto: " + nuevoProductoTicket.getCodigoBarras_producto());
                     }
+                    if(bbddController.incrementarVecesDevuelto(producto.getCodigoBarras(), producto.getCantidad())) {
+                        Log.d(TAG, "Veces devueltas del producto actualizado: " + nuevoProductoTicket.getCodigoBarras_producto());
+                    }
                 } else {
                     Log.e(TAG, "Error al insertar el producto en ticket_producto: " + nuevoProductoTicket.toString());
                 }

@@ -77,4 +77,5 @@ public class BBDDController {
     public boolean verificarExistenciaTicket(String codigoTicket) {return conexionBBDD.verificarExistenciaTicket(codigoTicket);}
     public void actualizarCantidadProducto(String codigoBarrasProducto, String codigoBarrasTicket, int nuevaCantidad) {conexionBBDD.actualizarCantidadProducto(codigoBarrasProducto, codigoBarrasTicket, nuevaCantidad);}
 
+    public boolean incrementarVecesDevuelto(String codigoBarras, int vecesDevuelto){return conexionBBDD.incrementarVecesDevuelto(codigoBarras, vecesDevuelto);}
     }

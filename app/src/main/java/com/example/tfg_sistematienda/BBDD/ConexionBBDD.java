@@ -451,6 +451,30 @@ public class ConexionBBDD {
         return modificarOK;
     }
 
+    public boolean incrementarVecesDevuelto(String codigoBarras, int vecesDevuelto){
+        boolean modificarOK = false;
+        conectarBD();
+        try {
+            String query = "UPDATE producto SET vecesDevuelto = vecesDevuelto + "+vecesDevuelto+" WHERE codigo_barras = ?";
+            PreparedStatement preparedStatement = conexion.prepareStatement(query);
+            preparedStatement.setString(1, codigoBarras);
+            int filasModificadas = preparedStatement.executeUpdate();
+            preparedStatement.close();
+            if (filasModificadas > 0) {
+                modificarOK = true;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                cerrarConnection(conexion);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return modificarOK;
+    }
+
     public boolean decrementarCantidadStock(String codigoBarras) {
         boolean modificarOK = false;
         conectarBD();
