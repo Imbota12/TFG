@@ -34,6 +34,9 @@
         android:theme="@style/Theme.TFG_SistemaTienda"
         tools:targetApi="31">
         <activity
+            android:name=".vistas.ListaEmpleados"
+            android:exported="false" />
+        <activity
             android:name=".vistas.RealizarDevolucion"
             android:exported="false" />
         <activity
