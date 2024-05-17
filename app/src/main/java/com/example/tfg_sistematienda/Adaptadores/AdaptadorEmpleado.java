@@ -4,12 +4,16 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -29,6 +33,8 @@ public class AdaptadorEmpleado extends RecyclerView.Adapter<ViewHolderEmpleados>
     private UsuarioModel usuarioSeleccionado;
     private BBDDController bbddController = new BBDDController();
 
+    private TextView tx_confir;
+    private EditText dni, nombre, apellidos, telefono, correo, contrasena,confirmarContrasena;
 
     public AdaptadorEmpleado(Context context, List<UsuarioModel> listaEmpleados) {
         this.listaEmpleados = listaEmpleados;
@@ -76,6 +82,15 @@ public class AdaptadorEmpleado extends RecyclerView.Adapter<ViewHolderEmpleados>
         }else if (empleado.isReponedor()){
             holder.tipoEmpleado.setChecked(true);
         }
+
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                usuarioSeleccionado = empleado;
+                abrirDialogoEditarEmpleado(usuarioSeleccionado);
+            }
+        });
 
         holder.contrato.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -163,7 +178,179 @@ public class AdaptadorEmpleado extends RecyclerView.Adapter<ViewHolderEmpleados>
     }
 
 
-    private void mostrarDialogoEnviarCorreo(UsuarioModel trabajador) {
+    private void abrirDialogoEditarEmpleado(UsuarioModel empleadoAeditar) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle("Editar Empleado");
+
+        // Inflar el diseño del diálogo de edición de producto
+        View dialogView = LayoutInflater.from(context).inflate(R.layout.popup_editarempleado, null);
+        builder.setView(dialogView);
+
+        // Obtener referencias a las vistas del diálogo
+        dni = dialogView.findViewById(R.id.edi_dni);
+        nombre = dialogView.findViewById(R.id.edi_nombre);
+        apellidos = dialogView.findViewById(R.id.edi_apellido);
+        correo = dialogView.findViewById(R.id.edi_correo);
+        telefono = dialogView.findViewById(R.id.edi_telefono);
+        contrasena = dialogView.findViewById(R.id.edi_contrasena);
+        tx_confir = dialogView.findViewById(R.id.tx_confi_contra);
+        confirmarContrasena = dialogView.findViewById(R.id.edi_confirma_contra);
+
+
+        dni.setEnabled(false);
+        contrasena.setText("****");
+        tx_confir.setVisibility(View.GONE);
+        confirmarContrasena.setVisibility(View.GONE);
+
+        dni.setText(empleadoAeditar.getDni());
+        nombre.setText(empleadoAeditar.getNombre());
+        apellidos.setText(empleadoAeditar.getApellido());
+        correo.setText(empleadoAeditar.getCorreo());
+        telefono.setText(empleadoAeditar.getTelefono());
+
+        contrasena.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                tx_confir.setVisibility(View.VISIBLE);
+                confirmarContrasena.setVisibility(View.VISIBLE);
+            }
+        });
+        builder.setPositiveButton("Guardar Cambios", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String nuevoNombre = nombre.getText().toString();
+                String nuevoApellido = apellidos.getText().toString();
+                String nuevoCorreo = correo.getText().toString();
+                String nuevoTelefono = telefono.getText().toString();
+                String nuevaContrasena="";
+                if (contrasena.getText().toString().equals("****")) {
+
+                }else{
+                    nuevaContrasena = contrasena.getText().toString();
+                }
+
+                if(comprobarDatosEmpleado(nuevaContrasena)){
+                    // Actualizar los datos del producto en la BBDD
+//                    if (bbddController.modificarProducto(nuevoNombre, nuevaDescripcion, nuevoPrecioUnidad, nuevaImagen, productoSeleccionado.getCodigoBarras())) {
+//                        Toast.makeText(context, "Producto modificado correctamente", Toast.LENGTH_SHORT).show();
+//                    } else {
+//                        Toast.makeText(context, "Error al modificar el producto", Toast.LENGTH_SHORT).show();
+//                    }
+//
+//                    // Actualizar los datos del producto en la lista
+//                    productoSeleccionado.setNombre(nuevoNombre);
+//                    productoSeleccionado.setDescripcion(nuevaDescripcion);
+//                    productoSeleccionado.setPrecioUnidad(nuevoPrecioUnidad);
+//                    productoSeleccionado.setImagenProducto(nuevaImagen);
+//
+//                    // Notificar al adaptador que los datos han cambiado
+//                    notifyDataSetChanged();
+
+                    Toast.makeText(context, "Cambios guardados correctamente", Toast.LENGTH_SHORT);
+                    // Cerrar el diálogo
+                    dialog.dismiss();
+                }
+
+            }
+        });
+
+        // Configurar el botón de cancelar del diálogo
+        builder.setNegativeButton("Cancelar Cambios", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // Cerrar el diálogo
+                dialog.dismiss();
+            }
+        });
+
+        // Mostrar el diálogo
+        builder.show();
+        builder.setCancelable(false);
+    }
+
+
+
+    private boolean comprobarDatosEmpleado(String nuevaContrasena) {
+        boolean datosValidos = true;
+
+        // Limpiar los errores previos
+        nombre.setError(null);
+        apellidos.setError(null);
+        correo.setError(null);
+        contrasena.setError(null);
+        telefono.setError(null);
+
+
+        // Verificar el nombre
+        if (nombre.getText().toString().isEmpty()) {
+            nombre.setError("Campo vacío");
+            datosValidos = false;
+        }
+
+        // Verificar la descripción
+        if (apellidos.getText().toString().isEmpty()) {
+            apellidos.setError("Campo vacío");
+            datosValidos = false;
+        }
+
+        // Verificar el precio por unidad
+        if (correo.getText().toString().isEmpty()) {
+            correo.setError("Campo vacío");
+            datosValidos = false;
+        }
+
+        if (contrasena.getText().toString().isEmpty()) {
+            contrasena.setError("Campo vacío");
+            datosValidos = false;
+        }
+
+        if (telefono.getText().toString().isEmpty()) {
+            telefono.setError("Campo vacío");
+            datosValidos = false;
+        }
+        if (contrasena.getText().length() < 4){
+            contrasena.setError("Contraseña demasiado corta");
+            datosValidos = false;
+        }
+
+        if (!contrasena.getText().toString().equals("****")){
+            if (!contrasena.getText().toString().matches("^[a-zA-Z0-9]*$")){
+                contrasena.setError("Contraseña no válida. Sólo numeros o letras");
+                datosValidos = false;
+            }
+
+            if (!contrasena.getText().toString().equals(nuevaContrasena)) {
+                contrasena.setError("Las contraseñas no coinciden");
+                confirmarContrasena.setError("Las contraseñas no coinciden");
+                datosValidos = false;
+            }
+        }
+
+        // Si hay errores, mostrar un mensaje de advertencia
+        if (!datosValidos) {
+            Toast.makeText(context, "Por favor, corrige los errores", Toast.LENGTH_SHORT).show();
+        }
+
+        return datosValidos;
+    }
+
+
+
+
+
+
+        private void mostrarDialogoEnviarCorreo(UsuarioModel trabajador) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle("Enviar Correo Electrónico");
 

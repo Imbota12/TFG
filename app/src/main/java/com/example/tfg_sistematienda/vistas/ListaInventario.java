@@ -73,6 +73,7 @@ public class ListaInventario extends AppCompatActivity {
         cargarProductos();
 
         adaptadorProducto = new AdaptadorProducto(this, listaProductos);
+        adaptadorProducto = new AdaptadorProducto(this, listaProductos);
         recyclerView.setAdapter(adaptadorProducto);
 
         codigoBuscar = findViewById(R.id.et_codigo_buscar);
