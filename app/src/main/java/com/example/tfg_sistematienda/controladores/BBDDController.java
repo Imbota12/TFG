@@ -78,4 +78,8 @@ public class BBDDController {
     public void actualizarCantidadProducto(String codigoBarrasProducto, String codigoBarrasTicket, int nuevaCantidad) {conexionBBDD.actualizarCantidadProducto(codigoBarrasProducto, codigoBarrasTicket, nuevaCantidad);}
 
     public boolean incrementarVecesDevuelto(String codigoBarras, int vecesDevuelto){return conexionBBDD.incrementarVecesDevuelto(codigoBarras, vecesDevuelto);}
+
+    public void actualizarEstadoEmpleado(String dni, boolean estado){conexionBBDD.actualizarEstadoEmpleado(dni, estado);}
+
+    public List<UsuarioModel> obtenerListaEmpleados(){return conexionBBDD.obtenerListaEmpleados();}
     }

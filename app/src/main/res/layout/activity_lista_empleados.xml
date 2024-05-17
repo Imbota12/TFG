@@ -17,13 +17,13 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <FrameLayout
-        android:layout_width="980dp"
-        android:layout_height="648dp"
-        android:layout_marginStart="36dp"
-        android:layout_marginBottom="36dp"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_listaEmpleados"
+        android:layout_width="1042dp"
+        android:layout_height="721dp"
+        android:layout_marginStart="25dp"
+        android:layout_marginBottom="29dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintStart_toStartOf="parent" />
 
-    </FrameLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

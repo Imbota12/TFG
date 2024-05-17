@@ -22,7 +22,7 @@ public class ConexionBBDD {
 
     private Connection conexion = null;
     private static final String DRIVER = "org.postgresql.Driver";
-    private static final String URL = "jdbc:postgresql://192.168.129.244:5432/TiendaInfo";
+    private static final String URL = "jdbc:postgresql://192.168.19.244:5432/TiendaInfo";
     //private static final String URL = "jdbc:postgresql://10.0.2.2:5432/TiendaInfo";
     private static final String USUARIO = "postgres";
     private static final String PASSWORD = "admin";
@@ -918,7 +918,7 @@ public class ConexionBBDD {
             e.printStackTrace();
         } finally {
             try {
-                cerrarConnection(conexion); // Supongo que tienes un método cerrarConnection() para cerrar la conexión
+                cerrarConnection(conexion);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -928,7 +928,7 @@ public class ConexionBBDD {
     }
     public List<ProductoModel> obtenerListaProductosparaDevo(String codigoTicket) {
         List<ProductoModel> listaProductos = new ArrayList<>();
-        conectarBD(); // Supongamos que esta función establece la conexión a la base de datos
+        conectarBD();
 
         try {
             String query = "SELECT p.codigo_barras, p.nombre, p.descripcion, p.cantidad_stock, p.precio_unidad, " +
@@ -963,7 +963,7 @@ public class ConexionBBDD {
             e.printStackTrace();
         } finally {
             try {
-                cerrarConnection(conexion); // Supongo que tienes un método cerrarConnection() para cerrar la conexión
+                cerrarConnection(conexion);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -994,7 +994,7 @@ public class ConexionBBDD {
             e.printStackTrace();
         } finally {
             try {
-                cerrarConnection(conexion); // Supongo que tienes un método cerrarConnection() para cerrar la conexión
+                cerrarConnection(conexion);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -1019,14 +1019,75 @@ public class ConexionBBDD {
             e.printStackTrace();
         } finally {
             try {
-                cerrarConnection(conexion); // Supongo que tienes un método cerrarConnection() para cerrar la conexión
+                cerrarConnection(conexion);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
     }
 
+    public void actualizarEstadoEmpleado(String dni, boolean estado){
+        conectarBD(); // Establecer la conexión a la base de datos
 
+        try {
+            String query = "UPDATE usuario SET activo = ? WHERE dni = ?";
+            PreparedStatement preparedStatement = conexion.prepareStatement(query);
+            preparedStatement.setBoolean(1, estado);
+            preparedStatement.setString(2, dni);
+            preparedStatement.executeUpdate();
+
+            preparedStatement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                cerrarConnection(conexion); // Cerrar la conexión
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public List<UsuarioModel> obtenerListaEmpleados() {
+        List<UsuarioModel> listaEmpleados = new ArrayList<>();
+        conectarBD(); // Supongamos que esta función establece la conexión a la base de datos
+
+        try {
+            String query = "SELECT * FROM usuario WHERE is_admin = false";
+            PreparedStatement preparedStatement = conexion.prepareStatement(query);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()) {
+                UsuarioModel empleado = new UsuarioModel();
+                empleado.setDni(resultSet.getString("dni"));
+                empleado.setNombre(resultSet.getString("nombre"));
+                empleado.setApellido(resultSet.getString("apellido"));
+                empleado.setTelefono(resultSet.getString("telefono"));
+                empleado.setCorreo(resultSet.getString("correo"));
+                empleado.setActivo(resultSet.getBoolean("activo"));
+                empleado.setContraseña(resultSet.getString("contraseña"));
+                empleado.setIdTienda(resultSet.getString("id_tienda"));
+                empleado.setAdmin(resultSet.getBoolean("is_admin"));
+                empleado.setVendedor(resultSet.getBoolean("is_vendedor"));
+                empleado.setReponedor(resultSet.getBoolean("is_reponedor"));
+
+                listaEmpleados.add(empleado);
+            }
+
+            resultSet.close();
+            preparedStatement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                cerrarConnection(conexion);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        return listaEmpleados;
+    }
 
 
 
