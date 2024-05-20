@@ -1089,7 +1089,64 @@ public class ConexionBBDD {
         return listaEmpleados;
     }
 
+    public boolean modificarEmpleadoConContra(String dni, String nombreNuevo, String apellidoNuevo,
+                                     String correoNuevo, String telefonoNuevo, String nuevaContra) {
+        boolean modificarOK = false;
+        conectarBD();
+        try {
+            String query = "UPDATE usuario SET nombre = ?, apellido = ?, telefono = ?, correo = ?, contraseña = ? WHERE dni = ?";
+            PreparedStatement preparedStatement = conexion.prepareStatement(query);
+            preparedStatement.setString(1, nombreNuevo);
+            preparedStatement.setString(2, apellidoNuevo);
+            preparedStatement.setString(3, telefonoNuevo);
+            preparedStatement.setString(4, correoNuevo);
+            preparedStatement.setString(5, nuevaContra);
+            preparedStatement.setString(6, dni);
+            int filasModificadas = preparedStatement.executeUpdate();
+            preparedStatement.close();
+            if (filasModificadas > 0) {
+                modificarOK = true;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                cerrarConnection(conexion);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return modificarOK;
+    }
 
+    public boolean modificarEmpleadoSinContra(String dni, String nombreNuevo, String apellidoNuevo,
+                                              String correoNuevo, String telefonoNuevo) {
+        boolean modificarOK = false;
+        conectarBD();
+        try {
+            String query = "UPDATE usuario SET nombre = ?, apellido = ?, telefono = ?, correo = ? WHERE dni = ?";
+            PreparedStatement preparedStatement = conexion.prepareStatement(query);
+            preparedStatement.setString(1, nombreNuevo);
+            preparedStatement.setString(2, apellidoNuevo);
+            preparedStatement.setString(3, telefonoNuevo);
+            preparedStatement.setString(4, correoNuevo);
+            preparedStatement.setString(5, dni);
+            int filasModificadas = preparedStatement.executeUpdate();
+            preparedStatement.close();
+            if (filasModificadas > 0) {
+                modificarOK = true;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                cerrarConnection(conexion);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return modificarOK;
+    }
 
 }
 

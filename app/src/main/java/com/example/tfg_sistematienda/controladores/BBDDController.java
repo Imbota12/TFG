@@ -82,4 +82,8 @@ public class BBDDController {
     public void actualizarEstadoEmpleado(String dni, boolean estado){conexionBBDD.actualizarEstadoEmpleado(dni, estado);}
 
     public List<UsuarioModel> obtenerListaEmpleados(){return conexionBBDD.obtenerListaEmpleados();}
-    }
+    public boolean modificarEmpleadoConContra(String dni, String nombreNuevo, String apellidoNuevo,
+                                              String correoNuevo, String telefonoNuevo, String nuevaContra){return conexionBBDD.modificarEmpleadoConContra(dni, nombreNuevo,apellidoNuevo,correoNuevo,telefonoNuevo,nuevaContra);}
+    public boolean modificarEmpleadoSinContra(String dni, String nombreNuevo, String apellidoNuevo,
+                                              String correoNuevo, String telefonoNuevo){return conexionBBDD.modificarEmpleadoSinContra(dni, nombreNuevo,apellidoNuevo,correoNuevo,telefonoNuevo);}
+}

@@ -1,5 +1,7 @@
 package com.example.tfg_sistematienda.Adaptadores;
 
+import static com.example.tfg_sistematienda.vistas.CrearUsuario.hashPassword;
+
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
@@ -23,6 +25,8 @@ import com.example.tfg_sistematienda.R;
 import com.example.tfg_sistematienda.controladores.BBDDController;
 import com.example.tfg_sistematienda.modelos.ProductoModel;
 import com.example.tfg_sistematienda.modelos.UsuarioModel;
+
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.util.List;
 
@@ -208,6 +212,45 @@ public class AdaptadorEmpleado extends RecyclerView.Adapter<ViewHolderEmpleados>
         correo.setText(empleadoAeditar.getCorreo());
         telefono.setText(empleadoAeditar.getTelefono());
 
+        telefono.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                // No necesitas hacer nada aquí
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                // No necesitas hacer nada aquí
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                String input = s.toString();
+
+                // Limitar la longitud a 9 caracteres
+                if (input.length() > 9) {
+                    s.delete(9, input.length());
+                    return;
+                }
+
+                // Validar el primer dígito
+                if (input.length() > 0) {
+                    char firstChar = input.charAt(0);
+                    if (firstChar != '6' && firstChar != '7' && firstChar != '9') {
+                        s.delete(0, 1);
+                    }
+                }
+
+                // Eliminar caracteres no numéricos
+                for (int i = s.length() - 1; i >= 0; i--) {
+                    if (!Character.isDigit(s.charAt(i))) {
+                        s.delete(i, i + 1);
+                    }
+                }
+            }
+        });
+
+
         contrasena.addTextChangedListener(new TextWatcher() {
 
             @Override
@@ -235,31 +278,39 @@ public class AdaptadorEmpleado extends RecyclerView.Adapter<ViewHolderEmpleados>
                 String nuevoTelefono = telefono.getText().toString();
                 String nuevaContrasena="";
                 if (contrasena.getText().toString().equals("****")) {
-
+                    nuevaContrasena = contrasena.getText().toString();
+                    if (comprobarDatosEmpleado(nuevaContrasena)){
+                        if (bbddController.modificarEmpleadoSinContra(dni.getText().toString(), nuevoNombre, nuevoApellido, nuevoCorreo, nuevoTelefono)) {
+                            Toast.makeText(context, "Empleado modificado correctamente", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(context, "Error al modificar el empleado", Toast.LENGTH_SHORT).show();
+                        }
+                    }
                 }else{
                     nuevaContrasena = contrasena.getText().toString();
-                }
+                    if (comprobarDatosEmpleado(nuevaContrasena)) {
+                       String contraHash= hashPassword(nuevaContrasena);
+                        // Actualizar los datos del producto en la BBDD
+                        if (bbddController.modificarEmpleadoConContra(dni.getText().toString(), nuevoNombre, nuevoApellido, nuevoCorreo, nuevoTelefono, contraHash)) {
+                            Toast.makeText(context, "Empleado modificado correctamente", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(context, "Error al modificar el empleado", Toast.LENGTH_SHORT).show();
+                        }
 
-                if(comprobarDatosEmpleado(nuevaContrasena)){
-                    // Actualizar los datos del producto en la BBDD
-//                    if (bbddController.modificarProducto(nuevoNombre, nuevaDescripcion, nuevoPrecioUnidad, nuevaImagen, productoSeleccionado.getCodigoBarras())) {
-//                        Toast.makeText(context, "Producto modificado correctamente", Toast.LENGTH_SHORT).show();
-//                    } else {
-//                        Toast.makeText(context, "Error al modificar el producto", Toast.LENGTH_SHORT).show();
-//                    }
-//
-//                    // Actualizar los datos del producto en la lista
-//                    productoSeleccionado.setNombre(nuevoNombre);
-//                    productoSeleccionado.setDescripcion(nuevaDescripcion);
-//                    productoSeleccionado.setPrecioUnidad(nuevoPrecioUnidad);
-//                    productoSeleccionado.setImagenProducto(nuevaImagen);
-//
-//                    // Notificar al adaptador que los datos han cambiado
-//                    notifyDataSetChanged();
+                        String asunto = "Cambio de contraseña de su cuenta";
+                        String mensaje = "Le informamos que sus credenciales de acceso han sido modificadas. Para acceder necesitará\n"
+                                +"introducir el correo de acceso  "+nuevoCorreo+" \n"
+                                +"y su nueva contraseña: "+nuevaContrasena+"\n";
+                        enviarCorreo(nuevoCorreo, asunto, mensaje);
 
-                    Toast.makeText(context, "Cambios guardados correctamente", Toast.LENGTH_SHORT);
-                    // Cerrar el diálogo
-                    dialog.dismiss();
+                        empleadoAeditar.setNombre(nuevoNombre);
+                        empleadoAeditar.setApellido(nuevoApellido);
+                        empleadoAeditar.setCorreo(nuevoCorreo);
+                        //empleadoAeditar.setContraseña(nuevaContrasena);
+                        empleadoAeditar.setTelefono(nuevoTelefono);
+
+                        notifyDataSetChanged();
+                    }
                 }
 
             }
@@ -279,7 +330,9 @@ public class AdaptadorEmpleado extends RecyclerView.Adapter<ViewHolderEmpleados>
         builder.setCancelable(false);
     }
 
-
+    public static String hashPassword(String password) {
+        return BCrypt.hashpw(password, BCrypt.gensalt());
+    }
 
     private boolean comprobarDatosEmpleado(String nuevaContrasena) {
         boolean datosValidos = true;
@@ -347,9 +400,6 @@ public class AdaptadorEmpleado extends RecyclerView.Adapter<ViewHolderEmpleados>
 
 
 
-
-
-
         private void mostrarDialogoEnviarCorreo(UsuarioModel trabajador) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle("Enviar Correo Electrónico");
@@ -371,6 +421,7 @@ public class AdaptadorEmpleado extends RecyclerView.Adapter<ViewHolderEmpleados>
 
         builder.show();
     }
+
 
     private void enviarCorreo(String correo, String asunto, String mensaje) {
         Intent intent = new Intent(Intent.ACTION_SEND);
