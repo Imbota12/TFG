@@ -1,7 +1,5 @@
 package com.example.tfg_sistematienda.Adaptadores;
 
-import static com.example.tfg_sistematienda.vistas.CrearUsuario.hashPassword;
-
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
@@ -23,14 +21,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.tfg_sistematienda.R;
 import com.example.tfg_sistematienda.controladores.BBDDController;
-import com.example.tfg_sistematienda.modelos.ProductoModel;
 import com.example.tfg_sistematienda.modelos.UsuarioModel;
 
 import org.mindrot.jbcrypt.BCrypt;
 
 import java.util.List;
 
-public class AdaptadorEmpleado extends RecyclerView.Adapter<ViewHolderEmpleados>{
+public class AdaptadorEmpleado extends RecyclerView.Adapter<ViewHolderEmpleados> {
 
     private List<UsuarioModel> listaEmpleados;
     private Context context;
@@ -38,7 +35,7 @@ public class AdaptadorEmpleado extends RecyclerView.Adapter<ViewHolderEmpleados>
     private BBDDController bbddController = new BBDDController();
 
     private TextView tx_confir;
-    private EditText dni, nombre, apellidos, telefono, correo, contrasena,confirmarContrasena;
+    private EditText dni, nombre, apellidos, telefono, correo, contrasena, confirmarContrasena;
 
     public AdaptadorEmpleado(Context context, List<UsuarioModel> listaEmpleados) {
         this.listaEmpleados = listaEmpleados;
@@ -46,11 +43,10 @@ public class AdaptadorEmpleado extends RecyclerView.Adapter<ViewHolderEmpleados>
 
     }
 
-    public void actualizarLista(List<UsuarioModel> nuevaLista) {
-        listaEmpleados.clear();
-        listaEmpleados.addAll(nuevaLista);
-        notifyDataSetChanged();
+    public static String hashPassword(String password) {
+        return BCrypt.hashpw(password, BCrypt.gensalt());
     }
+
 
     @NonNull
     @Override
@@ -71,19 +67,19 @@ public class AdaptadorEmpleado extends RecyclerView.Adapter<ViewHolderEmpleados>
         holder.empleadoActivo.setEnabled(false);
         holder.tipoEmpleado.setEnabled(false);
 
-        if (empleado.isActivo()){
+        if (empleado.isActivo()) {
             holder.empleadoActivo.setChecked(true);
             holder.expulsar.setVisibility(View.VISIBLE);
             holder.contrato.setVisibility(View.GONE);
-        }else{
+        } else {
             holder.empleadoActivo.setChecked(false);
             holder.contrato.setVisibility(View.VISIBLE);
             holder.expulsar.setVisibility(View.GONE);
         }
 
-        if (empleado.isVendedor()){
+        if (empleado.isVendedor()) {
             holder.tipoEmpleado.setChecked(false);
-        }else if (empleado.isReponedor()){
+        } else if (empleado.isReponedor()) {
             holder.tipoEmpleado.setChecked(true);
         }
 
@@ -127,60 +123,59 @@ public class AdaptadorEmpleado extends RecyclerView.Adapter<ViewHolderEmpleados>
         });
 
         holder.llamada.setOnClickListener(new View.OnClickListener() {
-           @Override
+            @Override
             public void onClick(View v) {
-               String phoneNumber = empleado.getTelefono();
-               Intent intent = new Intent(Intent.ACTION_DIAL);
-               intent.setData(Uri.parse("tel:" + phoneNumber));
-               try {
-                   v.getContext().startActivity(intent);
-               } catch (ActivityNotFoundException e) {
-                   Toast.makeText(v.getContext(), "No se puede realizar la llamada. No hay aplicaciones de llamadas disponibles.", Toast.LENGTH_SHORT).show();
-               } catch (Exception e) {
-                   Toast.makeText(v.getContext(), "Error al intentar realizar la llamada.", Toast.LENGTH_SHORT).show();
-               }
+                String phoneNumber = empleado.getTelefono();
+                Intent intent = new Intent(Intent.ACTION_DIAL);
+                intent.setData(Uri.parse("tel:" + phoneNumber));
+                try {
+                    v.getContext().startActivity(intent);
+                } catch (ActivityNotFoundException e) {
+                    Toast.makeText(v.getContext(), "No se puede realizar la llamada. No hay aplicaciones de llamadas disponibles.", Toast.LENGTH_SHORT).show();
+                } catch (Exception e) {
+                    Toast.makeText(v.getContext(), "Error al intentar realizar la llamada.", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
         holder.correo.setOnClickListener(new View.OnClickListener() {
-           @Override
+            @Override
             public void onClick(View v) {
-               mostrarDialogoEnviarCorreo(empleado);
-           }
+                mostrarDialogoEnviarCorreo(empleado);
+            }
         });
 
         holder.expulsar.setOnClickListener(new View.OnClickListener() {
-           @Override
+            @Override
             public void onClick(View v) {
-               new AlertDialog.Builder(context)
-                       .setTitle("Confirmar despido")
-                       .setMessage("¿Estás seguro de que quieres despedir a este empleado?")
-                       .setPositiveButton("Sí", (dialog, which) -> {
-                           // Actualizar el estado del empleado
-                           empleado.setActivo(false);
-                           // Actualizar en la base de datos
-                           bbddController.actualizarEstadoEmpleado(empleado.getDni(), false);
-                           // Notificar cambios al adaptador
-                           notifyItemChanged(position);
+                new AlertDialog.Builder(context)
+                        .setTitle("Confirmar despido")
+                        .setMessage("¿Estás seguro de que quieres despedir a este empleado?")
+                        .setPositiveButton("Sí", (dialog, which) -> {
+                            // Actualizar el estado del empleado
+                            empleado.setActivo(false);
+                            // Actualizar en la base de datos
+                            bbddController.actualizarEstadoEmpleado(empleado.getDni(), false);
+                            // Notificar cambios al adaptador
+                            notifyItemChanged(position);
 
-                           // Enviar correo de despido
-                           String asunto = "Despido";
-                           String mensaje = "Yo como responsable de la empresa en la que esta actualmente, "
-                                   + "por motivos definidos (baja producción, retrasos etc...) o por falta de trabajo, "
-                                   + "hemos decidido despedirle por un tiempo. En caso de volver a necesitar de su servicio, "
-                                   + "nos pondremos en contacto con usted. Gracias por su servicio. Un saludo.";
-                           enviarCorreo(empleado.getCorreo(), asunto, mensaje);
-                       })
-                       .setNegativeButton("No", (dialog, which) -> {
-                           dialog.dismiss();
-                       })
-                       .create()
-                       .show();
-           }
+                            // Enviar correo de despido
+                            String asunto = "Despido";
+                            String mensaje = "Yo como responsable de la empresa en la que esta actualmente, "
+                                    + "por motivos definidos (baja producción, retrasos etc...) o por falta de trabajo, "
+                                    + "hemos decidido despedirle por un tiempo. En caso de volver a necesitar de su servicio, "
+                                    + "nos pondremos en contacto con usted. Gracias por su servicio. Un saludo.";
+                            enviarCorreo(empleado.getCorreo(), asunto, mensaje);
+                        })
+                        .setNegativeButton("No", (dialog, which) -> {
+                            dialog.dismiss();
+                        })
+                        .create()
+                        .show();
+            }
         });
 
     }
-
 
     private void abrirDialogoEditarEmpleado(UsuarioModel empleadoAeditar) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
@@ -234,7 +229,7 @@ public class AdaptadorEmpleado extends RecyclerView.Adapter<ViewHolderEmpleados>
                 }
 
                 // Validar el primer dígito
-                if (input.length() > 0) {
+                if (!input.isEmpty()) {
                     char firstChar = input.charAt(0);
                     if (firstChar != '6' && firstChar != '7' && firstChar != '9') {
                         s.delete(0, 1);
@@ -276,20 +271,20 @@ public class AdaptadorEmpleado extends RecyclerView.Adapter<ViewHolderEmpleados>
                 String nuevoApellido = apellidos.getText().toString();
                 String nuevoCorreo = correo.getText().toString();
                 String nuevoTelefono = telefono.getText().toString();
-                String nuevaContrasena="";
+                String nuevaContrasena = "";
                 if (contrasena.getText().toString().equals("****")) {
                     nuevaContrasena = contrasena.getText().toString();
-                    if (comprobarDatosEmpleado(nuevaContrasena)){
+                    if (comprobarDatosEmpleado(nuevaContrasena)) {
                         if (bbddController.modificarEmpleadoSinContra(dni.getText().toString(), nuevoNombre, nuevoApellido, nuevoCorreo, nuevoTelefono)) {
                             Toast.makeText(context, "Empleado modificado correctamente", Toast.LENGTH_SHORT).show();
                         } else {
                             Toast.makeText(context, "Error al modificar el empleado", Toast.LENGTH_SHORT).show();
                         }
                     }
-                }else{
+                } else {
                     nuevaContrasena = contrasena.getText().toString();
                     if (comprobarDatosEmpleado(nuevaContrasena)) {
-                       String contraHash= hashPassword(nuevaContrasena);
+                        String contraHash = hashPassword(nuevaContrasena);
                         // Actualizar los datos del producto en la BBDD
                         if (bbddController.modificarEmpleadoConContra(dni.getText().toString(), nuevoNombre, nuevoApellido, nuevoCorreo, nuevoTelefono, contraHash)) {
                             Toast.makeText(context, "Empleado modificado correctamente", Toast.LENGTH_SHORT).show();
@@ -299,8 +294,8 @@ public class AdaptadorEmpleado extends RecyclerView.Adapter<ViewHolderEmpleados>
 
                         String asunto = "Cambio de contraseña de su cuenta";
                         String mensaje = "Le informamos que sus credenciales de acceso han sido modificadas. Para acceder necesitará\n"
-                                +"introducir el correo de acceso  "+nuevoCorreo+" \n"
-                                +"y su nueva contraseña: "+nuevaContrasena+"\n";
+                                + "introducir el correo de acceso  " + nuevoCorreo + " \n"
+                                + "y su nueva contraseña: " + nuevaContrasena + "\n";
                         enviarCorreo(nuevoCorreo, asunto, mensaje);
 
                         empleadoAeditar.setNombre(nuevoNombre);
@@ -328,10 +323,6 @@ public class AdaptadorEmpleado extends RecyclerView.Adapter<ViewHolderEmpleados>
         // Mostrar el diálogo
         builder.show();
         builder.setCancelable(false);
-    }
-
-    public static String hashPassword(String password) {
-        return BCrypt.hashpw(password, BCrypt.gensalt());
     }
 
     private boolean comprobarDatosEmpleado(String nuevaContrasena) {
@@ -372,13 +363,13 @@ public class AdaptadorEmpleado extends RecyclerView.Adapter<ViewHolderEmpleados>
             telefono.setError("Campo vacío");
             datosValidos = false;
         }
-        if (contrasena.getText().length() < 4){
+        if (contrasena.getText().length() < 4) {
             contrasena.setError("Contraseña demasiado corta");
             datosValidos = false;
         }
 
-        if (!contrasena.getText().toString().equals("****")){
-            if (!contrasena.getText().toString().matches("^[a-zA-Z0-9]*$")){
+        if (!contrasena.getText().toString().equals("****")) {
+            if (!contrasena.getText().toString().matches("^[a-zA-Z0-9]*$")) {
                 contrasena.setError("Contraseña no válida. Sólo numeros o letras");
                 datosValidos = false;
             }
@@ -399,8 +390,7 @@ public class AdaptadorEmpleado extends RecyclerView.Adapter<ViewHolderEmpleados>
     }
 
 
-
-        private void mostrarDialogoEnviarCorreo(UsuarioModel trabajador) {
+    private void mostrarDialogoEnviarCorreo(UsuarioModel trabajador) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle("Enviar Correo Electrónico");
 
@@ -438,8 +428,6 @@ public class AdaptadorEmpleado extends RecyclerView.Adapter<ViewHolderEmpleados>
             Toast.makeText(context, "Error al enviar el correo electrónico.", Toast.LENGTH_SHORT).show();
         }
     }
-
-
 
 
     @Override

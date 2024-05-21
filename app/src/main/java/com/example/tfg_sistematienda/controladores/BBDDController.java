@@ -8,6 +8,7 @@ import com.example.tfg_sistematienda.modelos.TiendaModel;
 import com.example.tfg_sistematienda.modelos.UsuarioModel;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class BBDDController {
@@ -86,4 +87,9 @@ public class BBDDController {
                                               String correoNuevo, String telefonoNuevo, String nuevaContra){return conexionBBDD.modificarEmpleadoConContra(dni, nombreNuevo,apellidoNuevo,correoNuevo,telefonoNuevo,nuevaContra);}
     public boolean modificarEmpleadoSinContra(String dni, String nombreNuevo, String apellidoNuevo,
                                               String correoNuevo, String telefonoNuevo){return conexionBBDD.modificarEmpleadoSinContra(dni, nombreNuevo,apellidoNuevo,correoNuevo,telefonoNuevo);}
+
+    public UsuarioModel obtenerEmpleado(String dni) {return conexionBBDD.obtenerEmpleado(dni);}
+
+    public boolean insertarLog(String accion, LocalDateTime fechaHora, String dniEmpleado) {return conexionBBDD.insertarLog(accion,fechaHora,dniEmpleado);}
+
 }

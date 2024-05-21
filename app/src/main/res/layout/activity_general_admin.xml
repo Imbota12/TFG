@@ -7,4 +7,17 @@
     android:layout_height="match_parent"
     tools:context=".vistas.GeneralAdmin">
 
+    <TextView
+        android:id="@+id/textView55"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="92dp"
+        android:layout_marginBottom="668dp"
+        android:text="BIENVENIDO DE NUEVO ADMINISTRADOR IOAN MARK BOTA"
+        android:textAlignment="center"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

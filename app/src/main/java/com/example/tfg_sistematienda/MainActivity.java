@@ -1,7 +1,6 @@
 package com.example.tfg_sistematienda;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -12,8 +11,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -22,12 +19,9 @@ import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-
 import com.example.tfg_sistematienda.controladores.BBDDController;
 import com.example.tfg_sistematienda.modelos.UsuarioModel;
 import com.example.tfg_sistematienda.vistas.CrearProducto;
-import com.example.tfg_sistematienda.vistas.CrearTienda;
-import com.example.tfg_sistematienda.vistas.CrearUsuario;
 import com.example.tfg_sistematienda.vistas.GeneralAdmin;
 import com.example.tfg_sistematienda.vistas.GeneralReponedor;
 import com.example.tfg_sistematienda.vistas.GeneralVendedor;
@@ -35,268 +29,221 @@ import com.example.tfg_sistematienda.vistas.ListaEmpleados;
 import com.example.tfg_sistematienda.vistas.ListaInventario;
 import com.example.tfg_sistematienda.vistas.RealizaVenta;
 import com.example.tfg_sistematienda.vistas.RealizarDevolucion;
-
 import org.mindrot.jbcrypt.BCrypt;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static final int PERMISSION_BLUETOOTH_SCAN = 9;
-    private Button iniciar, recuperar;
+    private static final int REQUEST_CODE_STORAGE = 105;
+    private static final int REQUEST_CODE_CAMERA = 106;
+    private static final int REQUEST_CODE_BLUETOOTH = 107;
+    public static final int PERMISSION_BLUETOOTH = 101;
+    public static final int PERMISSION_BLUETOOTH_ADMIN = 102;
+    public static final int PERMISSION_BLUETOOTH_CONNECT = 103;
+    public static final int PERMISSION_BLUETOOTH_SCAN = 109;
 
-    private Button irCrearProducto, listaProductos, irVenta, irDevolucion, irEmpleados;
-    private BBDDController bbddController= new BBDDController();
+    private BBDDController bbddController = new BBDDController();
     private EditText usuario, contrasena;
 
-    public static final int PERMISSION_BLUETOOTH = 1;
-    public static final int PERMISSION_BLUETOOTH_ADMIN = 2;
-    public static final int PERMISSION_BLUETOOTH_CONNECT = 3;
-
-
-    private static final int REQUEST_CODE_STORAGE = 5;
-    private static final int REQUEST_CODE_CAMERA = 6;
-    private static final int REQUEST_CODE_BLUETOOTH = 7;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
 
-        iniciar = findViewById(R.id.iniciar_sesion);
-        recuperar = findViewById(R.id.bt_recuperar);
-        irCrearProducto = findViewById(R.id.crear_producto_ir);
-        listaProductos = findViewById(R.id.bt_lista);
-        irVenta = findViewById(R.id.bt_ventas);
-        irDevolucion = findViewById(R.id.ir_devolucion);
-        irEmpleados = findViewById(R.id.ir_empleados);
-
         usuario = findViewById(R.id.usuario);
         contrasena = findViewById(R.id.contrasena);
+        Button iniciar = findViewById(R.id.iniciar_sesion);
+        Button recuperar = findViewById(R.id.bt_recuperar);
+        Button irCrearProducto = findViewById(R.id.crear_producto_ir);
+        Button listaProductos = findViewById(R.id.bt_lista);
+        Button irVenta = findViewById(R.id.bt_ventas);
+        Button irDevolucion = findViewById(R.id.ir_devolucion);
+        Button irEmpleados = findViewById(R.id.ir_empleados);
+
+        // Request permissions
+        requestPermissions();
+
+        // Set button click listeners
+        setButtonClickListeners(irDevolucion, RealizarDevolucion.class);
+        setButtonClickListeners(irCrearProducto, CrearProducto.class);
+        setButtonClickListeners(irEmpleados, ListaEmpleados.class);
+        setButtonClickListeners(irVenta, RealizaVenta.class);
+        setButtonClickListeners(listaProductos, ListaInventario.class);
+
+        iniciar.setOnClickListener(v -> iniciarSesion());
+        recuperar.setOnClickListener(v -> mostrarDialogoRecuperarCredenciales());
+    }
+
+    private void requestPermissions() {
+        List<String> permissionsToRequest = new ArrayList<>();
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ||
                 ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_CODE_STORAGE);
+            permissionsToRequest.add(Manifest.permission.READ_EXTERNAL_STORAGE);
+            permissionsToRequest.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
         }
 
-        // Verificar y solicitar permiso para la cámara
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, REQUEST_CODE_CAMERA);
+            permissionsToRequest.add(Manifest.permission.CAMERA);
         }
 
-        // Verificar y solicitar permiso para Bluetooth
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.BLUETOOTH}, REQUEST_CODE_BLUETOOTH);
+            permissionsToRequest.add(Manifest.permission.BLUETOOTH);
         }
 
-        irDevolucion.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(MainActivity.this, RealizarDevolucion.class);
-                startActivity(i);
-            }
-        });
-
-        irCrearProducto.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(MainActivity.this, CrearProducto.class);
-                startActivity(i);
-            }
-        });
-
-        irEmpleados.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(MainActivity.this, ListaEmpleados.class);
-                startActivity(i);
-            }
-        });
-
-
-        irVenta.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(MainActivity.this, RealizaVenta.class);
-                startActivity(i);
-            }
-        });
-
-        listaProductos.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(MainActivity.this, ListaInventario.class);
-                startActivity(i);
-            }
-        });
-        iniciar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                String contraseñaIntroducida = contrasena.getText().toString();
-                String contraseñaBBDDHasheada = bbddController.obtenerContraseñaPorCorreo(usuario.getText().toString());
-
-                if (contraseñaBBDDHasheada == null){
-                    usuario.setError("El usuario no existe");
-                    contrasena.setError("El usuario no existe");
-                    return;
-                }
-
-                if (!BCrypt.checkpw(contraseñaIntroducida, contraseñaBBDDHasheada)){
-                    contrasena.setError("La contraseña no es correcta");
-                    return;
-                }else{
-                    UsuarioModel usuarioActual = bbddController.buscarUsuarioPorCorreo(usuario.getText().toString());
-                    if (usuarioActual.isActivo()){
-                        if (usuarioActual.isVendedor()){
-                            Intent i = new Intent(MainActivity.this, GeneralVendedor.class);
-                            i.putExtra("usuarioDNI", usuarioActual.getDni());
-                            startActivity(i);
-                        }else if (usuarioActual.isReponedor()){
-                            Intent i = new Intent(MainActivity.this, GeneralReponedor.class);
-                            i.putExtra("usuarioDNI", usuarioActual.getDni());
-                            startActivity(i);
-                        }else if (usuarioActual.isAdmin()){
-                            Intent i = new Intent(MainActivity.this, GeneralAdmin.class);
-                            i.putExtra("usuarioDNI", usuarioActual.getDni());
-                            startActivity(i);
-                        }
-
-                    }else{
-                        usuario.setError("El usuario no está activo");
-                    }
-
-                }
-
-            }
-        });
-
-        recuperar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                builder.setTitle("Recuperar Credenciales");
-
-                View dialogView = LayoutInflater.from(MainActivity.this).inflate(R.layout.popup_recuperarcredenciales, null);
-                builder.setView(dialogView);
-
-                EditText nombre = dialogView.findViewById(R.id.recupera_nombre);
-                EditText apellidos = dialogView.findViewById(R.id.recupera_apellido);
-                EditText dni = dialogView.findViewById(R.id.recupera_dni);
-                EditText telefono = dialogView.findViewById(R.id.recupera_telefono);
-
-
-                Button buscar = dialogView.findViewById(R.id.bt_buscar_credenciales);
-
-                TextView usuario = dialogView.findViewById(R.id.mostrar_usuario);
-
-                TextView textoC = dialogView.findViewById(R.id.tv_contraR);
-
-                TextView textoCr = dialogView.findViewById(R.id.tv_contraRR);
-
-
-                EditText contra = dialogView.findViewById(R.id.passwd_reset);
-
-                EditText contraVeri = dialogView.findViewById(R.id.passwd_reset_veri);
-
-                Button cambiarContra = dialogView.findViewById(R.id.bt_restablecer_contra);
-
-                Button resetContra = dialogView.findViewById(R.id.reset_contra);
-
-
-                usuario.setVisibility(View.INVISIBLE);
-                textoC.setVisibility(View.INVISIBLE);
-                textoCr.setVisibility(View.INVISIBLE);
-                contra.setVisibility(View.INVISIBLE);
-                contraVeri.setVisibility(View.INVISIBLE);
-                cambiarContra.setVisibility(View.INVISIBLE);
-                resetContra.setVisibility(View.INVISIBLE);
-
-
-
-                    buscar.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-
-                        UsuarioModel usuarioEncontrado = bbddController.buscarUsuario(nombre.getText().toString(), apellidos.getText().toString(), dni.getText().toString(), telefono.getText().toString());
-
-                        if ( usuarioEncontrado != null){
-                            if (usuarioEncontrado.isActivo()){
-                                usuario.setVisibility(View.VISIBLE);
-                                usuario.setText(usuarioEncontrado.getCorreo());
-                                resetContra.setVisibility(View.VISIBLE);
-
-
-
-                            }else{
-                                mostrarAlertaUsuarioNoActivo();
-                            }
-
-                        }else{
-                            mostrarAlertaUsuarioNoEncontrado();
-                        }
-                    }
-                });
-
-                resetContra.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        cambiarContra.setVisibility(View.VISIBLE);
-                        contra.setVisibility(View.VISIBLE);
-                        contraVeri.setVisibility(View.VISIBLE);
-                        textoC.setVisibility(View.VISIBLE);
-                        textoCr.setVisibility(View.VISIBLE);
-                    }
-                });
-
-
-
-                    cambiarContra.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            if (contra.getText().toString().equals(contraVeri.getText().toString())){
-                                UsuarioModel usuarioEncontrado = bbddController.buscarUsuario(nombre.getText().toString(), apellidos.getText().toString(), dni.getText().toString(), telefono.getText().toString());
-                                usuarioEncontrado.setContraseña(BCrypt.hashpw(contra.getText().toString(), BCrypt.gensalt()));
-                                if (bbddController.actualizarUsuario(usuarioEncontrado)){
-                                    cambioContraOK();
-                                }else{
-                                    cambioContraNoOK();
-                                }
-
-                            }else{
-                                contra.setError("Las contraseñas no coinciden");
-                                contraVeri.setError("Las contraseñas no coinciden");
-                            }
-                        }
-                    });
-
-                builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-
-                AlertDialog dialog = builder.create();
-                dialog.show();
-
-            }
-        });
-
-
-
+        if (!permissionsToRequest.isEmpty()) {
+            ActivityCompat.requestPermissions(this, permissionsToRequest.toArray(new String[0]), REQUEST_CODE_STORAGE);
+        }
     }
 
 
+    private void setButtonClickListeners(Button button, Class<?> cls) {
+        button.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, cls);
+            startActivity(intent);
+        });
+    }
+
+    private void iniciarSesion() {
+        String contraseñaIntroducida = contrasena.getText().toString();
+        String contraseñaBBDDHasheada = bbddController.obtenerContraseñaPorCorreo(usuario.getText().toString());
+
+        if (contraseñaBBDDHasheada == null) {
+            mostrarError(usuario, contrasena, "El usuario no existe");
+            return;
+        }
+
+        if (!BCrypt.checkpw(contraseñaIntroducida, contraseñaBBDDHasheada)) {
+            contrasena.setError("La contraseña no es correcta");
+            return;
+        }
+
+        UsuarioModel usuarioActual = bbddController.buscarUsuarioPorCorreo(usuario.getText().toString());
+        if (!usuarioActual.isActivo()) {
+            usuario.setError("El usuario no está activo");
+            return;
+        }
+
+        Class<?> nextActivity;
+        if (usuarioActual.isVendedor()) {
+            nextActivity = GeneralVendedor.class;
+        } else if (usuarioActual.isReponedor()) {
+            nextActivity = GeneralReponedor.class;
+        } else if (usuarioActual.isAdmin()) {
+            nextActivity = GeneralAdmin.class;
+        } else {
+            return;
+        }
+        bbddController.insertarLog("Inicio de sesión", LocalDateTime.now(), usuarioActual.getDni());
+        Intent i = new Intent(MainActivity.this, nextActivity);
+        i.putExtra("usuarioDNI", usuarioActual.getDni());
+        startActivity(i);
+    }
+
+    private void mostrarError(EditText usuario, EditText contrasena, String mensaje) {
+        usuario.setError(mensaje);
+        contrasena.setError(mensaje);
+    }
+
+    private void mostrarDialogoRecuperarCredenciales() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setTitle("Recuperar Credenciales");
+
+        View dialogView = LayoutInflater.from(MainActivity.this).inflate(R.layout.popup_recuperarcredenciales, null);
+        builder.setView(dialogView);
+
+        EditText nombre = dialogView.findViewById(R.id.recupera_nombre);
+        EditText apellidos = dialogView.findViewById(R.id.recupera_apellido);
+        EditText dni = dialogView.findViewById(R.id.recupera_dni);
+        EditText telefono = dialogView.findViewById(R.id.recupera_telefono);
+        TextView usuario = dialogView.findViewById(R.id.mostrar_usuario);
+        TextView textoC = dialogView.findViewById(R.id.tv_contraR);
+        TextView textoCr = dialogView.findViewById(R.id.tv_contraRR);
+        EditText contra = dialogView.findViewById(R.id.passwd_reset);
+        EditText contraVeri = dialogView.findViewById(R.id.passwd_reset_veri);
+        Button buscar = dialogView.findViewById(R.id.bt_buscar_credenciales);
+        Button cambiarContra = dialogView.findViewById(R.id.bt_restablecer_contra);
+        Button resetContra = dialogView.findViewById(R.id.reset_contra);
+
+        usuario.setVisibility(View.INVISIBLE);
+        textoC.setVisibility(View.INVISIBLE);
+        textoCr.setVisibility(View.INVISIBLE);
+        contra.setVisibility(View.INVISIBLE);
+        contraVeri.setVisibility(View.INVISIBLE);
+        cambiarContra.setVisibility(View.INVISIBLE);
+        resetContra.setVisibility(View.INVISIBLE);
+
+        buscar.setOnClickListener(v -> buscarUsuario(nombre, apellidos, dni, telefono, usuario, resetContra));
+        resetContra.setOnClickListener(v -> mostrarCamposRestablecerContrasena(textoC, textoCr, contra, contraVeri, cambiarContra));
+        cambiarContra.setOnClickListener(v -> restablecerContrasena(nombre, apellidos, dni, telefono, contra, contraVeri));
+
+        builder.setPositiveButton("Aceptar", (dialog, which) -> dialog.dismiss());
+        builder.create().show();
+    }
+
+    private void buscarUsuario(EditText nombre, EditText apellidos, EditText dni, EditText telefono, TextView usuario, Button resetContra) {
+        UsuarioModel usuarioEncontrado = bbddController.buscarUsuario(nombre.getText().toString(), apellidos.getText().toString(), dni.getText().toString(), telefono.getText().toString());
+
+        if (usuarioEncontrado != null && usuarioEncontrado.isActivo()) {
+            usuario.setVisibility(View.VISIBLE);
+            usuario.setText(usuarioEncontrado.getCorreo());
+            resetContra.setVisibility(View.VISIBLE);
+        } else if (usuarioEncontrado == null) {
+            mostrarAlerta("Usuario no encontrado", "No se encontró ningún usuario con los datos proporcionados.");
+        } else {
+            mostrarAlerta("Usuario no activo", "El usuario no está activo. Póngase en contacto con el administrador.");
+        }
+    }
+
+    private void mostrarCamposRestablecerContrasena(TextView textoC, TextView textoCr, EditText contra, EditText contraVeri, Button cambiarContra) {
+        textoC.setVisibility(View.VISIBLE);
+        textoCr.setVisibility(View.VISIBLE);
+        contra.setVisibility(View.VISIBLE);
+        contraVeri.setVisibility(View.VISIBLE);
+        cambiarContra.setVisibility(View.VISIBLE);
+    }
+
+    private void restablecerContrasena(EditText nombre, EditText apellidos, EditText dni, EditText telefono, EditText contra, EditText contraVeri) {
+        if (contra.getText().toString().equals(contraVeri.getText().toString())) {
+            UsuarioModel usuarioEncontrado = bbddController.buscarUsuario(nombre.getText().toString(), apellidos.getText().toString(), dni.getText().toString(), telefono.getText().toString());
+            if (usuarioEncontrado != null) {
+                usuarioEncontrado.setContraseña(BCrypt.hashpw(contra.getText().toString(), BCrypt.gensalt()));
+                if (bbddController.actualizarUsuario(usuarioEncontrado)) {
+                    mostrarAlerta("Contraseña actualizada", "Su contraseña ha sido actualizada con éxito.");
+                    bbddController.insertarLog("Restablecimiento de contraseña", LocalDateTime.now(), usuarioEncontrado.getDni());
+                } else {
+                    mostrarAlerta("Error", "Hubo un error al actualizar su contraseña.");
+                }
+            }
+        } else {
+            contra.setError("Las contraseñas no coinciden");
+            contraVeri.setError("Las contraseñas no coinciden");
+        }
+    }
+
+    private void mostrarAlerta(String titulo, String mensaje) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setTitle(titulo)
+                .setMessage(mensaje)
+                .setPositiveButton("Aceptar", (dialog, which) -> dialog.dismiss())
+                .show();
+    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
         if (requestCode == REQUEST_CODE_STORAGE || requestCode == REQUEST_CODE_CAMERA || requestCode == REQUEST_CODE_BLUETOOTH) {
-            // Verificar si se concedieron todos los permisos solicitados
             boolean allGranted = true;
             for (int result : grantResults) {
                 if (result != PackageManager.PERMISSION_GRANTED) {
@@ -304,69 +251,12 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 }
             }
-            if (allGranted) {
-                // Todos los permisos fueron concedidos, puedes realizar las operaciones necesarias aquí
-            } else {
-                // Al menos uno de los permisos fue denegado, puedes mostrar un mensaje al usuario o deshabilitar ciertas funcionalidades
+
+            if (!allGranted) {
+                // Manejar el caso donde no se conceden los permisos
+                mostrarAlerta("Permiso denegado", "Al menos uno de los permisos fue denegado. Algunas funcionalidades pueden no estar disponibles.");
             }
         }
     }
-
-
-    private void mostrarAlertaUsuarioNoEncontrado() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-        builder.setTitle("Usuario no encontrado")
-                .setMessage("No se encontró ningún usuario con los datos proporcionados. Revise los datos introducidos ó póngase en contacto con el jefe llamando al 641938476 o escriba un correo a ioanbota2002@outlook.es  Gracias")
-                .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                })
-                .show();
-    }
-
-    private void mostrarAlertaUsuarioNoActivo() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-        builder.setTitle("Usuario no activo")
-                .setMessage("Es posible que actualmente no tenga acceso para acceder ya que no está usted activo. Póngase en contacto con el jefe llamando al 641938476 o escriba un correo a ioanbota2002@outlook.es  Gracias")
-                .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                })
-                .show();
-    }
-
-    private void cambioContraOK() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-        builder.setTitle("Contraseña actualizada")
-                .setMessage("Su contraseña a sido actualizada con éxito. No la vuelva a olvidar!")
-                .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                })
-                .show();
-    }
-
-    private void cambioContraNoOK() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-        builder.setTitle("Error actualizacion de contraseña")
-                .setMessage("Hubo un error a la hora de actualizar su contraseña. Póngase en contacto con el jefe llamando al 641938476 o escriba un correo a ioanbota2002@outlook.es  Gracias")
-
-                .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                })
-                .show();
-    }
-
-
-
 
 }

@@ -5,4 +5,96 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".vistas.GeneralReponedor"/>
+    android:background="@color/gray"
+    tools:context=".vistas.GeneralReponedor">
+
+    <TextView
+        android:id="@+id/textView55"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="88dp"
+        android:layout_marginBottom="648dp"
+        android:text="BIENVENIDO DE NUEVO :"
+        android:textAlignment="center"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/nombre_repone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="388dp"
+        android:layout_marginBottom="644dp"
+        android:text="TextView"
+        android:textSize="34sp"
+        android:textStyle="bold|italic"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageButton
+        android:id="@+id/anadir_producto"
+        android:layout_width="456dp"
+        android:layout_height="195dp"
+        android:layout_marginStart="92dp"
+        android:layout_marginBottom="292dp"
+        android:background="@android:color/transparent"
+        android:contentDescription="añadirProducto"
+        android:scaleType="fitCenter"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@mipmap/anadirprodu" />
+
+    <ImageButton
+        android:id="@+id/listado_productos"
+        android:layout_width="429dp"
+        android:layout_height="285dp"
+        android:layout_marginStart="576dp"
+        android:layout_marginBottom="244dp"
+        android:background="@android:color/transparent"
+        android:contentDescription="listadoProducto"
+        android:scaleType="fitCenter"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@mipmap/listado" />
+
+    <ImageButton
+        android:id="@+id/cerrar_sesion_repone"
+        android:layout_width="97dp"
+        android:layout_height="108dp"
+        android:layout_marginStart="896dp"
+        android:layout_marginBottom="16dp"
+        android:background="@android:color/transparent"
+        android:contentDescription="cerrarSesion"
+        android:scaleType="fitCenter"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@mipmap/cerrarsesion" />
+
+    <ImageButton
+        android:id="@+id/correo_repone"
+        android:layout_width="122dp"
+        android:layout_height="108dp"
+        android:layout_marginStart="236dp"
+        android:layout_marginBottom="28dp"
+        android:background="@android:color/transparent"
+        android:contentDescription="gmail"
+        android:scaleType="fitCenter"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@mipmap/gmail" />
+
+    <ImageButton
+        android:id="@+id/llamada_repone"
+        android:layout_width="122dp"
+        android:layout_height="108dp"
+        android:layout_marginStart="64dp"
+        android:layout_marginBottom="28dp"
+        android:background="@android:color/transparent"
+        android:contentDescription="llamar"
+        android:scaleType="fitCenter"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@mipmap/llamadaa" />
+</androidx.constraintlayout.widget.ConstraintLayout>

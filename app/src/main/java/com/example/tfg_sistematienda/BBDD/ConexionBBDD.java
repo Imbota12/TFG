@@ -8,46 +8,46 @@ import com.example.tfg_sistematienda.modelos.TicketModel;
 import com.example.tfg_sistematienda.modelos.TiendaModel;
 import com.example.tfg_sistematienda.modelos.UsuarioModel;
 
-import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ConexionBBDD {
 
-    private Connection conexion = null;
     private static final String DRIVER = "org.postgresql.Driver";
-    private static final String URL = "jdbc:postgresql://192.168.19.244:5432/TiendaInfo";
-    //private static final String URL = "jdbc:postgresql://10.0.2.2:5432/TiendaInfo";
+    //private static final String URL = "jdbc:postgresql://192.168.19.244:5432/TiendaInfo";
+    private static final String URL = "jdbc:postgresql://10.0.2.2:5432/TiendaInfo";
     private static final String USUARIO = "postgres";
     private static final String PASSWORD = "admin";
+    private Connection conexion = null;
 
-
-    public void conectarBD(){
+    public void conectarBD() {
         try {
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
             StrictMode.setThreadPolicy(policy);
             Class.forName(DRIVER);
             conexion = DriverManager.getConnection(URL, USUARIO, PASSWORD);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-
-        } catch (ClassNotFoundException e) {
+        } catch (SQLException | ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
     }
 
 
     protected void cerrarConnection(Connection conexion) throws Exception {
-        if (conexion != null){
+        if (conexion != null) {
             try {
                 conexion.close();
-            }catch (SQLException e) {
+            } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
         }
@@ -308,7 +308,6 @@ public class ConexionBBDD {
     }
 
 
-
     public boolean insertarTicket(TicketModel ticket) {
         boolean insertarOK = false;
         conectarBD(); // Supongamos que esta función establece la conexión a la base de datos
@@ -367,8 +366,6 @@ public class ConexionBBDD {
         }
         return insertarOK;
     }
-
-
 
 
     public boolean modificarProducto(String nombreNuevo, String descripcionNueva,
@@ -451,11 +448,11 @@ public class ConexionBBDD {
         return modificarOK;
     }
 
-    public boolean incrementarVecesDevuelto(String codigoBarras, int vecesDevuelto){
+    public boolean incrementarVecesDevuelto(String codigoBarras, int vecesDevuelto) {
         boolean modificarOK = false;
         conectarBD();
         try {
-            String query = "UPDATE producto SET vecesDevuelto = vecesDevuelto + "+vecesDevuelto+" WHERE codigo_barras = ?";
+            String query = "UPDATE producto SET vecesDevuelto = vecesDevuelto + " + vecesDevuelto + " WHERE codigo_barras = ?";
             PreparedStatement preparedStatement = conexion.prepareStatement(query);
             preparedStatement.setString(1, codigoBarras);
             int filasModificadas = preparedStatement.executeUpdate();
@@ -499,7 +496,6 @@ public class ConexionBBDD {
         }
         return modificarOK;
     }
-
 
 
     public List<TiendaModel> obtenerListaTiendas() {
@@ -766,7 +762,6 @@ public class ConexionBBDD {
     }
 
 
-
     public List<String> obtenerListaCodigosTicket() {
         List<String> listaCodigosTicket = new ArrayList<>();
         conectarBD(); // Supongamos que esta función establece la conexión a la base de datos
@@ -887,7 +882,6 @@ public class ConexionBBDD {
     }
 
 
-
     public List<ProductoModel> obtenerListaProductos() {
         List<ProductoModel> listaProductos = new ArrayList<>();
         conectarBD(); // Supongamos que esta función establece la conexión a la base de datos
@@ -926,6 +920,7 @@ public class ConexionBBDD {
 
         return listaProductos;
     }
+
     public List<ProductoModel> obtenerListaProductosparaDevo(String codigoTicket) {
         List<ProductoModel> listaProductos = new ArrayList<>();
         conectarBD();
@@ -1026,7 +1021,7 @@ public class ConexionBBDD {
         }
     }
 
-    public void actualizarEstadoEmpleado(String dni, boolean estado){
+    public void actualizarEstadoEmpleado(String dni, boolean estado) {
         conectarBD(); // Establecer la conexión a la base de datos
 
         try {
@@ -1090,7 +1085,7 @@ public class ConexionBBDD {
     }
 
     public boolean modificarEmpleadoConContra(String dni, String nombreNuevo, String apellidoNuevo,
-                                     String correoNuevo, String telefonoNuevo, String nuevaContra) {
+                                              String correoNuevo, String telefonoNuevo, String nuevaContra) {
         boolean modificarOK = false;
         conectarBD();
         try {
@@ -1147,6 +1142,92 @@ public class ConexionBBDD {
         }
         return modificarOK;
     }
+
+
+    public UsuarioModel obtenerEmpleado(String dni) {
+        UsuarioModel usuarioEncontrado = null;
+        conectarBD(); // Supongamos que esta función establece la conexión a la base de datos
+
+        try {
+            // Construir la consulta SQL con los parámetros proporcionados
+            String query = "SELECT * FROM usuario WHERE dni = ?";
+            PreparedStatement preparedStatement = conexion.prepareStatement(query);
+            preparedStatement.setString(1, dni);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            // Si se encuentra al menos un resultado, el usuario existe
+            if (resultSet.next()) {
+                // Crear un objeto UsuarioModel con los datos del resultado
+                usuarioEncontrado = new UsuarioModel(
+                        resultSet.getString("dni"),
+                        resultSet.getString("nombre"),
+                        resultSet.getString("apellido"),
+                        resultSet.getString("telefono"),
+                        resultSet.getString("correo"),
+                        resultSet.getBoolean("activo"),
+                        resultSet.getString("contraseña"),
+                        resultSet.getString("id_tienda"),
+                        resultSet.getBoolean("is_admin"),
+                        resultSet.getBoolean("is_vendedor"),
+                        resultSet.getBoolean("is_reponedor")
+                );
+            }
+
+
+            resultSet.close();
+            preparedStatement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                cerrarConnection(conexion); // Supongo que tienes un método cerrarConnection() para cerrar la conexión
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        return usuarioEncontrado;
+    }
+
+    public boolean insertarLog(String accion, LocalDateTime fechaHora, String dniEmpleado) {
+        boolean insertarOK = false;
+        conectarBD();
+
+        try {
+
+            // Construir la consulta SQL para insertar un nuevo log
+            String query = "INSERT INTO logs (accion, fecha_y_hora, dni) VALUES (?, ?, ?)";
+            PreparedStatement preparedStatement = conexion.prepareStatement(query);
+
+            // Separar fecha y hora de LocalDateTime
+            preparedStatement.setString(1, accion);
+            String fechaHoraString = fechaHora.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+
+            // Pasar la cadena a Timestamp.valueOf()
+            preparedStatement.setTimestamp(2, Timestamp.valueOf(fechaHoraString));
+
+            preparedStatement.setString(3, dniEmpleado);
+
+
+            // Ejecutar la consulta
+            preparedStatement.executeUpdate();
+            preparedStatement.close();
+            insertarOK = true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                cerrarConnection(conexion); // Supongo que tienes un método cerrarConnection() para cerrar la conexión
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return insertarOK;
+    }
+
+
+
 
 }
 
