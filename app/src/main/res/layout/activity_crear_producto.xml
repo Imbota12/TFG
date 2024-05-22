@@ -67,6 +67,7 @@
         android:layout_marginBottom="344dp"
         android:background="@color/white"
         android:ems="10"
+        android:textSize="24dp"
         android:hint="NOMBRE PRODUCTO"
         android:inputType="text"
         android:textAlignment="center"
@@ -82,6 +83,7 @@
         android:layout_marginBottom="132dp"
         android:background="@color/white"
         android:ems="10"
+        android:textSize="24dp"
         android:hint="DESCRIPCION DEL PRODUCTO"
         android:inputType="textMultiLine"
         android:textAlignment="center"
@@ -101,7 +103,7 @@
         android:inputType="numberDecimal"
         android:textAlignment="center"
         android:textColor="@color/black"
-        android:textSize="24sp"
+        android:textSize="34sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -113,11 +115,11 @@
         android:layout_marginBottom="320dp"
         android:background="@color/white"
         android:ems="10"
-        android:hint="UNIDADES DISPONIBLES"
+        android:hint="UNIDADES"
         android:inputType="number"
         android:textAlignment="center"
         android:textColor="@color/black"
-        android:textSize="24sp"
+        android:textSize="34sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -259,5 +261,17 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:srcCompat="@mipmap/cancelaranadirproducto" />
+
+    <TextView
+        android:id="@+id/textView54"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="1084dp"
+        android:layout_marginBottom="208dp"
+        android:text="€"
+        android:textSize="48sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

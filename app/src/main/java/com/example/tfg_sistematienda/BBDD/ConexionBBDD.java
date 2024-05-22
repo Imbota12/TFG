@@ -882,13 +882,14 @@ public class ConexionBBDD {
     }
 
 
-    public List<ProductoModel> obtenerListaProductos() {
+    public List<ProductoModel> obtenerListaProductos(String idTienda) {
         List<ProductoModel> listaProductos = new ArrayList<>();
         conectarBD(); // Supongamos que esta función establece la conexión a la base de datos
 
         try {
-            String query = "SELECT codigo_barras, nombre, descripcion, cantidad_stock, precio_unidad, veces_comprado, veces_devuelto, imagen_producto, id_tienda FROM producto";
+            String query = "SELECT codigo_barras, nombre, descripcion, cantidad_stock, precio_unidad, veces_comprado, veces_devuelto, imagen_producto, id_tienda FROM producto WHERE id_tienda = ?";
             PreparedStatement preparedStatement = conexion.prepareStatement(query);
+            preparedStatement.setString(1, idTienda);
             ResultSet resultSet = preparedStatement.executeQuery();
 
             while (resultSet.next()) {

@@ -3,4 +3,6 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="gray">#b2c4ce</color>
+    <color name="listapro">#c0dadc</color>
+    <color name="contorno">#333f50</color>
 </resources>

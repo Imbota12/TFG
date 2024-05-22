@@ -288,12 +288,13 @@ public class CrearProducto extends AppCompatActivity {
         int cantidadProducto = Integer.parseInt(cantidadStock.getText().toString());
         double precioProducto = Double.parseDouble(precioUnidad.getText().toString());
         String codigoBarrasProducto = codigoBarras.getText().toString();
+        String idTienda = usuario.getIdTienda();
 
         // Determina la imagen a utilizar (imagen actual o imagen por defecto) y la convierte en bytes
         byte[] imagen = (imagenenByte == null) ? imagenDefectoByte : imagenenByte;
 
         // Inserta el producto en la base de datos y registra un mensaje de registro
-        boolean isInserted = bbddController.insertarProducto(codigoBarrasProducto, nombreProducto, descripcionProducto, cantidadProducto, precioProducto, 0, 0, imagen, "012541689P");
+        boolean isInserted = bbddController.insertarProducto(codigoBarrasProducto, nombreProducto, descripcionProducto, cantidadProducto, precioProducto, 0, 0, imagen, idTienda);
         String logMessage = isInserted ? "Producto con codigo " + codigoBarrasProducto + " creado exitosamente" : "Error al insertar el nuevo producto " + codigoBarrasProducto + " en BBDD";
         bbddController.insertarLog(logMessage, LocalDateTime.now(), usuario.getDni());
 

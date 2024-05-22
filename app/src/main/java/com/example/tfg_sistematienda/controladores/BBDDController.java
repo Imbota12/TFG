@@ -52,7 +52,7 @@ public class BBDDController {
 
     public List<String> obtenerListaCIF() {return conexionBBDD.obtenerListaCIF();}
 
-    public List<ProductoModel> obtenerListaProductos() {return conexionBBDD.obtenerListaProductos();}
+    public List<ProductoModel> obtenerListaProductos(String idTienda) {return conexionBBDD.obtenerListaProductos(idTienda);}
 
     public boolean modificarProducto(String nombreNuevo, String descripcionNueva,
                                      double precioUnidadNuevo, byte[] imagenNueva, String codigoBarras) {

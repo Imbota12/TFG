@@ -14,6 +14,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.Image;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.text.InputFilter;
@@ -23,6 +24,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -276,8 +278,8 @@ public class AdaptadorProducto extends RecyclerView.Adapter<ViewHolderProducto> 
         EditText stock = dialogView.findViewById(R.id.et_stock);
         TextView nombre = dialogView.findViewById(R.id.tv_nombreproducto);
         ImageView imagen = dialogView.findViewById(R.id.iv_producto);
-        Button bt_mas = dialogView.findViewById(R.id.bt_mas_stock);
-        Button bt_menos = dialogView.findViewById(R.id.bt_menos_stock);
+        ImageButton bt_mas = dialogView.findViewById(R.id.bt_mas_stock);
+        ImageButton bt_menos = dialogView.findViewById(R.id.bt_menos_stock);
 
         // Establecer los datos del producto en las vistas del diálogo
 

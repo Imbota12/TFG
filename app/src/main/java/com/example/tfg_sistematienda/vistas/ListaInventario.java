@@ -34,6 +34,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.tfg_sistematienda.Adaptadores.AdaptadorProducto;
 import com.example.tfg_sistematienda.controladores.BBDDController;
 import com.example.tfg_sistematienda.modelos.ProductoModel;
+import com.example.tfg_sistematienda.modelos.UsuarioModel;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
@@ -60,7 +61,7 @@ public class ListaInventario extends AppCompatActivity {
 
     static final String TAG = "ScanBarcodeActivity";
 
-    private Button botonEscaneo;
+    private ImageButton botonEscaneo;
     private String codigoEscaneado;
 
     private EditText codigoBuscar;
@@ -69,6 +70,8 @@ public class ListaInventario extends AppCompatActivity {
     private AdaptadorProducto adaptadorProducto;
     private List<ProductoModel> listaProductos;
     private ImageButton generarExcel, bajoStock;
+    // Modelo del usuario que está utilizando la aplicación
+    private UsuarioModel usuario;
 
 
     private BBDDController bbddController= new BBDDController();
@@ -83,6 +86,14 @@ public class ListaInventario extends AppCompatActivity {
             return insets;
         });
 
+        // Obtiene el Intent que inició esta actividad
+        Intent intent = getIntent();
+
+        // Captura el DNI del usuario pasado desde la actividad anterior
+        String usuarioDNI = intent.getStringExtra("usuarioDNI");
+
+        // Recupera la información del usuario desde la base de datos utilizando el controlador de la base de datos
+        usuario = bbddController.obtenerEmpleado(usuarioDNI);
 
         recyclerView = findViewById(R.id.lista_productos);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -191,7 +202,7 @@ public class ListaInventario extends AppCompatActivity {
     }
 
     private void cargarProductos() {
-        listaProductos = bbddController.obtenerListaProductos();
+        listaProductos = bbddController.obtenerListaProductos(usuario.getIdTienda());
     }
 
 

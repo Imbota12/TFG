@@ -46,6 +46,7 @@ import com.example.tfg_sistematienda.controladores.BBDDController;
 import com.example.tfg_sistematienda.modelos.ProductoModel;
 import com.example.tfg_sistematienda.modelos.Producto_TicketModel;
 import com.example.tfg_sistematienda.modelos.TicketModel;
+import com.example.tfg_sistematienda.modelos.UsuarioModel;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 import com.journeyapps.barcodescanner.CaptureActivity;
@@ -85,6 +86,7 @@ public class RealizaVenta extends AppCompatActivity implements AdaptadorProducto
     private BluetoothConnection connection;
     private EscPosPrinter printer;
     private BluetoothAdapter bluetoothAdapter;
+    private UsuarioModel usuario;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,6 +98,15 @@ public class RealizaVenta extends AppCompatActivity implements AdaptadorProducto
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        // Obtiene el Intent que inició esta actividad
+        Intent intent = getIntent();
+
+        // Captura el DNI del usuario pasado desde la actividad anterior
+        String usuarioDNI = intent.getStringExtra("usuarioDNI");
+
+        // Recupera la información del usuario desde la base de datos utilizando el controlador de la base de datos
+        usuario = bbddController.obtenerEmpleado(usuarioDNI);
 
         todosProductos = findViewById(R.id.rv_todos);
         productosComprados = findViewById(R.id.rv_comprados);
@@ -166,10 +177,10 @@ public class RealizaVenta extends AppCompatActivity implements AdaptadorProducto
         });
 
         cancelarVenta.setOnClickListener(v -> {
-            Intent intent = new Intent(this, MainActivity.class);
+            Intent i = new Intent(this, MainActivity.class);
             // Limpiar la pila de actividades y comenzar la nueva actividad
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(intent);
+            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(i);
         });
 
         realizarVenta.setOnClickListener(v -> {
@@ -649,10 +660,11 @@ public class RealizaVenta extends AppCompatActivity implements AdaptadorProducto
     }
 
     private void cargarProductos() {
-        listaTodosProductos = bbddController.obtenerListaProductos();
+        listaTodosProductos = bbddController.obtenerListaProductos(usuario.getIdTienda());
     }
 
     @Override
+
     public void onProductoSeleccionado(ProductoModel producto) {
 
         // Verificar si hay suficiente stock disponible

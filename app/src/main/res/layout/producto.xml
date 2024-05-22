@@ -1,7 +1,7 @@
 
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="750dp"
-    android:layout_height="250dp"
+    android:layout_width="820dp"
+    android:layout_height="230dp"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:padding="5dp"
     android:background="@drawable/border_black">
@@ -11,8 +11,8 @@
         android:layout_width="130dp"
         android:layout_height="160dp"
         android:layout_marginEnd="11dp"
-        android:layout_marginTop="5dp"
-        android:layout_marginStart="5dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginStart="15dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -67,33 +67,44 @@
         app:layout_constraintTop_toBottomOf="@id/cod_produ_todos"
          />
 
-    <Button
+    <ImageButton
+        android:src="@mipmap/modificarstock"
         android:id="@+id/modificarCantidad"
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:text="Modificar stock"
-        android:layout_marginStart="60dp"
-        android:layout_marginTop="10dp"
+        android:layout_width="150dp"
+        android:layout_height="80dp"
+        android:layout_marginStart="65dp"
+        android:layout_marginTop="12dp"
+        android:background="@android:color/transparent"
+        android:contentDescription="seleccionar_foto"
+        android:scaleType="fitCenter"
         app:layout_constraintStart_toEndOf="@id/im_produ_todos"
         app:layout_constraintTop_toBottomOf="@id/stockProducto" />
 
-    <Button
+    <ImageButton
+        android:src="@mipmap/eliminarproducto"
         android:id="@+id/borrarProducto"
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
+        android:layout_width="150dp"
+        android:layout_height="80dp"
         android:text="Borrar"
-        android:layout_marginStart="60dp"
-        app:layout_constraintStart_toEndOf="@id/modificarCantidad"
+        android:background="@android:color/transparent"
+        android:contentDescription="seleccionar_foto"
+        android:scaleType="fitCenter"
+        android:layout_marginStart="40dp"
+        app:layout_constraintStart_toEndOf="@id/ImprimirCodigoBarras"
         app:layout_constraintTop_toTopOf="@id/modificarCantidad" />
 
-    <Button
+    <ImageButton
+        android:src="@mipmap/imprimirr"
         android:id="@+id/ImprimirCodigoBarras"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_width="150dp"
+        android:layout_height="80dp"
         android:text="IMPRIMIR CODIGO BARRAS"
-        android:layout_marginTop="10dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/modificarCantidad" />
+        android:layout_marginTop="12dp"
+        android:background="@android:color/transparent"
+        android:contentDescription="seleccionar_foto"
+        android:scaleType="fitCenter"
+        android:layout_marginStart="40dp"
+        app:layout_constraintStart_toEndOf="@id/modificarCantidad"
+        app:layout_constraintTop_toBottomOf="@id/stockProducto" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
