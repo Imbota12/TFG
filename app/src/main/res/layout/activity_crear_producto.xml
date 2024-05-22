@@ -5,129 +5,87 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/gray"
     tools:context=".vistas.CrearProducto">
 
     <TextView
         android:id="@+id/textView13"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="380dp"
-        android:layout_marginBottom="696dp"
+        android:layout_marginStart="288dp"
+        android:layout_marginBottom="708dp"
         android:text="FORMULARIO CREAR PRODUCTO"
-        android:textSize="34sp"
+        android:textSize="40sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <ImageView
         android:id="@+id/imagen_producto"
-        android:layout_width="157dp"
-        android:layout_height="177dp"
-        android:layout_marginStart="80dp"
-        android:layout_marginBottom="484dp"
+        android:layout_width="166dp"
+        android:layout_height="221dp"
+        android:layout_marginStart="68dp"
+        android:layout_marginBottom="460dp"
         android:background="@android:color/transparent"
         android:scaleType="fitXY"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:srcCompat="@mipmap/productosinimagen" />
 
-    <Button
-        android:id="@+id/hacer_foto"
-        android:layout_width="213dp"
-        android:layout_height="71dp"
-        android:layout_marginStart="256dp"
-        android:layout_marginBottom="588dp"
-        android:text="TOMAR FOTO"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <Button
-        android:id="@+id/elegir_foto"
-        android:layout_width="213dp"
-        android:layout_height="81dp"
-        android:layout_marginStart="256dp"
-        android:layout_marginBottom="484dp"
-        android:text="ELEGIR FOTO DESDE ALMACENAMIENTO"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <Button
-        android:id="@+id/crear_producto"
-        android:layout_width="938dp"
-        android:layout_height="71dp"
-        android:layout_marginStart="56dp"
-        android:layout_marginBottom="24dp"
-        android:text="CREAR PRODUCTO"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
     <EditText
         android:id="@+id/codigobarras_producto"
-        android:layout_width="425dp"
-        android:layout_height="72dp"
-        android:layout_marginStart="620dp"
-        android:layout_marginBottom="600dp"
+        android:layout_width="372dp"
+        android:layout_height="63dp"
+        android:layout_marginStart="540dp"
+        android:layout_marginBottom="460dp"
+        android:background="@color/white"
         android:ems="10"
         android:inputType="text"
         android:text="SIN CODIGO DE BARRAS"
         android:textAlignment="center"
+        android:textColor="@color/black"
         android:textSize="24sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <Button
-        android:id="@+id/generar_cod_barras"
-        android:layout_width="198dp"
-        android:layout_height="96dp"
-        android:layout_marginStart="1048dp"
-        android:layout_marginBottom="588dp"
-        android:text="GENERAR CODIGO BARRAS"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <ImageView
         android:id="@+id/imagen_cod_barras"
-        android:layout_width="439dp"
-        android:layout_height="141dp"
-        android:layout_marginStart="620dp"
-        android:layout_marginBottom="444dp"
+        android:layout_width="368dp"
+        android:layout_height="155dp"
+        android:layout_marginStart="540dp"
+        android:layout_marginBottom="528dp"
         android:background="@android:color/transparent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:srcCompat="@mipmap/codigobarrasvacio" />
 
-    <Button
-        android:id="@+id/imprimir_cod_barras"
-        android:layout_width="164dp"
-        android:layout_height="105dp"
-        android:layout_marginStart="1068dp"
-        android:layout_marginBottom="460dp"
-        android:text="IMPRIMIR COD BARRAS"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
     <EditText
         android:id="@+id/nombre_producto"
-        android:layout_width="293dp"
+        android:layout_width="297dp"
         android:layout_height="64dp"
         android:layout_marginStart="236dp"
-        android:layout_marginBottom="380dp"
+        android:layout_marginBottom="344dp"
+        android:background="@color/white"
         android:ems="10"
         android:hint="NOMBRE PRODUCTO"
         android:inputType="text"
+        android:textAlignment="center"
+        android:textColor="@color/black"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <EditText
         android:id="@+id/descripcion_producto"
-        android:layout_width="298dp"
-        android:layout_height="223dp"
+        android:layout_width="297dp"
+        android:layout_height="200dp"
         android:layout_marginStart="236dp"
         android:layout_marginBottom="132dp"
+        android:background="@color/white"
         android:ems="10"
-        android:gravity="start|top"
         android:hint="DESCRIPCION DEL PRODUCTO"
         android:inputType="textMultiLine"
+        android:textAlignment="center"
+        android:textColor="@color/black"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -135,26 +93,30 @@
         android:id="@+id/precio_producto"
         android:layout_width="254dp"
         android:layout_height="98dp"
-        android:layout_marginStart="888dp"
-        android:layout_marginBottom="172dp"
+        android:layout_marginStart="828dp"
+        android:layout_marginBottom="192dp"
+        android:background="@color/white"
         android:ems="10"
         android:hint="€ / UNIDAD"
         android:inputType="numberDecimal"
         android:textAlignment="center"
+        android:textColor="@color/black"
         android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <EditText
         android:id="@+id/unidades_producto"
-        android:layout_width="249dp"
-        android:layout_height="101dp"
-        android:layout_marginStart="888dp"
-        android:layout_marginBottom="296dp"
+        android:layout_width="287dp"
+        android:layout_height="102dp"
+        android:layout_marginStart="828dp"
+        android:layout_marginBottom="320dp"
+        android:background="@color/white"
         android:ems="10"
         android:hint="UNIDADES DISPONIBLES"
         android:inputType="number"
         android:textAlignment="center"
+        android:textColor="@color/black"
         android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -163,10 +125,10 @@
         android:id="@+id/textView14"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="676dp"
-        android:layout_marginBottom="372dp"
+        android:layout_marginStart="612dp"
+        android:layout_marginBottom="376dp"
         android:text="UNIDADES DISPONIBLES:"
-        android:textSize="16sp"
+        android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -175,10 +137,10 @@
         android:id="@+id/textView15"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="700dp"
-        android:layout_marginBottom="248dp"
+        android:layout_marginStart="632dp"
+        android:layout_marginBottom="252dp"
         android:text="PRECIO POR UNIDAD:"
-        android:textSize="16sp"
+        android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -187,10 +149,10 @@
         android:id="@+id/textView16"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="56dp"
-        android:layout_marginBottom="420dp"
+        android:layout_marginStart="52dp"
+        android:layout_marginBottom="380dp"
         android:text="NOMBRE PRODUCTO:"
-        android:textSize="16sp"
+        android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -199,10 +161,10 @@
         android:id="@+id/textView17"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginBottom="332dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginBottom="292dp"
         android:text="DESCRIPCIÓN PRODUCTO:"
-        android:textSize="16sp"
+        android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -211,8 +173,8 @@
         android:id="@+id/textView18"
         android:layout_width="518dp"
         android:layout_height="52dp"
-        android:layout_marginStart="728dp"
-        android:layout_marginBottom="120dp"
+        android:layout_marginStart="692dp"
+        android:layout_marginBottom="140dp"
         android:text="EL FORMATO DEL PRECIO/UNIDAD DEBE SER DE UN NUMERO + UN PUNTO ( . ) PARA SEPARAR LOS DECIMALES + 2 DECIMALES"
         android:textAlignment="center"
         android:textColor="@android:color/holo_red_light"
@@ -220,14 +182,82 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <Button
-        android:id="@+id/cancelar_crear_producto"
-        android:layout_width="196dp"
-        android:layout_height="73dp"
-        android:layout_marginStart="1016dp"
-        android:layout_marginBottom="24dp"
-        android:text="CANCELAR"
+    <ImageButton
+        android:id="@+id/hacer_foto"
+        android:layout_width="216dp"
+        android:layout_height="121dp"
+        android:layout_marginStart="260dp"
+        android:layout_marginBottom="564dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        android:background="@android:color/transparent"
+        android:scaleType="fitCenter"
+        android:contentDescription="hacer_foto"
+        app:srcCompat="@mipmap/tomarfoto" />
+
+    <ImageButton
+        android:id="@+id/elegir_foto"
+        android:layout_width="216dp"
+        android:layout_height="121dp"
+        android:layout_marginStart="260dp"
+        android:layout_marginBottom="450dp"
+        android:background="@android:color/transparent"
+        android:contentDescription="seleccionar_foto"
+        android:scaleType="fitCenter"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@mipmap/seleccionargaleria" />
+
+    <ImageButton
+        android:id="@+id/crear_producto"
+        android:layout_width="581dp"
+        android:layout_height="100dp"
+        android:layout_marginStart="140dp"
+        android:layout_marginBottom="24dp"
+        android:background="@android:color/transparent"
+        android:contentDescription="seleccionar_foto"
+        android:scaleType="fitCenter"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@mipmap/anadirproducto" />
+
+    <ImageButton
+        android:id="@+id/generar_cod_barras"
+        android:layout_width="230dp"
+        android:layout_height="104dp"
+        android:layout_marginStart="919dp"
+        android:layout_marginBottom="564dp"
+        android:background="@android:color/transparent"
+        android:contentDescription="seleccionar_foto"
+        android:scaleType="fitCenter"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@mipmap/generarcodbarras" />
+
+    <ImageButton
+        android:id="@+id/imprimir_cod_barras"
+        android:layout_width="230dp"
+        android:layout_height="104dp"
+        android:layout_marginStart="919dp"
+        android:layout_marginBottom="460dp"
+        android:background="@android:color/transparent"
+        android:contentDescription="seleccionar_foto"
+        android:scaleType="fitCenter"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@mipmap/imprimircodigo" />
+
+    <ImageButton
+        android:id="@+id/cancelar_crear_producto"
+        android:layout_width="400dp"
+        android:layout_height="100dp"
+        android:layout_marginStart="748dp"
+        android:layout_marginBottom="24dp"
+        android:background="@android:color/transparent"
+        android:contentDescription="seleccionar_foto"
+        android:scaleType="fitCenter"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@mipmap/cancelaranadirproducto" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -23,12 +23,15 @@ import com.example.tfg_sistematienda.R;
 import com.example.tfg_sistematienda.controladores.BBDDController;
 import com.example.tfg_sistematienda.modelos.UsuarioModel;
 
+import java.time.LocalDateTime;
+
 public class GeneralReponedor extends AppCompatActivity {
 
     private UsuarioModel usuario;
     private BBDDController bbddController= new BBDDController();
     private TextView nombreRepone;
     private ImageButton cerrarSesion, mandarCorreo, llamar, listaProductos,crearProducto;
+    private boolean allowBackPress = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,13 +66,26 @@ public class GeneralReponedor extends AppCompatActivity {
 
     }
 
+    @Override
+    public void onBackPressed() {
+        if (allowBackPress) {
+            super.onBackPressed();
+        } else {
+            Toast.makeText(this, "No puedes retroceder. Por favor, cierra sesión primero.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
     private void listaProductos(){
+        bbddController.insertarLog("Acceso lista productos", LocalDateTime.now(), usuario.getDni());
         Intent intent = new Intent(GeneralReponedor.this, ListaInventario.class);
+        intent.putExtra("usuarioDNI", usuario.getDni());
         startActivity(intent);
     }
 
     private void crearProducto(){
+        bbddController.insertarLog("Acceso añadir nuevo producto", LocalDateTime.now(), usuario.getDni());
         Intent intent = new Intent(GeneralReponedor.this, CrearProducto.class);
+        intent.putExtra("usuarioDNI", usuario.getDni());
         startActivity(intent);
     }
 
@@ -86,6 +102,8 @@ public class GeneralReponedor extends AppCompatActivity {
         builder.setPositiveButton("Enviar", (dialog, which) -> {
             String asunto = asuntoEditText.getText().toString().trim();
             String mensaje = mensajeEditText.getText().toString().trim();
+
+            bbddController.insertarLog("Envio correo a jefe", LocalDateTime.now(), usuario.getDni());
 
             mandarCorreo("ioanbota2002@outlook.es", asunto, mensaje);
         });
@@ -113,6 +131,7 @@ public class GeneralReponedor extends AppCompatActivity {
 
     private void llamar(){
         String phoneNumber = "641938476";
+        bbddController.insertarLog("Realiza llamada jefe", LocalDateTime.now(), usuario.getDni());
         Intent intent = new Intent(Intent.ACTION_DIAL);
         intent.setData(Uri.parse("tel:" + phoneNumber));
         try {
@@ -126,6 +145,7 @@ public class GeneralReponedor extends AppCompatActivity {
 
 
     private void cerrarSesion() {
+        bbddController.insertarLog("Cierre sesión", LocalDateTime.now(), usuario.getDni());
         Intent intent = new Intent(GeneralReponedor.this, MainActivity.class);
         startActivity(intent);
         finish();

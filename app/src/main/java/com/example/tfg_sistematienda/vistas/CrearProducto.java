@@ -7,28 +7,23 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.ColorMatrix;
-import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.InputFilter;
 import android.text.Spanned;
-import android.util.DisplayMetrics;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.content.Intent;
 import android.widget.Toast;
-
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -42,16 +37,14 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.dantsu.escposprinter.EscPosPrinter;
 import com.dantsu.escposprinter.connection.bluetooth.BluetoothConnection;
-import com.dantsu.escposprinter.connection.bluetooth.BluetoothConnections;
-import com.dantsu.escposprinter.connection.bluetooth.BluetoothPrintersConnections;
 import com.dantsu.escposprinter.exceptions.EscPosBarcodeException;
 import com.dantsu.escposprinter.exceptions.EscPosConnectionException;
 import com.dantsu.escposprinter.exceptions.EscPosEncodingException;
 import com.dantsu.escposprinter.exceptions.EscPosParserException;
-import com.dantsu.escposprinter.textparser.PrinterTextParserImg;
 import com.example.tfg_sistematienda.MainActivity;
 import com.example.tfg_sistematienda.R;
 import com.example.tfg_sistematienda.controladores.BBDDController;
+import com.example.tfg_sistematienda.modelos.UsuarioModel;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
@@ -59,72 +52,161 @@ import com.journeyapps.barcodescanner.BarcodeEncoder;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 import java.util.Set;
-import java.util.UUID;
 
 public class CrearProducto extends AppCompatActivity {
 
-    Button tomarFoto, subirFoto, crearProducto, generarCodigoBarras, imprimirCodigoBarras, cancelarCrearProducto;
-    ImageView fotoProducto, imagenCodigoBarras;
-    EditText codigoBarras, nombre, descripcion, cantidadStock, precioUnidad;
-
-    private String codigoBarrasProducto;
-    private Random random = new Random();
-
-    private BBDDController bbddController= new BBDDController();
-
-    private BluetoothAdapter bluetoothAdapter;
-    private BluetoothDevice bluetoothDevice;
-    private BluetoothSocket bluetoothSocket;
+    // Constante para la solicitud de habilitación de Bluetooth
     private static final int REQUEST_ENABLE_BT = 17;
+    // Constante para la solicitud de permiso de almacenamiento externo
     private static final int REQUEST_EXTERNAL_STORAGE = 189;
-
+    // Constante para la solicitud de imagen desde la galería
     private static final int REQUEST_IMAGE_GALLERY = 16;
+    // Constante para la solicitud de captura de imagen con la cámara
     private static final int REQUEST_IMAGE_CAMERA = 2;
+    // Constante para la solicitud de permiso de uso de la cámara
     private static final int REQUEST_CAMERA_PERMISSION = 123;
-
+    // Constante para la solicitud de permiso de conexión Bluetooth
     private static final int REQUEST_BLUETOOTH_CONNECT_PERMISSION = 22;
-
-
+    // Constante para la solicitud de permiso de escritura en almacenamiento externo
     private static final int WRITE_EXTERNAL_STORAGE_PERMISSION_REQUEST_CODE = 1;
+    // Declaración de botones de la interfaz
+    ImageButton tomarFoto, subirFoto, crearProducto, generarCodigoBarras, imprimirCodigoBarras, cancelarCrearProducto;
+    // Declaración de vistas de imagen de la interfaz
+    ImageView fotoProducto, imagenCodigoBarras;
+    // Declaración de campos de texto editables
+    EditText codigoBarras, nombre, descripcion, cantidadStock, precioUnidad;
+    // Variable para almacenar el código de barras del producto
+    private String codigoBarrasProducto;
+    // Objeto Random para generar números aleatorios
+    private Random random = new Random();
+    // Controlador para interactuar con la base de datos
+    private BBDDController bbddController = new BBDDController();
+    // Adaptador Bluetooth para manejar conexiones Bluetooth
+    private BluetoothAdapter bluetoothAdapter;
+    // Dispositivo Bluetooth seleccionado para la conexión
+    private BluetoothDevice bluetoothDevice;
+    // Socket Bluetooth para la conexión
+    private BluetoothSocket bluetoothSocket;
+    // Bitmap para almacenar la imagen del producto
+    private Bitmap bitmap;
 
+    // Bitmap para almacenar la imagen del código de barras
+    private Bitmap codigoBarrasBitmap;
 
-    private Bitmap bitmap, codigoBarrasBitmap;
+    // Array de bytes para almacenar la imagen en formato de bytes
+    private byte[] imagenenByte = null;
 
-    private byte[] imagenenByte=null;
+    // Array de bytes para almacenar la imagen por defecto en formato de bytes
+    private byte[] imagenDefectoByte;
 
-     private byte[] imagenDefectoByte;
-
-
+    // Conexión Bluetooth para la impresora
     private BluetoothConnection connection;
+
+    // Impresora EscPos para imprimir etiquetas
     private EscPosPrinter printer;
 
+    // Modelo del usuario que está utilizando la aplicación
+    private UsuarioModel usuario;
 
 
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Habilita el modo EdgeToEdge para una experiencia de pantalla completa
         EdgeToEdge.enable(this);
+
+        // Establece el diseño de la actividad a 'activity_crear_producto'
         setContentView(R.layout.activity_crear_producto);
+
+        // Ajusta los márgenes de la vista principal para que no queden detrás de las barras del sistema
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
 
+        // Obtiene el Intent que inició esta actividad
+        Intent intent = getIntent();
 
+        // Captura el DNI del usuario pasado desde la actividad anterior
+        String usuarioDNI = intent.getStringExtra("usuarioDNI");
+
+        // Recupera la información del usuario desde la base de datos utilizando el controlador de la base de datos
+        usuario = bbddController.obtenerEmpleado(usuarioDNI);
+
+        // Inicializa las vistas y asigna las variables correspondientes
+        initializeViews();
+
+        // Establece los valores por defecto para las vistas
+        setDefaultValues();
+
+        // Solicita los permisos necesarios para el almacenamiento
+        requestStoragePermission();
+
+        // Configura el botón para generar un código de barras único
+        generarCodigoBarras.setOnClickListener(v -> {
+            generarCodigoBarras.setEnabled(false);
+            String nuevoCodigoBarras;
+
+            // Obtiene la lista de todos los códigos de barras desde la base de datos
+            List<String> listaCodigosBarras = obtenerListaCodigosBarrasDesdeBD();
+
+            // Genera un código de barras único que no esté en la lista obtenida
+            do {
+                nuevoCodigoBarras = generarCodigoBarrasUnico();
+            } while (listaCodigosBarras.contains(nuevoCodigoBarras));
+
+            // Asigna y muestra el nuevo código de barras
+            codigoBarrasProducto = nuevoCodigoBarras;
+            codigoBarras.setText(codigoBarrasProducto);
+            mostrarCodigoBarrasEnImagen(codigoBarrasProducto);
+        });
+
+        // Configura el botón para seleccionar una imagen desde la galería
+        subirFoto.setOnClickListener(v -> seleccionarImagen());
+
+        // Configura el botón para tomar una foto con la cámara
+        tomarFoto.setOnClickListener(v -> tomarFotoDispositivo());
+
+        // Configura el botón para cancelar la creación del producto y volver al menú principal
+        cancelarCrearProducto.setOnClickListener(v -> confirmarCancelar());
+
+        // Configura el botón para imprimir el código de barras
+        imprimirCodigoBarras.setOnClickListener(v -> {
+            try {
+                // Verifica los permisos de conexión Bluetooth antes de intentar imprimir
+                checkBluetoothConnectPermission();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+
+        // Configura los filtros para los campos de texto editables
+        setEditTextFilters();
+
+        // Configura el botón para crear un producto con los datos ingresados
+        crearProducto.setOnClickListener(v -> {
+            // Verifica que los datos del producto sean válidos antes de insertar en la base de datos
+            if (comprobarDatosProducto()) {
+                insertarProductoBBDD();
+            }
+        });
+    }
+
+
+    private void initializeViews() {
         tomarFoto = findViewById(R.id.hacer_foto);
         subirFoto = findViewById(R.id.elegir_foto);
         fotoProducto = findViewById(R.id.imagen_producto);
@@ -135,243 +217,155 @@ public class CrearProducto extends AppCompatActivity {
         descripcion = findViewById(R.id.descripcion_producto);
         cantidadStock = findViewById(R.id.unidades_producto);
         precioUnidad = findViewById(R.id.precio_producto);
-
-
         codigoBarras = findViewById(R.id.codigobarras_producto);
-
         crearProducto = findViewById(R.id.crear_producto);
-
         cancelarCrearProducto = findViewById(R.id.cancelar_crear_producto);
-
-        fotoProducto.setImageResource(R.mipmap.productosinimagen);
-        imagenCodigoBarras.setImageResource(R.mipmap.codigobarrasvacio);
-        codigoBarras.setText("SIN CODIGO DE BARRAS");
-        codigoBarras.setEnabled(false);
-        imprimirCodigoBarras.setEnabled(false);
-
-        Bitmap imagenDefecto = BitmapFactory.decodeResource(getResources(), R.mipmap.productosinimagen);
-        imagenDefectoByte = bitmapToByteArray(imagenDefecto);
-
-        connection = null;
-        printer = null;
-
-        requestStoragePermission();
-
-
-        generarCodigoBarras.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                generarCodigoBarras.setEnabled(false);
-
-                // Obtener la lista de todos los códigos de barras desde la base de datos
-                List<String> listaCodigosBarras = obtenerListaCodigosBarrasDesdeBD();
-
-                // Generar un código de barras único
-                String nuevoCodigoBarras;
-                do {
-                    nuevoCodigoBarras = generarCodigoBarrasUnico();
-                } while (listaCodigosBarras.contains(nuevoCodigoBarras));
-
-                // Mostrar el nuevo código de barras
-                codigoBarrasProducto = nuevoCodigoBarras;
-                codigoBarras.setText(codigoBarrasProducto);
-                mostrarCodigoBarrasEnImagen(codigoBarrasProducto);
-            }
-        });
-
-
-        subirFoto.setOnClickListener(v -> seleccionarImagen());
-
-
-        tomarFoto.setOnClickListener(v -> tomarFotoDispositivo());
-
-        cancelarCrearProducto.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                confirmarCancelar();
-            }
-        });
-
-
-
-        imprimirCodigoBarras.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    checkBluetoothConnectPermission();
-                } catch (EscPosEncodingException | EscPosBarcodeException | EscPosParserException | EscPosConnectionException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-
-        });
-
-        cantidadStock.setFilters(new InputFilter[] {
-                new InputFilter.LengthFilter(5), // Limita la cantidad de caracteres a 5
-                new InputFilter() {
-                    public CharSequence filter(CharSequence source, int start, int end,
-                                               Spanned dest, int dstart, int dend) {
-                        StringBuilder builder = new StringBuilder(dest);
-                        builder.replace(dstart, dend, source.subSequence(start, end).toString());
-
-                        // Verificar si el texto resultante contiene solo dígitos y tiene una longitud adecuada
-                        if (!builder.toString().matches("\\d{0,5}")) {
-                            return ""; // Si no cumple con el formato, eliminar la entrada
-                        }
-
-                        return null; // Aceptar este cambio de texto
-                    }
-                }
-        });
-
-
-        precioUnidad.setFilters(new InputFilter[] {
-                new InputFilter() {
-                    boolean isDecimalInserted = false;
-
-                    public CharSequence filter(CharSequence source, int start, int end,
-                                               Spanned dest, int dstart, int dend) {
-                        StringBuilder builder = new StringBuilder(dest);
-                        builder.replace(dstart, dend, source.subSequence(start, end).toString());
-
-                        // Verificar si se insertó un punto o coma decimal
-                        if (source.equals(".") || source.equals(",")) {
-                            // Verificar si ya se ha insertado un punto o coma
-                            if (isDecimalInserted || dstart == 0) {
-                                return ""; // Evitar que se introduzca más de un punto o coma o que esté al principio
-                            } else {
-                                isDecimalInserted = true;
-                            }
-                        }
-
-                        // Verificar si el texto resultante cumple con el formato numérico deseado
-                        if (!builder.toString().matches("^\\d+\\.?\\d{0,2}$")) {
-                            return ""; // Si no cumple con el formato, eliminar la entrada
-                        }
-
-                        // Verificar si el texto resultante tiene más de 7 dígitos en total
-                        if (builder.length() > 7) {
-                            return ""; // Si tiene más de 7 dígitos, eliminar la entrada
-                        }
-
-                        return null; // Aceptar este cambio de texto
-                    }
-                }
-        });
-
-
-
-        crearProducto.setOnClickListener(new View.OnClickListener() {
-           @Override
-           public void onClick(View v) {
-               if (comprobarDatosProducto()){
-                  insertarProductoBBDD();
-               }
-           }
-        });
-
     }
 
 
-    private void insertarProductoBBDD(){
+    // Método para establecer los valores por defecto en las vistas
+    private void setDefaultValues() {
+        // Establece la imagen predeterminada del producto en la vista de la foto
+        fotoProducto.setImageResource(R.mipmap.productosinimagen);
+
+        // Establece la imagen predeterminada del código de barras en la vista de imagen del código de barras
+        imagenCodigoBarras.setImageResource(R.mipmap.codigobarrasvacio);
+
+        // Establece el texto por defecto del campo de texto de código de barras y lo deshabilita
+        codigoBarras.setText("SIN CODIGO DE BARRAS");
+        codigoBarras.setEnabled(false);
+
+        // Deshabilita el botón de imprimir código de barras por defecto
+        imprimirCodigoBarras.setEnabled(false);
+
+        // Convierte la imagen predeterminada en formato Bitmap
+        Bitmap imagenDefecto = BitmapFactory.decodeResource(getResources(), R.mipmap.productosinimagen);
+
+        // Convierte la imagen predeterminada en formato de bytes y la asigna a la variable imagenDefectoByte
+        imagenDefectoByte = bitmapToByteArray(imagenDefecto);
+    }
+
+
+    // Método para configurar los filtros de entrada para los campos de texto editables
+    private void setEditTextFilters() {
+        // Configura el filtro de entrada para el campo de cantidad de stock
+        cantidadStock.setFilters(new InputFilter[]{
+                // Limita la longitud del texto a 5 caracteres
+                new InputFilter.LengthFilter(5),
+                // Filtra el texto de entrada para que solo contenga dígitos y tenga una longitud adecuada
+                (source, start, end, dest, dstart, dend) -> {
+                    StringBuilder builder = new StringBuilder(dest);
+                    builder.replace(dstart, dend, source.subSequence(start, end).toString());
+                    return (!builder.toString().matches("\\d{0,5}")) ? "" : null;
+                }
+        });
+
+        // Configura el filtro de entrada para el campo de precio por unidad
+        precioUnidad.setFilters(new InputFilter[]{
+                new InputFilter() {
+                    private boolean isDecimalInserted = false;
+
+                    @Override
+                    public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
+                        StringBuilder builder = new StringBuilder(dest);
+                        builder.replace(dstart, dend, source.subSequence(start, end).toString());
+                        if ((source.equals(".") || source.equals(",")) && (isDecimalInserted || dstart == 0)) {
+                            return "";
+                        }
+                        isDecimalInserted = builder.toString().contains(".") || builder.toString().contains(",");
+                        return (!builder.toString().matches("^\\d+\\.?\\d{0,2}$") || builder.length() > 7) ? "" : null;
+                    }
+                }
+        });
+    }
+
+
+    // Método para insertar el producto en la base de datos
+    private void insertarProductoBBDD() {
+        // Obtiene los datos del producto desde los campos de texto editables
         String nombreProducto = nombre.getText().toString();
         String descripcionProducto = descripcion.getText().toString();
         int cantidadProducto = Integer.parseInt(cantidadStock.getText().toString());
         double precioProducto = Double.parseDouble(precioUnidad.getText().toString());
         String codigoBarrasProducto = codigoBarras.getText().toString();
 
-        if (imagenenByte==null){
-            if (bbddController.insertarProducto(codigoBarrasProducto, nombreProducto, descripcionProducto, cantidadProducto, precioProducto, 0, 0, imagenDefectoByte, "012541689P"  )){
-                mostrarDialogoCrearOtroProducto();
-            }else{
-                mostrarAlertaErrorBBDD();
-            }
-        }else{
-            if (bbddController.insertarProducto(codigoBarrasProducto, nombreProducto, descripcionProducto, cantidadProducto, precioProducto, 0, 0, imagenenByte, "012541689P" )){
-                mostrarDialogoCrearOtroProducto();
-            }else{
-                mostrarAlertaErrorBBDD();
-            }
+        // Determina la imagen a utilizar (imagen actual o imagen por defecto) y la convierte en bytes
+        byte[] imagen = (imagenenByte == null) ? imagenDefectoByte : imagenenByte;
+
+        // Inserta el producto en la base de datos y registra un mensaje de registro
+        boolean isInserted = bbddController.insertarProducto(codigoBarrasProducto, nombreProducto, descripcionProducto, cantidadProducto, precioProducto, 0, 0, imagen, "012541689P");
+        String logMessage = isInserted ? "Producto con codigo " + codigoBarrasProducto + " creado exitosamente" : "Error al insertar el nuevo producto " + codigoBarrasProducto + " en BBDD";
+        bbddController.insertarLog(logMessage, LocalDateTime.now(), usuario.getDni());
+
+        // Muestra un diálogo o una alerta según el resultado de la inserción en la base de datos
+        if (isInserted) {
+            mostrarDialogoCrearOtroProducto();
+        } else {
+            mostrarAlertaErrorBBDD();
         }
-
-
-
     }
 
 
+    // Método para mostrar un diálogo de confirmación antes de cancelar la operación de creación del producto
     private void confirmarCancelar() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("¿ESTAS SEGURO?");
-        builder.setMessage("¿ESTAS SEGURO QUE QUIERE CANCELAR LA OPERACIÓN Y VOLVER AL MENÚ PRINCIPAL?");
-        builder.setPositiveButton("SI", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                finish();
-            }
-        });
-        builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
-
-        builder.setCancelable(false); // Evitar que el diálogo se cierre al tocar fuera de él
-        builder.show();
+        new AlertDialog.Builder(this)
+                .setTitle("¿ESTAS SEGURO?")
+                .setMessage("¿ESTAS SEGURO QUE QUIERE CANCELAR LA OPERACIÓN Y VOLVER AL MENÚ PRINCIPAL?")
+                .setPositiveButton("SI", (dialog, which) -> {
+                    // Registra un mensaje de registro y finaliza la actividad actual
+                    bbddController.insertarLog("Cancela generar el producto", LocalDateTime.now(), usuario.getDni());
+                    finish();
+                })
+                .setNegativeButton("NO", (dialog, which) -> dialog.dismiss())
+                .setCancelable(false) // Evita que el diálogo se cierre al tocar fuera de él
+                .show(); // Muestra el diálogo en la interfaz
     }
 
 
-
+    // Método para comprobar si los datos del producto son válidos
     private boolean comprobarDatosProducto() {
+        // Inicializa la bandera para verificar la validez de los datos
         boolean datosValidos = true;
 
-        // Limpiar los errores previos
-        nombre.setError(null);
-        descripcion.setError(null);
-        cantidadStock.setError(null);
-        precioUnidad.setError(null);
-        codigoBarras.setError(null);
+        // Valida cada campo del producto utilizando el método validarCampo()
+        datosValidos &= validarCampo(nombre, "Campo vacío");
+        datosValidos &= validarCampo(descripcion, "Campo vacío");
+        datosValidos &= validarCampo(cantidadStock, "Campo vacío");
+        datosValidos &= validarCampo(precioUnidad, "Campo vacío");
 
-        // Verificar el nombre
-        if (nombre.getText().toString().isEmpty()) {
-            nombre.setError("Campo vacío");
-            datosValidos = false;
-        }
-
-        // Verificar la descripción
-        if (descripcion.getText().toString().isEmpty()) {
-            descripcion.setError("Campo vacío");
-            datosValidos = false;
-        }
-
-        // Verificar la cantidad en stock
-        if (cantidadStock.getText().toString().isEmpty()) {
-            cantidadStock.setError("Campo vacío");
-            datosValidos = false;
-        }
-
-        // Verificar el precio por unidad
-        if (precioUnidad.getText().toString().isEmpty()) {
-            precioUnidad.setError("Campo vacío");
-            datosValidos = false;
-        }
-
-        // Verificar el código de barras
+        // Verifica si se generó un código de barras antes de continuar
         if (codigoBarras.getText().toString().equals("SIN CODIGO DE BARRAS")) {
+            // Si no se generó un código de barras, muestra un error y marca los datos como inválidos
             codigoBarras.setError("Debes generar un CÓDIGO DE BARRAS");
             datosValidos = false;
         }
 
-        // Si hay errores, mostrar un mensaje de advertencia
+        // Si hay errores, muestra un mensaje de advertencia al usuario
         if (!datosValidos) {
             Toast.makeText(this, "Por favor, corrige los errores", Toast.LENGTH_SHORT).show();
         }
 
+        // Devuelve true si todos los datos son válidos, de lo contrario devuelve false
         return datosValidos;
     }
 
 
-    private void vaciarCampos(){
+    // Método para validar un campo de texto editado
+    private boolean validarCampo(EditText campo, String errorMensaje) {
+        // Verifica si el campo está vacío
+        if (campo.getText().toString().isEmpty()) {
+            // Si está vacío, muestra un mensaje de error y devuelve false
+            campo.setError(errorMensaje);
+            return false;
+        }
+        // Si no está vacío, devuelve true
+        return true;
+    }
+
+
+    // Método para limpiar los campos del formulario
+    private void vaciarCampos() {
+        // Limpia todos los campos del formulario y restablece los valores predeterminados
         nombre.setText("");
         descripcion.setText("");
         cantidadStock.setText("");
@@ -380,78 +374,79 @@ public class CrearProducto extends AppCompatActivity {
         codigoBarras.setEnabled(false);
         fotoProducto.setImageResource(R.mipmap.productosinimagen);
         generarCodigoBarras.setEnabled(true);
-        imagenenByte=null;
+        imagenenByte = null;
         nombre.setError(null);
         descripcion.setError(null);
         cantidadStock.setError(null);
         precioUnidad.setError(null);
         codigoBarras.setError(null);
         imagenCodigoBarras.setImageResource(R.mipmap.codigobarrasvacio);
-
     }
 
 
+    // Método para mostrar una alerta en caso de error en la inserción en la base de datos
     private void mostrarAlertaErrorBBDD() {
+        // Crea y muestra un diálogo de alerta con un mensaje de error personalizado
         AlertDialog.Builder builder = new AlertDialog.Builder(CrearProducto.this);
-        builder.setTitle("Error en la inserccion en BBDD")
+        builder.setTitle("Error en la inserción en BBDD")
                 .setMessage("Hubo un error a la hora de insertar en BBDD. Compruebe los campos que sean ideales. Puede suceder que haya un error interno en la BBDD. Lo sentimos")
-                .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                })
+                .setPositiveButton("Aceptar", (dialog, which) -> dialog.dismiss()) // Botón para cerrar el diálogo
                 .show();
     }
 
+
+    // Método para mostrar un diálogo con opciones después de crear exitosamente un producto
     private void mostrarDialogoCrearOtroProducto() {
+        // Crea y muestra un diálogo con opciones para crear otro producto o volver al menú principal
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Producto creado exitosamente");
         builder.setMessage("¿Qué desea hacer a continuación?");
-        builder.setPositiveButton("Crear otro producto", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                // Aquí puedes agregar el código para crear otro usuario
-                // Por ejemplo, puedes limpiar los campos del formulario
-                // y permitir al usuario ingresar los datos de otro usuario.
-                vaciarCampos();
-            }
+        // Opción para crear otro producto
+        builder.setPositiveButton("Crear otro producto", (dialog, which) -> {
+            // Limpia los campos del formulario para permitir al usuario crear otro producto
+            vaciarCampos();
+            // Registra un mensaje de registro indicando que se desea crear otro producto
+            bbddController.insertarLog("Desea crear otro producto", LocalDateTime.now(), usuario.getDni());
         });
-        builder.setNegativeButton("Volver al menú", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                finish();
-            }
+        // Opción para volver al menú principal
+        builder.setNegativeButton("Volver al menú", (dialog, which) -> {
+            // Registra un mensaje de registro indicando que se vuelve al menú principal
+            bbddController.insertarLog("Vuelve al menú de reponedor", LocalDateTime.now(), usuario.getDni());
+            // Finaliza la actividad actual para volver al menú principal
+            finish();
         });
-        builder.setCancelable(false); // Evitar que el diálogo se cierre al tocar fuera de él
-        builder.show();
-
+        builder.setCancelable(false); // Evita que el diálogo se cierre al tocar fuera de él
+        builder.show(); // Muestra el diálogo en la interfaz
     }
 
 
+    // Método para obtener una lista de códigos de barras desde la base de datos
     private List<String> obtenerListaCodigosBarrasDesdeBD() {
-        List <String> codigos = bbddController.obtenerListaCodigosBarras();
-        return codigos;
+        // Obtiene la lista de códigos de barras utilizando el controlador de la base de datos
+        return bbddController.obtenerListaCodigosBarras(); // Retorna la lista de códigos de barras
     }
 
 
-
+    // Método para generar un código de barras único
     private String generarCodigoBarrasUnico() {
         Random random = new Random();
         StringBuilder numeroAleatorio = new StringBuilder();
+        // Genera un código de barras de 13 dígitos de forma aleatoria
         for (int i = 0; i < 13; i++) {
             int digito = random.nextInt(10);
             numeroAleatorio.append(digito);
         }
-        return numeroAleatorio.toString();
+        // Registra un mensaje de registro indicando que se ha generado un código de barras
+        bbddController.insertarLog("Genera codigo barras " + numeroAleatorio + " ", LocalDateTime.now(), usuario.getDni());
+        return numeroAleatorio.toString(); // Retorna el código de barras generado
     }
 
 
-
+    // Método para solicitar permiso de almacenamiento externo
     private void requestStoragePermission() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
-
+            // Si el permiso no está concedido, solicita permiso al usuario
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
                     REQUEST_EXTERNAL_STORAGE);
@@ -459,17 +454,16 @@ public class CrearProducto extends AppCompatActivity {
     }
 
 
-
-
-    public void seleccionarImagen(){
-        requestStoragePermission();
-            Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-            startActivityForResult(intent, REQUEST_IMAGE_GALLERY);
-
-
+    // Método para seleccionar una imagen de la galería
+    public void seleccionarImagen() {
+        requestStoragePermission(); // Solicita permiso de almacenamiento antes de abrir la galería
+        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(intent, REQUEST_IMAGE_GALLERY); // Inicia la actividad de selección de imagen
     }
 
-    public void tomarFotoDispositivo(){
+
+    // Método para tomar una foto con la cámara del dispositivo
+    public void tomarFotoDispositivo() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
                 != PackageManager.PERMISSION_GRANTED) {
             // Si el permiso no está concedido, solicitarlo al usuario
@@ -477,34 +471,49 @@ public class CrearProducto extends AppCompatActivity {
                     new String[]{Manifest.permission.CAMERA},
                     REQUEST_CAMERA_PERMISSION);
         } else {
+            // Si el permiso está concedido, iniciar la actividad de la cámara
             Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             startActivityForResult(intent, REQUEST_IMAGE_CAMERA);
         }
     }
 
 
+    // Método llamado cuando se completa una actividad (por ejemplo, al seleccionar una imagen de la galería o tomar una foto)
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (resultCode == RESULT_OK) {
             if (requestCode == REQUEST_IMAGE_GALLERY && data != null) {
+                // Si la solicitud es para seleccionar una imagen de la galería y hay datos disponibles
                 Uri uri = data.getData();
                 try {
+                    // Convierte la URI de la imagen en un objeto Bitmap
                     bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
+                    // Registra un mensaje de registro indicando que se seleccionó una foto de la galería
+                    bbddController.insertarLog("Selección foto galería", LocalDateTime.now(), usuario.getDni());
+                    // Muestra la imagen seleccionada en un ImageView
                     fotoProducto.setImageBitmap(bitmap);
-                    imagenenByte= bitmapToByteArray(bitmap);
+                    // Convierte el Bitmap en un array de bytes
+                    imagenenByte = bitmapToByteArray(bitmap);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             } else if (requestCode == REQUEST_IMAGE_CAMERA && data != null) {
+                // Si la solicitud es para tomar una foto con la cámara y hay datos disponibles
                 bitmap = (Bitmap) data.getExtras().get("data");
+                // Registra un mensaje de registro indicando que se tomó una foto con la cámara
+                bbddController.insertarLog("Toma foto cámara", LocalDateTime.now(), usuario.getDni());
+                // Muestra la foto tomada en un ImageView
                 fotoProducto.setImageBitmap(bitmap);
-                imagenenByte= bitmapToByteArray(bitmap);
+                // Convierte el Bitmap en un array de bytes
+                imagenenByte = bitmapToByteArray(bitmap);
             }
         }
     }
 
+
+    // Método para convertir un objeto Bitmap en un array de bytes
     private byte[] bitmapToByteArray(Bitmap bitmap) {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
@@ -512,7 +521,7 @@ public class CrearProducto extends AppCompatActivity {
     }
 
 
-
+    // Método llamado cuando se solicitan permisos al usuario y se reciben las respuestas
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
@@ -521,16 +530,12 @@ public class CrearProducto extends AppCompatActivity {
             case REQUEST_CAMERA_PERMISSION:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     // Permiso de la cámara concedido, puedes abrir la cámara
-                } else {
-                    // Permiso de la cámara denegado, muestra un mensaje o toma otra acción adecuada.
                 }
                 break;
             case WRITE_EXTERNAL_STORAGE_PERMISSION_REQUEST_CODE:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     // Permiso de escritura en almacenamiento externo concedido, procede con el guardado de la imagen
                     guardarImagen(bitmap); // Aquí llama al método para guardar la imagen
-                } else {
-                    // Permiso de escritura en almacenamiento externo denegado, muestra un mensaje o toma otra acción adecuada.
                 }
                 break;
             case REQUEST_BLUETOOTH_CONNECT_PERMISSION:
@@ -538,17 +543,10 @@ public class CrearProducto extends AppCompatActivity {
                     // Permiso de conexión Bluetooth concedido, puedes proceder con la funcionalidad Bluetooth
                     try {
                         conectarImpresora();
-                    } catch (EscPosEncodingException e) {
-                        throw new RuntimeException(e);
-                    } catch (EscPosBarcodeException e) {
-                        throw new RuntimeException(e);
-                    } catch (EscPosParserException e) {
-                        throw new RuntimeException(e);
-                    } catch (EscPosConnectionException e) {
+                    } catch (EscPosEncodingException | EscPosConnectionException |
+                             EscPosParserException | EscPosBarcodeException e) {
                         throw new RuntimeException(e);
                     }
-                } else {
-                    // Permiso de conexión Bluetooth denegado, muestra un mensaje o toma otra acción adecuada.
                 }
                 break;
             // Agrega más casos si necesitas manejar más códigos de solicitud de permisos
@@ -556,6 +554,7 @@ public class CrearProducto extends AppCompatActivity {
     }
 
 
+    // Método para mostrar el código de barras en una imagen
     public void mostrarCodigoBarrasEnImagen(String codigoBarras) {
         BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
         try {
@@ -577,12 +576,13 @@ public class CrearProducto extends AppCompatActivity {
             paint.setTextAlign(Paint.Align.CENTER);
 
             // Dibujar el número debajo del código de barras
-            canvas.drawText(codigoBarras, bitmap.getWidth() / 2, bitmap.getHeight() + 40, paint);
+            canvas.drawText(codigoBarras, (float) bitmap.getWidth() / 2, bitmap.getHeight() + 40, paint);
 
             // Establecer la imagen combinada en el ImageView
             imagenCodigoBarras.setImageBitmap(combinedBitmap);
-            codigoBarrasBitmap=combinedBitmap;
+            codigoBarrasBitmap = combinedBitmap;
 
+            // Verificar el permiso de escritura en almacenamiento externo antes de guardar la imagen
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
                     != PackageManager.PERMISSION_GRANTED) {
                 // Si el permiso no ha sido concedido, solicitarlo
@@ -594,8 +594,7 @@ public class CrearProducto extends AppCompatActivity {
                 guardarImagen(combinedBitmap);
             }
 
-            guardarImagen(combinedBitmap);
-
+            // Habilitar el botón de impresión de código de barras
             imprimirCodigoBarras.setEnabled(true);
         } catch (WriterException e) {
             throw new RuntimeException(e);
@@ -603,22 +602,23 @@ public class CrearProducto extends AppCompatActivity {
     }
 
 
-
-
-
+    // Método para guardar una imagen en el almacenamiento externo
     private void guardarImagen(Bitmap bitmap) {
         requestStoragePermission();
 
+        // Crear un directorio para almacenar la imagen
         File directory = new File(getExternalFilesDir(null), "MiCarpeta");
         if (!directory.exists()) {
             directory.mkdirs();
         }
 
+        // Crear un nombre de archivo único para la imagen
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
         String fileName = "codigo_barras_" + timeStamp + ".png";
         File file = new File(directory, fileName);
 
         try {
+            // Guardar la imagen en el archivo
             FileOutputStream outputStream = new FileOutputStream(file);
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
             outputStream.flush();
@@ -629,13 +629,9 @@ public class CrearProducto extends AppCompatActivity {
     }
 
 
-
-
-
-
-
-
+    // Método para conectar a la impresora Bluetooth
     private void conectarImpresora() throws EscPosEncodingException, EscPosBarcodeException, EscPosParserException, EscPosConnectionException {
+        // Obtener el adaptador Bluetooth predeterminado
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (bluetoothAdapter == null) {
             // El dispositivo no soporta Bluetooth
@@ -643,7 +639,7 @@ public class CrearProducto extends AppCompatActivity {
         }
 
         if (!bluetoothAdapter.isEnabled()) {
-            // El Bluetooth no está activado, solicita al usuario que lo active
+            // El Bluetooth no está activado, solicitar al usuario que lo active
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
                 // Manejar el caso en que los permisos no estén concedidos
@@ -677,7 +673,8 @@ public class CrearProducto extends AppCompatActivity {
                             connection = new BluetoothConnection(selectedDevice);
                             printer = new EscPosPrinter(connection, 200, 50f, 35);
                             // Imprimir
-                            printer.printFormattedText("[C]<barcode type='128' height='10'>"+codigoBarrasProducto+"</barcode>\n");
+                            printer.printFormattedText("[C]<barcode type='128' height='10'>" + codigoBarrasProducto + "</barcode>\n");
+                            bbddController.insertarLog("Imprime codigo de barras " + codigoBarrasProducto + " con impresora " + selectedDevice.getAddress().toString(), LocalDateTime.now(), usuario.getDni());
                             desconectarImpresora();
                         } catch (Exception e) {
                             e.printStackTrace();
@@ -685,7 +682,10 @@ public class CrearProducto extends AppCompatActivity {
                         }
                     }
                 });
-                builder.show();
+                AlertDialog dialog = builder.create();
+                dialog.setCancelable(false);
+                dialog.setCanceledOnTouchOutside(false);
+                dialog.show();
             } else {
                 // Manejar el caso en que no haya dispositivos emparejados
                 return;
@@ -694,40 +694,14 @@ public class CrearProducto extends AppCompatActivity {
     }
 
 
-/*
-        if (targetDevice != null) {
-            try {
-                // Obtener el socket Bluetooth
-                bluetoothSocket = bluetoothDevice.createInsecureRfcommSocketToServiceRecord(UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"));
-
-                // Establecer la conexión Bluetooth
-                bluetoothSocket.connect();
-
-                // Obtener el OutputStream para enviar comandos ESC/POS
-                OutputStream outputStream = bluetoothSocket.getOutputStream();
-
-                // Enviar comandos ESC/POS a la impresora
-                String textToPrint = "Hello, ESC/POS!";
-                byte[] bytesToPrint = textToPrint.getBytes("UTF-8");
-                outputStream.write(bytesToPrint);
-
-                // Finalizar la conexión Bluetooth
-                bluetoothSocket.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-                // Manejar el error de conexión
-            }
-        }
-*/
-
     private void checkBluetoothConnectPermission() throws EscPosEncodingException, EscPosBarcodeException, EscPosParserException, EscPosConnectionException {
         if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.S && ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.BLUETOOTH}, MainActivity.PERMISSION_BLUETOOTH);
         } else if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.S && ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_ADMIN) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.BLUETOOTH_ADMIN}, MainActivity.PERMISSION_BLUETOOTH_ADMIN);
-        } else if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S && ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+        } else if (ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.BLUETOOTH_CONNECT}, MainActivity.PERMISSION_BLUETOOTH_CONNECT);
-        } else if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S && ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
+        } else if (ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.BLUETOOTH_SCAN}, MainActivity.PERMISSION_BLUETOOTH_SCAN);
         } else {
             conectarImpresora();
@@ -740,133 +714,5 @@ public class CrearProducto extends AppCompatActivity {
             connection.disconnect(); // Cierra la conexión Bluetooth
         }
     }
-
-
-
-
-
-/*
-    private void imprimirCodigoBarras(Bitmap bitmap) {
-        // Verificar si el socket Bluetooth está disponible y conectado
-        if (bluetoothSocket == null || !bluetoothSocket.isConnected()) {
-            // La impresora Bluetooth no está disponible o no está conectada
-            return;
-        }
-
-        try {
-            // Convertir la imagen del código de barras a un formato imprimible (por ejemplo, ESC/POS)
-            byte[] datosImprimibles = convertirImagenAFormatoImprimible(bitmap);
-
-            // Enviar los datos a la impresora Bluetooth
-            OutputStream outputStream = bluetoothSocket.getOutputStream();
-            outputStream.write(datosImprimibles);
-            outputStream.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-            // Manejar errores de impresión
-        }
-    }
- */
-
-
-    private byte[] convertirImagenAFormatoImprimible(Bitmap bitmap) {
-        // Aquí deberías implementar la conversión de la imagen del código de barras a un formato imprimible
-        // Puedes utilizar bibliotecas como EscPosPrinter para hacer esto
-        // En este ejemplo, simplemente se convierte la imagen a un array de bytes
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
-        return stream.toByteArray();
-    }
-
-
-/*
-
-    private void imprimirCodigoBarras(Bitmap bitmap) {
-        // Verificar si el socket Bluetooth está disponible y conectado
-        if (bluetoothSocket == null || !bluetoothSocket.isConnected()) {
-            // La impresora Bluetooth no está disponible o no está conectada
-            return;
-        }
-
-        try {
-            // Convertir la imagen a un formato imprimible para la impresora térmica
-            byte[] datosImprimibles = convertirImagenAFormatoTermico(bitmap);
-
-            // Enviar los datos a la impresora Bluetooth
-            OutputStream outputStream = bluetoothSocket.getOutputStream();
-            outputStream.write(datosImprimibles);
-            outputStream.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-            // Manejar errores de impresión
-        }
-    }
-
-    private byte[] convertirImagenAFormatoTermico(Bitmap bitmap) {
-        // Escalar la imagen al tamaño de la etiqueta de 40x30 mm
-        int nuevoAncho = 400; // 40 mm en píxeles a 10 píxeles/mm
-        int nuevoAlto = 300; // 30 mm en píxeles a 10 píxeles/mm
-        Bitmap imagenEscalada = Bitmap.createScaledBitmap(bitmap, nuevoAncho, nuevoAlto, true);
-
-        // Convertir la imagen a escala de grises
-        Bitmap imagenEscalaGrises = convertirAGrises(imagenEscalada);
-
-        // Convertir la imagen a datos de impresión en formato térmico
-        byte[] datosImprimibles = convertirImagenATermico(imagenEscalaGrises);
-
-        return datosImprimibles;
-    }
-
-    private Bitmap convertirAGrises(Bitmap bitmap) {
-        // Convertir la imagen a escala de grises
-        Bitmap imagenGrises = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(imagenGrises);
-        Paint paint = new Paint();
-        ColorMatrix cm = new ColorMatrix();
-        cm.setSaturation(0); // Configurar la matriz de color para convertir a escala de grises
-        ColorMatrixColorFilter filter = new ColorMatrixColorFilter(cm);
-        paint.setColorFilter(filter);
-        canvas.drawBitmap(bitmap, 0, 0, paint);
-        return imagenGrises;
-    }
-
-    private byte[] convertirImagenATermico(Bitmap bitmap) {
-        // Aquí debes implementar la conversión de la imagen a datos de impresión en formato térmico
-        // Esto depende de la especificación de comandos de tu impresora térmica
-        // Deberás investigar la documentación de tu impresora para saber cómo enviar imágenes
-        // Normalmente, las impresoras térmicas utilizan comandos específicos para imprimir imágenes
-        // Consulta el manual de tu impresora para obtener más detalles sobre el formato de los datos de impresión
-        return null;
-    }
-
-
-
-    private void imprimirImagen(File file) {
-        if (bluetoothSocket != null) {
-            try {
-                OutputStream outputStream = bluetoothSocket.getOutputStream();
-
-                // Iniciar la conexión de impresión
-                outputStream.write(new byte[]{0x1B, 0x40});
-
-                // Enviar la imagen como datos binarios
-                FileInputStream inputStream = new FileInputStream(file);
-                byte[] buffer = new byte[1024];
-                int bytesRead;
-                while ((bytesRead = inputStream.read(buffer)) != -1) {
-                    outputStream.write(buffer, 0, bytesRead);
-                }
-                inputStream.close();
-
-                // Finalizar la conexión de impresión
-                outputStream.write(new byte[]{0x1B, 0x64, 0x02});
-            } catch (IOException e) {
-                e.printStackTrace();
-                // Manejar el error de impresión
-            }
-        }
-    }
-*/
-
 
 }
