@@ -29,7 +29,7 @@ public class GeneralReponedor extends AppCompatActivity {
 
     private UsuarioModel usuario;
     private BBDDController bbddController= new BBDDController();
-    private TextView nombreRepone;
+    private TextView nombreRepone, nombreTienda;
     private ImageButton cerrarSesion, mandarCorreo, llamar, listaProductos,crearProducto;
     private boolean allowBackPress = false;
 
@@ -51,6 +51,9 @@ public class GeneralReponedor extends AppCompatActivity {
         usuario = bbddController.obtenerEmpleado(usuarioDNI);
         nombreRepone = findViewById(R.id.nombre_repone);
         nombreRepone.setText(usuario.getNombre() + " " + usuario.getApellido());
+
+        nombreTienda = findViewById(R.id.nombretienda);
+        nombreTienda.setText(bbddController.obtenerNombreTienda(usuario.getIdTienda()));
 
         cerrarSesion = findViewById(R.id.cerrar_sesion_repone);
         mandarCorreo = findViewById(R.id.correo_repone);

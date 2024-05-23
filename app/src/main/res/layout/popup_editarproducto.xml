@@ -3,45 +3,39 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="620dp"
+    android:background="@drawable/border_black"
     android:layout_height="650dp">
-
-    <TextView
-        android:id="@+id/textView29"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="44dp"
-        android:layout_marginBottom="608dp"
-        android:text="EDITAR PRODUCTO"
-        android:textAlignment="center"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
 
     <EditText
         android:id="@+id/et_descrip_a_editar"
-        android:layout_width="319dp"
-        android:layout_height="168dp"
-        android:layout_marginStart="288dp"
-        android:layout_marginBottom="136dp"
+        android:layout_width="311dp"
+        android:layout_height="172dp"
+        android:layout_marginStart="216dp"
+        android:layout_marginBottom="104dp"
+        android:background="@drawable/border_black"
         android:ems="10"
-        android:gravity="start|top"
         android:hint="DESCRIPCIÓN DEL PRODUCTO"
         android:inputType="textMultiLine"
+        android:textAlignment="center"
+        android:textColor="@color/black"
         android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <EditText
         android:id="@+id/et_nombre_a_editar"
-        android:layout_width="316dp"
-        android:layout_height="51dp"
-        android:layout_marginStart="288dp"
-        android:layout_marginBottom="336dp"
+        android:layout_width="306dp"
+        android:layout_height="56dp"
+        android:layout_marginStart="216dp"
+        android:layout_marginBottom="284dp"
+        android:background="@drawable/border_black"
         android:ems="10"
         android:hint="NOMBRE DEL PRODUCTO"
         android:inputType="text"
+        android:textAlignment="center"
+        android:textColor="@color/black"
         android:textSize="20sp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -49,9 +43,12 @@
         android:id="@+id/textView30"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="88dp"
-        android:layout_marginBottom="360dp"
-        android:text="NOMBRE DEL PRODUCTO:"
+        android:layout_marginStart="68dp"
+        android:layout_marginBottom="292dp"
+        android:text="NOMBRE \nDEL PRODUCTO:"
+        android:textAlignment="center"
+        android:textColor="@color/black"
+        android:textSize="18dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -59,9 +56,12 @@
         android:id="@+id/textView31"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="60dp"
-        android:layout_marginBottom="304dp"
-        android:text="DESCRIPCIÓN DEL PRODUCTO:"
+        android:layout_marginStart="64dp"
+        android:layout_marginBottom="228dp"
+        android:text="DESCRIPCIÓN \nDEL PRODUCTO:"
+        android:textAlignment="center"
+        android:textColor="@color/black"
+        android:textSize="18dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -69,9 +69,12 @@
         android:id="@+id/textView32"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="60dp"
-        android:layout_marginBottom="104dp"
-        android:text="PRECIO UNITARIO DEL PRODUCTO:"
+        android:layout_marginStart="52dp"
+        android:layout_marginBottom="40dp"
+        android:text="PRECIO / UNIDAD \nPRODUCTO:"
+        android:textAlignment="center"
+        android:textColor="@color/black"
+        android:textSize="18dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -80,60 +83,93 @@
         android:layout_width="180dp"
         android:layout_height="187dp"
         android:layout_marginStart="412dp"
-        android:layout_marginBottom="396dp"
+        android:layout_marginBottom="356dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:srcCompat="@mipmap/productosinimagen" />
 
-    <Button
+    <ImageButton
         android:id="@+id/bt_editar_foto"
-        android:layout_width="180dp"
-        android:layout_height="59dp"
-        android:layout_marginStart="216dp"
-        android:layout_marginBottom="484dp"
+        android:layout_width="162dp"
+        android:layout_height="70dp"
+        android:layout_marginStart="236dp"
+        android:layout_marginBottom="472dp"
+        android:background="@android:color/transparent"
+        android:contentDescription="bajoStock"
+        android:scaleType="fitCenter"
+        android:src="@mipmap/editarimagen"
         android:text="EDITAR FOTO"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <Button
+    <ImageButton
         android:id="@+id/bt_tomar_foto"
-        android:layout_width="174dp"
-        android:layout_height="52dp"
-        android:layout_marginStart="28dp"
-        android:layout_marginBottom="492dp"
+        android:layout_width="169dp"
+        android:layout_height="74dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginBottom="468dp"
+        android:background="@android:color/transparent"
+        android:contentDescription="bajoStock"
+        android:scaleType="fitCenter"
+        android:src="@mipmap/tomarfotop"
         android:text="TOMAR FOTO"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <Button
+    <ImageButton
         android:id="@+id/bt_seleccionar_foto"
-        android:layout_width="181dp"
-        android:layout_height="56dp"
-        android:layout_marginStart="28dp"
-        android:layout_marginBottom="420dp"
+        android:layout_width="168dp"
+        android:layout_height="77dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginBottom="356dp"
+        android:background="@android:color/transparent"
+        android:contentDescription="bajoStock"
+        android:scaleType="fitCenter"
+        android:src="@mipmap/seleccionarfoto"
         android:text="SELECCIONAR FOTO"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <Button
+    <ImageButton
         android:id="@+id/bt_cancelar_foto"
-        android:layout_width="171dp"
-        android:layout_height="55dp"
-        android:layout_marginStart="216dp"
-        android:layout_marginBottom="420dp"
+        android:layout_width="162dp"
+        android:layout_height="70dp"
+        android:layout_marginStart="236dp"
+        android:layout_marginBottom="356dp"
+        android:background="@android:color/transparent"
+        android:contentDescription="bajoStock"
+        android:scaleType="fitCenter"
+        android:src="@mipmap/cancelarcambio"
         android:text="CANCELAR"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <EditText
         android:id="@+id/et_precio_a_editar"
-        android:layout_width="316dp"
-        android:layout_height="53dp"
-        android:layout_marginStart="288dp"
-        android:layout_marginBottom="68dp"
+        android:layout_width="260dp"
+        android:layout_height="73dp"
+        android:layout_marginStart="216dp"
+        android:layout_marginBottom="24dp"
+        android:background="@drawable/border_black"
         android:ems="10"
         android:hint="PRECIO/ UNIDAD"
+        android:textSize="28dp"
+        android:textStyle="bold"
         android:inputType="numberDecimal"
+        android:textAlignment="center"
+        android:textColor="@color/black"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/textView33"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="488dp"
+        android:layout_marginBottom="36dp"
+        android:text="€"
+        android:textSize="34sp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 

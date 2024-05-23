@@ -357,6 +357,7 @@ public class AdaptadorProducto extends RecyclerView.Adapter<ViewHolderProducto> 
                 AlertDialog.Builder builder = new AlertDialog.Builder(context);
                 builder.setTitle("Editar Producto");
 
+                builder.setCancelable(false);
                 // Inflar el diseño del diálogo de edición de producto
                 View dialogView = LayoutInflater.from(context).inflate(R.layout.popup_editarproducto, null);
                 builder.setView(dialogView);
@@ -368,12 +369,10 @@ public class AdaptadorProducto extends RecyclerView.Adapter<ViewHolderProducto> 
                 imagenEditar = dialogView.findViewById(R.id.iv_imagen_a_editar);
 
 
-
-
-                Button editarFoto = dialogView.findViewById(R.id.bt_editar_foto);
-                Button tomarFoto = dialogView.findViewById(R.id.bt_tomar_foto);
-                Button seleccionarFoto = dialogView.findViewById(R.id.bt_seleccionar_foto);
-                Button cancelar = dialogView.findViewById(R.id.bt_cancelar_foto);
+                ImageButton editarFoto = dialogView.findViewById(R.id.bt_editar_foto);
+                ImageButton tomarFoto = dialogView.findViewById(R.id.bt_tomar_foto);
+                ImageButton seleccionarFoto = dialogView.findViewById(R.id.bt_seleccionar_foto);
+                ImageButton cancelar = dialogView.findViewById(R.id.bt_cancelar_foto);
 
                 tomarFoto.setVisibility(View.INVISIBLE);
                 seleccionarFoto.setVisibility(View.INVISIBLE);
@@ -510,8 +509,8 @@ public class AdaptadorProducto extends RecyclerView.Adapter<ViewHolderProducto> 
                 });
 
                 // Mostrar el diálogo
+                builder.create();
                 builder.show();
-                builder.setCancelable(false);
             }
 
 

@@ -117,6 +117,7 @@ public class CrearProducto extends AppCompatActivity {
 
     // Modelo del usuario que está utilizando la aplicación
     private UsuarioModel usuario;
+    private boolean allowBackPress=false;
 
 
     @SuppressLint("MissingInflatedId")
@@ -205,6 +206,14 @@ public class CrearProducto extends AppCompatActivity {
         });
     }
 
+    @Override
+    public void onBackPressed() {
+        if (allowBackPress) {
+            super.onBackPressed();
+        } else {
+            Toast.makeText(this, "Para volver pulse el botón CANCELAR", Toast.LENGTH_SHORT).show();
+        }
+    }
 
     private void initializeViews() {
         tomarFoto = findViewById(R.id.hacer_foto);

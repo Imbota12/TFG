@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -36,14 +37,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-
-    private static final int REQUEST_CODE_STORAGE = 105;
-    private static final int REQUEST_CODE_CAMERA = 106;
-    private static final int REQUEST_CODE_BLUETOOTH = 107;
-    public static final int PERMISSION_BLUETOOTH = 101;
-    public static final int PERMISSION_BLUETOOTH_ADMIN = 102;
-    public static final int PERMISSION_BLUETOOTH_CONNECT = 103;
-    public static final int PERMISSION_BLUETOOTH_SCAN = 109;
+    private static final int REQUEST_CODE_STORAGE = 205;
+    private static final int REQUEST_CODE_CAMERA = 306;
+    private static final int REQUEST_CODE_BLUETOOTH = 407;
+    public static final int PERMISSION_BLUETOOTH = 501;
+    public static final int PERMISSION_BLUETOOTH_ADMIN = 602;
+    public static final int PERMISSION_BLUETOOTH_CONNECT = 703;
+    public static final int PERMISSION_BLUETOOTH_SCAN = 809;
 
     private BBDDController bbddController = new BBDDController();
     private EditText usuario, contrasena;
@@ -84,28 +84,50 @@ public class MainActivity extends AppCompatActivity {
         recuperar.setOnClickListener(v -> mostrarDialogoRecuperarCredenciales());
     }
 
+
+
     private void requestPermissions() {
         List<String> permissionsToRequest = new ArrayList<>();
 
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ||
-                ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            permissionsToRequest.add(Manifest.permission.READ_EXTERNAL_STORAGE);
-            permissionsToRequest.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        // Verificar y agregar permisos de almacenamiento para Android 13 o superior
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_IMAGES) != PackageManager.PERMISSION_GRANTED) {
+                permissionsToRequest.add(Manifest.permission.READ_MEDIA_IMAGES);
+            }
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_VIDEO) != PackageManager.PERMISSION_GRANTED) {
+                permissionsToRequest.add(Manifest.permission.READ_MEDIA_VIDEO);
+            }
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+                permissionsToRequest.add(Manifest.permission.READ_MEDIA_AUDIO);
+            }
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                permissionsToRequest.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+            }
+        } else {
+            // Para versiones anteriores a Android 13
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                permissionsToRequest.add(Manifest.permission.READ_EXTERNAL_STORAGE);
+            }
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                permissionsToRequest.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+            }
         }
 
+        // Verificar y agregar permisos de cámara
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             permissionsToRequest.add(Manifest.permission.CAMERA);
         }
 
+        // Verificar y agregar permisos de Bluetooth
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH) != PackageManager.PERMISSION_GRANTED) {
             permissionsToRequest.add(Manifest.permission.BLUETOOTH);
         }
 
+        // Solicitar permisos si es necesario
         if (!permissionsToRequest.isEmpty()) {
             ActivityCompat.requestPermissions(this, permissionsToRequest.toArray(new String[0]), REQUEST_CODE_STORAGE);
         }
     }
-
 
     private void setButtonClickListeners(Button button, Class<?> cls) {
         button.setOnClickListener(v -> {
@@ -243,20 +265,35 @@ public class MainActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-        if (requestCode == REQUEST_CODE_STORAGE || requestCode == REQUEST_CODE_CAMERA || requestCode == REQUEST_CODE_BLUETOOTH) {
-            boolean allGranted = true;
-            for (int result : grantResults) {
-                if (result != PackageManager.PERMISSION_GRANTED) {
-                    allGranted = false;
-                    break;
-                }
-            }
+        switch (requestCode) {
 
-            if (!allGranted) {
-                // Manejar el caso donde no se conceden los permisos
-                mostrarAlerta("Permiso denegado", "Al menos uno de los permisos fue denegado. Algunas funcionalidades pueden no estar disponibles.");
-            }
+            case REQUEST_CODE_CAMERA:
+                handlePermissionsResult(grantResults, "Cámara");
+                break;
+
+            case REQUEST_CODE_BLUETOOTH:
+                handlePermissionsResult(grantResults, "Bluetooth");
+                break;
+
+            default:
+                // Opcional: Manejo de otros códigos de solicitud de permisos
+                break;
         }
     }
 
-}
+    private void handlePermissionsResult(int[] grantResults, String permissionName) {
+        boolean allGranted = true;
+        for (int result : grantResults) {
+            if (result != PackageManager.PERMISSION_GRANTED) {
+                allGranted = false;
+                break;
+            }
+        }
+
+        if (!allGranted) {
+            mostrarAlerta("Permiso denegado", "El permiso para " + permissionName + " fue denegado. Algunas funcionalidades pueden no estar disponibles.");
+        }
+        }
+    }
+
+

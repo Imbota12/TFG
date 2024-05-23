@@ -3,30 +3,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="700dp"
-    android:background="@color/contorno"
+    android:background="@drawable/border_black"
     android:layout_height="match_parent">
-
-    <TextView
-        android:id="@+id/textView33"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="156dp"
-        android:layout_marginBottom="684dp"
-        android:background="@color/black"
-        android:text="MODIFICAR STOCK"
-        android:textAlignment="center"
-        android:textColor="@color/white"
-        android:textSize="44sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
 
     <ImageView
         android:id="@+id/iv_producto"
-        android:layout_width="257dp"
-        android:layout_height="271dp"
-        android:layout_marginStart="216dp"
-        android:layout_marginBottom="280dp"
+        android:layout_width="237dp"
+        android:layout_height="253dp"
+        android:layout_marginStart="184dp"
+        android:layout_marginBottom="184dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:srcCompat="@mipmap/productosinimagen" />
@@ -35,8 +20,9 @@
         android:id="@+id/tv_nombreproducto"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="276dp"
-        android:layout_marginBottom="588dp"
+        android:layout_marginStart="224dp"
+        android:layout_marginBottom="480dp"
+        android:background="@color/black"
         android:text="TextView"
         android:textColor="@color/white"
         android:textSize="35sp"
@@ -48,8 +34,8 @@
         android:id="@+id/et_stock"
         android:layout_width="163dp"
         android:layout_height="98dp"
-        android:layout_marginStart="268dp"
-        android:layout_marginBottom="156dp"
+        android:layout_marginStart="220dp"
+        android:layout_marginBottom="48dp"
         android:background="@color/white"
         android:ems="10"
         android:hint="EN STOCK"
@@ -63,7 +49,7 @@
         android:id="@+id/bt_menos_stock"
         android:layout_width="120dp"
         android:layout_height="120dp"
-        android:layout_marginStart="108dp"
+        android:layout_marginStart="60dp"
         android:layout_marginBottom="36dp"
         android:background="@android:color/transparent"
         android:contentDescription="generarExcel"
@@ -73,15 +59,15 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <ImageButton
-        android:src="@mipmap/mastock"
         android:id="@+id/bt_mas_stock"
         android:layout_width="120dp"
         android:layout_height="120dp"
-        android:layout_marginStart="476dp"
+        android:layout_marginStart="436dp"
         android:layout_marginBottom="36dp"
         android:background="@android:color/transparent"
         android:contentDescription="generarExcel"
         android:scaleType="fitCenter"
+        android:src="@mipmap/mastock"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

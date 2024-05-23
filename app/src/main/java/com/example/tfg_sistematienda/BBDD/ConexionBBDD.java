@@ -25,8 +25,8 @@ import java.util.List;
 public class ConexionBBDD {
 
     private static final String DRIVER = "org.postgresql.Driver";
-    //private static final String URL = "jdbc:postgresql://192.168.19.244:5432/TiendaInfo";
-    private static final String URL = "jdbc:postgresql://10.0.2.2:5432/TiendaInfo";
+    private static final String URL = "jdbc:postgresql://192.168.10.150:5432/TiendaInfo";
+    //private static final String URL = "jdbc:postgresql://10.0.2.2:5432/TiendaInfo";
     private static final String USUARIO = "postgres";
     private static final String PASSWORD = "admin";
     private Connection conexion = null;
@@ -1227,6 +1227,34 @@ public class ConexionBBDD {
         return insertarOK;
     }
 
+    public String obtenerNombreTienda(String idTienda){
+        String nombreTienda="";
+
+        conectarBD(); // Supongamos que esta función establece la conexión a la base de datos
+
+        try {
+            // Construir la consulta SQL con los parámetros proporcionados
+            String query = "SELECT nombre FROM tienda WHERE cif = ?";
+            PreparedStatement preparedStatement = conexion.prepareStatement(query);
+            preparedStatement.setString(1, idTienda);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            // Si se encuentra al menos un resultado, el usuario existe
+            if (resultSet.next()) {
+                nombreTienda = resultSet.getString("nombre");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                cerrarConnection(conexion); // Supongo que tienes un método cerrarConnection() para cerrar la conexión
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return nombreTienda;
+    }
 
 
 

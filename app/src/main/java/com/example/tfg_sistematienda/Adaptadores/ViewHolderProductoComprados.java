@@ -3,6 +3,7 @@ package com.example.tfg_sistematienda.Adaptadores;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -16,7 +17,7 @@ public class ViewHolderProductoComprados extends RecyclerView.ViewHolder {
     public ImageView imagenProducto_comprado;
     public TextView nombreProducto_comprado, codigoProducto_comprado, precioProducto_comprado;
     public EditText cantidadProducto_comprado;
-    public Button aumentarProducto_comprado, disminuirProducto_comprado;
+    public ImageButton aumentarProducto_comprado, disminuirProducto_comprado;
 
 
 

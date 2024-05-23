@@ -4,21 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/main"
+    android:background="@color/gray"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".vistas.RealizaVenta">
-
-    <TextView
-        android:id="@+id/textView35"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="92dp"
-        android:layout_marginBottom="700dp"
-        android:text="REALIZAR VENTA"
-        android:textSize="34sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_todos"
@@ -31,32 +20,36 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_comprados"
-        android:layout_width="350dp"
-        android:layout_height="492dp"
-        android:layout_marginStart="720dp"
+        android:layout_width="353dp"
+        android:layout_height="476dp"
+        android:layout_marginStart="752dp"
         android:layout_marginBottom="160dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <Button
+    <ImageButton
         android:id="@+id/leer_producto_venta"
-        android:layout_width="138dp"
-        android:layout_height="74dp"
-        android:layout_marginStart="392dp"
-        android:layout_marginBottom="576dp"
-        android:text="LEER CODIGO"
+        android:layout_width="190dp"
+        android:layout_height="73dp"
+        android:layout_marginStart="404dp"
+        android:layout_marginBottom="592dp"
+        android:background="@android:color/transparent"
+        android:contentDescription="añadirProducto"
+        android:scaleType="fitCenter"
+        android:src="@mipmap/escanearcodigo"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <Button
+    <ImageButton
         android:id="@+id/bt_realizar_venta"
-        android:layout_width="362dp"
-        android:layout_height="71dp"
+        android:layout_width="338dp"
+        android:layout_height="120dp"
         android:layout_marginStart="44dp"
         android:layout_marginBottom="20dp"
-        android:text="REALIZAR VENTA"
-        android:textSize="24sp"
-        android:textStyle="bold"
+        android:background="@android:color/transparent"
+        android:contentDescription="añadirProducto"
+        android:scaleType="fitCenter"
+        android:src="@mipmap/confirmarventa"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -64,10 +57,12 @@
         android:id="@+id/textView36"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="840dp"
-        android:layout_marginBottom="92dp"
+        android:layout_marginStart="752dp"
+        android:layout_marginBottom="60dp"
+        android:background="@color/white"
         android:text="TOTAL: "
-        android:textSize="24sp"
+        android:textColor="@color/black"
+        android:textSize="32sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -75,8 +70,9 @@
         android:id="@+id/tv_total"
         android:layout_width="206dp"
         android:layout_height="59dp"
-        android:layout_marginStart="924dp"
-        android:layout_marginBottom="72dp"
+        android:layout_marginStart="872dp"
+        android:layout_marginBottom="44dp"
+        android:background="@drawable/border_black"
         android:text="0"
         android:textAlignment="center"
         android:textAllCaps="false"
@@ -89,8 +85,8 @@
         android:id="@+id/textView38"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="1136dp"
-        android:layout_marginBottom="80dp"
+        android:layout_marginStart="1084dp"
+        android:layout_marginBottom="52dp"
         android:text="€"
         android:textAlignment="center"
         android:textSize="38sp"
@@ -98,28 +94,17 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <Button
+    <ImageButton
         android:id="@+id/bt_cancelar_venta"
-        android:layout_width="211dp"
-        android:layout_height="66dp"
-        android:layout_marginStart="444dp"
+        android:layout_width="338dp"
+        android:layout_height="120dp"
+        android:layout_marginStart="404dp"
         android:layout_marginBottom="20dp"
+        android:background="@android:color/transparent"
+        android:contentDescription="añadirProducto"
+        android:scaleType="fitCenter"
+        android:src="@mipmap/cancelarventa"
         android:text="CANCELAR VENTA"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <EditText
-        android:id="@+id/id_ticket"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="900dp"
-        android:layout_marginBottom="16dp"
-        android:ems="10"
-        android:hint="id_ticket"
-        android:inputType="text"
-        android:textAlignment="center"
-        android:textSize="24sp"
-        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -128,10 +113,54 @@
         android:layout_width="335dp"
         android:layout_height="66dp"
         android:layout_marginStart="44dp"
-        android:layout_marginBottom="584dp"
+        android:layout_marginBottom="600dp"
+        android:background="@drawable/border_black"
         android:ems="10"
         android:hint="Introduzca CODIGO BARRAS a buscar"
         android:inputType="number"
+        android:textAlignment="center"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/textView29"
+        android:layout_width="600dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="44dp"
+        android:layout_marginBottom="540dp"
+        android:background="@color/black"
+        android:text="PRODUCTOS EN TIENDA:"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/textView99"
+        android:layout_width="353dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="752dp"
+        android:layout_marginBottom="636dp"
+        android:background="@color/black"
+        android:text="PRODUCTOS CLIENTE :"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="48dp"
+        android:layout_height="506dp"
+        android:layout_marginStart="684dp"
+        android:layout_marginBottom="160dp"
+        android:scaleType="fitXY"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@mipmap/linearecta" />
 </androidx.constraintlayout.widget.ConstraintLayout>

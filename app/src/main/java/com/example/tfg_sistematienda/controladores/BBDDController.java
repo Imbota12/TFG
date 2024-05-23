@@ -91,5 +91,6 @@ public class BBDDController {
     public UsuarioModel obtenerEmpleado(String dni) {return conexionBBDD.obtenerEmpleado(dni);}
 
     public boolean insertarLog(String accion, LocalDateTime fechaHora, String dniEmpleado) {return conexionBBDD.insertarLog(accion,fechaHora,dniEmpleado);}
+    public String obtenerNombreTienda(String idTienda) {return  conexionBBDD.obtenerNombreTienda(idTienda);}
 
 }

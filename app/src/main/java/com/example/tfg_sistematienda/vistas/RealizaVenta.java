@@ -18,6 +18,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -64,8 +65,8 @@ public class RealizaVenta extends AppCompatActivity implements AdaptadorProducto
 
     private static final int REQUEST_ENABLE_BT = 27;
     private RecyclerView todosProductos, productosComprados;
-    private EditText codigoBuscar, idTicket;
-    private Button escanearProducto, realizarVenta, cancelarVenta;
+    private EditText codigoBuscar;
+    private ImageButton escanearProducto, realizarVenta, cancelarVenta;
     private TextView precioTotal;
     private String id_ticket, codigoEscaneado;
     private AdaptadorProductosComprados adaptadorComprados;
@@ -79,7 +80,7 @@ public class RealizaVenta extends AppCompatActivity implements AdaptadorProducto
 
     private double entregado, devuelto;
     private EditText aPagar, aRecoger, aDevolver;
-    private Button tarjeta, efectivo, realizarPago, comprobar;
+    private ImageButton tarjeta, efectivo, realizarPago, comprobar;
     private TextView tx_Pagar, tx_Recoger, tx_Devolver, eu_Pagar, eu_Recoger, eu_Devolver;
     private static final int CAMERA_PERMISSION_REQUEST_CODE = 150;
 
@@ -87,6 +88,7 @@ public class RealizaVenta extends AppCompatActivity implements AdaptadorProducto
     private EscPosPrinter printer;
     private BluetoothAdapter bluetoothAdapter;
     private UsuarioModel usuario;
+    private boolean allowBackPress=false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,8 +112,7 @@ public class RealizaVenta extends AppCompatActivity implements AdaptadorProducto
 
         todosProductos = findViewById(R.id.rv_todos);
         productosComprados = findViewById(R.id.rv_comprados);
-        idTicket = findViewById(R.id.id_ticket);
-        idTicket.setEnabled(false);
+
         precioTotal = findViewById(R.id.tv_total);
         precioTotal.setText("0");
 
@@ -148,7 +149,7 @@ public class RealizaVenta extends AppCompatActivity implements AdaptadorProducto
 
         // Mostrar el nuevo código de barras
         id_ticket = nuevoIdBarras;
-        idTicket.setText(id_ticket);
+
 
 
         codigoBuscar.addTextChangedListener(new TextWatcher() {
@@ -177,9 +178,8 @@ public class RealizaVenta extends AppCompatActivity implements AdaptadorProducto
         });
 
         cancelarVenta.setOnClickListener(v -> {
-            Intent i = new Intent(this, MainActivity.class);
-            // Limpiar la pila de actividades y comenzar la nueva actividad
-            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            Intent i = new Intent(this, GeneralVendedor.class);
+            i.putExtra("usuarioDNI", usuario.getDni());
             startActivity(i);
         });
 
@@ -195,6 +195,15 @@ public class RealizaVenta extends AppCompatActivity implements AdaptadorProducto
 
 
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (allowBackPress) {
+            super.onBackPressed();
+        } else {
+            Toast.makeText(this, "Pulse el botón CANCELAR VENTA para volver atrás", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void crearTicketconCodigo() {

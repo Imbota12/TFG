@@ -1,6 +1,7 @@
 package com.example.tfg_sistematienda.vistas;
 
 
+
 import android.os.Bundle;
 
 import androidx.activity.EdgeToEdge;
@@ -50,7 +51,9 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class ListaInventario extends AppCompatActivity {
@@ -58,9 +61,11 @@ public class ListaInventario extends AppCompatActivity {
 
     private static final int CAMERA_PERMISSION_REQUEST_CODE = 1;
     private static final int WRITE_EXTERNAL_STORAGE_PERMISSION_REQUEST_CODE = 2;
+    private static final int REQUEST_EXTERNAL_STORAGE = 18;
 
     static final String TAG = "ScanBarcodeActivity";
-
+    private static final int MAX_CELL_LENGTH = 32767;
+    private boolean allowBackPress = false;
     private ImageButton botonEscaneo;
     private String codigoEscaneado;
 
@@ -69,7 +74,7 @@ public class ListaInventario extends AppCompatActivity {
     private RecyclerView recyclerView;
     private AdaptadorProducto adaptadorProducto;
     private List<ProductoModel> listaProductos;
-    private ImageButton generarExcel, bajoStock;
+    private ImageButton generarExcel, bajoStock, volverMenu;
     // Modelo del usuario que está utilizando la aplicación
     private UsuarioModel usuario;
 
@@ -108,19 +113,25 @@ public class ListaInventario extends AppCompatActivity {
         botonEscaneo = findViewById(R.id.escanear_producto);
         generarExcel = findViewById(R.id.genera_Excel);
         bajoStock = findViewById(R.id.bajo_stock);
+        volverMenu = findViewById(R.id.volvermenu);
+
+        volverMenu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(ListaInventario.this, GeneralReponedor.class);
+                intent.putExtra("usuarioDNI", usuarioDNI);
+                startActivity(intent);
+            }
+        });
 
         generarExcel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (ContextCompat.checkSelfPermission(ListaInventario.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-                    try {
+                      try {
                         generarExcel();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                } else {
-                    ActivityCompat.requestPermissions(ListaInventario.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, WRITE_EXTERNAL_STORAGE_PERMISSION_REQUEST_CODE);
-                }
             }
         });
 
@@ -162,6 +173,14 @@ public class ListaInventario extends AppCompatActivity {
 
     }
 
+    @Override
+    public void onBackPressed() {
+        if (allowBackPress) {
+            super.onBackPressed();
+        } else {
+            Toast.makeText(this, "Para volver pulse el botón VOLVER MENÚ", Toast.LENGTH_SHORT).show();
+        }
+    }
 
     private void enviarNotificacionStockBajo() {
         List<ProductoModel> productosBajoStock = new ArrayList<>();
@@ -222,11 +241,16 @@ public class ListaInventario extends AppCompatActivity {
     }
 
     private void generarExcel() throws IOException {
+        File directory = new File(this.getExternalFilesDir(null), "MiCarpeta");
+        if (!directory.exists()) {
+            directory.mkdirs();
+        }
+
         Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet("Productos");
 
         // Crear encabezados
-        String[] encabezados = {"Código Barras", "Nombre", "Descripción", "Cantidad Stock", "Precio Unidad", "Veces Comprado", "Veces Devuelto", "Imagen Producto", "ID Tienda"};
+        String[] encabezados = {"Código Barras", "Nombre", "Descripción", "Cantidad Stock", "Precio Unidad", "Veces Comprado", "Veces Devuelto", "ID Tienda"};
         Row headerRow = sheet.createRow(0);
         for (int i = 0; i < encabezados.length; i++) {
             Cell cell = headerRow.createCell(i);
@@ -237,21 +261,38 @@ public class ListaInventario extends AppCompatActivity {
         int rowNum = 1;
         for (ProductoModel producto : listaProductos) {
             Row row = sheet.createRow(rowNum++);
+            if (producto.getCodigoBarras().length() > MAX_CELL_LENGTH) {
+                Log.e("ExcelError", "Código de barras excede el límite de caracteres.");
+            } else {
+                row.createCell(0).setCellValue(producto.getCodigoBarras());
+            }
 
-            row.createCell(0).setCellValue(producto.getCodigoBarras());
-            row.createCell(1).setCellValue(producto.getNombre());
-            row.createCell(2).setCellValue(producto.getDescripcion());
+            if (producto.getNombre().length() > MAX_CELL_LENGTH) {
+                Log.e("ExcelError", "Nombre excede el límite de caracteres.");
+            } else {
+                row.createCell(1).setCellValue(producto.getNombre());
+            }
+
+            if (producto.getDescripcion().length() > MAX_CELL_LENGTH) {
+                Log.e("ExcelError", "Descripción excede el límite de caracteres.");
+            } else {
+                row.createCell(2).setCellValue(producto.getDescripcion());
+            }
             row.createCell(3).setCellValue(producto.getCantidadStock());
             row.createCell(4).setCellValue(producto.getPrecioUnidad());
             row.createCell(5).setCellValue(producto.getVecesComprado());
             row.createCell(6).setCellValue(producto.getVecesDevuelto());
-            row.createCell(7).setCellValue(new String(producto.getImagenProducto())); // Asume que es un String por simplicidad
-            row.createCell(8).setCellValue(producto.getIdTienda());
+            row.createCell(7).setCellValue(producto.getIdTienda());
         }
 
-        // Guardar el archivo en el almacenamiento externo
-        String fileName = "productos.xlsx";
-        File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), fileName);
+        requestStoragePermission();
+
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        // Definir el nombre del archivo con la fecha y hora actual
+        String fileName = "productos_" + timeStamp + ".xlsx";
+
+        File file = new File(directory, fileName);
+
         FileOutputStream fileOut = new FileOutputStream(file);
         workbook.write(fileOut);
         fileOut.close();
@@ -262,6 +303,15 @@ public class ListaInventario extends AppCompatActivity {
     }
 
 
+    private void requestStoragePermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            // Si el permiso no está concedido, solicita permiso al usuario
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                    REQUEST_EXTERNAL_STORAGE);
+        }
+    }
 
     private void iniciarEscaner() {
         IntentIntegrator integrator = new IntentIntegrator(this);
@@ -312,9 +362,6 @@ public class ListaInventario extends AppCompatActivity {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     // Permiso de escritura concedido
                     Toast.makeText(this, "Permiso de escritura concedido", Toast.LENGTH_SHORT).show();
-                } else {
-                    // Permiso de escritura denegado
-                    Toast.makeText(this, "Permiso de escritura en almacenamiento externo denegado", Toast.LENGTH_SHORT).show();
                 }
                 break;
 

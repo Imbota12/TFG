@@ -5,6 +5,124 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/gray"
     tools:context=".vistas.GeneralVendedor">
+
+
+    <TextView
+        android:id="@+id/textView70"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="92dp"
+        android:layout_marginBottom="596dp"
+        android:text="BIENVENIDO DE NUEVO :"
+        android:textAlignment="center"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/nombre_vende"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="436dp"
+        android:layout_marginBottom="596dp"
+        android:text="TextView"
+        android:textSize="34sp"
+        android:textStyle="bold|italic"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/textView98"
+        android:layout_width="223dp"
+        android:layout_height="34dp"
+        android:layout_marginStart="132dp"
+        android:layout_marginBottom="544dp"
+        android:text="TIENDA :"
+        android:textAlignment="center"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/nombretienda_vende"
+        android:layout_width="300dp"
+        android:layout_height="51dp"
+        android:layout_marginStart="436dp"
+        android:layout_marginBottom="528dp"
+        android:text="TextView"
+        android:textAlignment="center"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageButton
+        android:id="@+id/cerrar_sesion_vende"
+        android:layout_width="97dp"
+        android:layout_height="108dp"
+        android:layout_marginStart="1004dp"
+        android:layout_marginBottom="28dp"
+        android:background="@android:color/transparent"
+        android:contentDescription="cerrarSesion"
+        android:scaleType="fitCenter"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@mipmap/cerrarsesion" />
+
+    <ImageButton
+        android:id="@+id/correo_vende"
+        android:layout_width="122dp"
+        android:layout_height="108dp"
+        android:layout_marginStart="236dp"
+        android:layout_marginBottom="28dp"
+        android:background="@android:color/transparent"
+        android:contentDescription="gmail"
+        android:scaleType="fitCenter"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@mipmap/gmail" />
+
+    <ImageButton
+        android:id="@+id/llamada_vende"
+        android:layout_width="122dp"
+        android:layout_height="108dp"
+        android:layout_marginStart="64dp"
+        android:layout_marginBottom="28dp"
+        android:background="@android:color/transparent"
+        android:contentDescription="llamar"
+        android:scaleType="fitCenter"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@mipmap/llamadaa" />
+
+    <ImageButton
+        android:id="@+id/realizar_venta"
+        android:layout_width="456dp"
+        android:layout_height="195dp"
+        android:layout_marginStart="92dp"
+        android:layout_marginBottom="260dp"
+        android:background="@android:color/transparent"
+        android:contentDescription="añadirProducto"
+        android:scaleType="fitCenter"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@mipmap/venta" />
+
+    <ImageButton
+        android:id="@+id/devolucion"
+        android:layout_width="429dp"
+        android:layout_height="285dp"
+        android:layout_marginStart="644dp"
+        android:layout_marginBottom="208dp"
+        android:background="@android:color/transparent"
+        android:contentDescription="listadoProducto"
+        android:scaleType="fitCenter"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@mipmap/devolucion" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
