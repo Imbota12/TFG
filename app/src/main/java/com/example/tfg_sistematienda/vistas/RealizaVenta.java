@@ -10,9 +10,12 @@ import android.bluetooth.BluetoothDevice;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,6 +42,7 @@ import com.dantsu.escposprinter.exceptions.EscPosBarcodeException;
 import com.dantsu.escposprinter.exceptions.EscPosConnectionException;
 import com.dantsu.escposprinter.exceptions.EscPosEncodingException;
 import com.dantsu.escposprinter.exceptions.EscPosParserException;
+import com.dantsu.escposprinter.textparser.PrinterTextParserImg;
 import com.example.tfg_sistematienda.Adaptadores.AdaptadorProductosComprados;
 import com.example.tfg_sistematienda.Adaptadores.AdaptadorProductosVenta;
 import com.example.tfg_sistematienda.MainActivity;
@@ -55,6 +59,7 @@ import com.journeyapps.barcodescanner.CaptureActivity;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -300,6 +305,22 @@ public class RealizaVenta extends AppCompatActivity implements AdaptadorProducto
                             printer = new EscPosPrinter(connection, 200, 50f, 45);
 
                             String textoTicket = "[C]\n";
+                            String nombreTienda = bbddController.obtenerNombreTienda(usuario.getIdTienda());
+                            LocalDateTime fecha = LocalDateTime.now();
+                            String fechaString = fecha.getDayOfMonth() + "/" + fecha.getMonthValue() + "/" + fecha.getYear()+ "   "+ fecha.getHour() + ":" + fecha.getMinute() + ":" + fecha.getSecond();
+                            Bitmap logo = BitmapFactory.decodeResource(getResources(), R.mipmap.imbott);
+                            String imagen= PrinterTextParserImg.bitmapToHexadecimalString(printer, logo );
+                            byte[] decodedString = Base64.decode(imagen, Base64.DEFAULT);
+                            Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+
+                                textoTicket += "[L]<b><font size='big'>TICKET DE VENTA</font></b>\n";
+                                textoTicket += "[C]<img>" + imagen + "</img>\n";
+                                textoTicket += "[C]\n";
+                                textoTicket += "[L]<b>FECHA: </b>" + fechaString + "\n";
+                                textoTicket += "[L]Por vendedor: "+usuario.getNombre()+"\n";
+                                textoTicket += "[L]En tienda: "+nombreTienda+"\n";
+                                textoTicket += "[L]Con CIF: <b>"+usuario.getIdTienda()+"</b>\n";
+                                textoTicket += "[L]*****************************\n";
 
                             for (ProductoModel producto : listaProductosComprados) {
                                 for (Producto_TicketModel prod : listaCantidades) {
@@ -312,10 +333,14 @@ public class RealizaVenta extends AppCompatActivity implements AdaptadorProducto
                                     }
                                 }
                             }
-                                        textoTicket+= "[L]<b> TOTAL A PAGAR:<b> "+totalVenta+"\n";
-                                        textoTicket+= "[L]<b> ENTREGADO:<b> " + entregado+"\n";
-                                        textoTicket+= "[L] DEVUELTO:<b> " + devuelto+"\n";
+                                        textoTicket+= "[L]<b> TOTAL A PAGAR:<b> "+totalVenta+" euros\n";
+                                        textoTicket+= "[L]<b> ENTREGADO:<b> " + entregado+" euros\n";
+                                        textoTicket+= "[L] DEVUELTO:<b> " + devuelto+" euros\n";
                                         textoTicket += "[C]<barcode type='128' height='10'>" + id_ticket + "</barcode>\n";
+                                        textoTicket += "[L]\n";
+                                        textoTicket += "[L]Tiene 15 días para devolver\n";
+                                        textoTicket += "[L]\n";
+                                        textoTicket += "[L]¡¡GRACIAS POR SU VISITA!!\n";
                             printer.printFormattedText(textoTicket);
                             desconectarImpresora();
                             // Después de imprimir, muestra el diálogo de venta exitosa
@@ -348,7 +373,8 @@ public class RealizaVenta extends AppCompatActivity implements AdaptadorProducto
             public void onClick(DialogInterface dialog, int which) {
                 // Implementa lo que deseas hacer cuando se presiona el botón "Volver al Menú"
                 // Por ejemplo, puedes iniciar la actividad del menú principal
-                Intent intent = new Intent(RealizaVenta.this, MainActivity.class);
+                Intent intent = new Intent(RealizaVenta.this, GeneralVendedor.class);
+                intent.putExtra("usuarioDNI", usuario.getDni());
                 startActivity(intent);
                 finish(); // Esto evita que el usuario pueda volver atrás al menú principal desde esta actividad
             }
@@ -360,7 +386,7 @@ public class RealizaVenta extends AppCompatActivity implements AdaptadorProducto
                 // Implementa lo que deseas hacer cuando se presiona el botón "Realizar Otra Venta"
                 // Por ejemplo, puedes iniciar la actividad de realizar venta sin datos
                 Intent intent = new Intent(RealizaVenta.this, RealizaVenta.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK); // Limpiar el historial de actividades
+                intent.putExtra("usuarioDNI", usuario.getDni());
                 startActivity(intent);
             }
         });
