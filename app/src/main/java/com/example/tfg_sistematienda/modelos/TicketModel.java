@@ -12,8 +12,10 @@ public class TicketModel {
     private boolean venta;
     private double entregado;
     private double devuelto;
+    private String id_ticket;
 
-    public TicketModel(String codigo_barras_ticket, double total_precio, boolean devolucion, boolean venta, double entregado, double devuelto) {
+
+    public TicketModel(String codigo_barras_ticket, double total_precio, boolean devolucion, boolean venta, double entregado, double devuelto, String id_ticket) {
         this.codigo_barras_ticket = codigo_barras_ticket;
         this.total_precio = total_precio;
         this.devolucion = devolucion;
@@ -22,6 +24,7 @@ public class TicketModel {
         this.devuelto = devuelto;
         this.fecha_ticket = LocalDate.now(); // Establecer la fecha actual como fecha de ticket
         this.fecha_limite_devolucion = calcularFechaLimiteDevolucion(); // Calcular la fecha límite de devolución
+        this.id_ticket = id_ticket;
     }
 
     public TicketModel() {
@@ -98,4 +101,9 @@ public class TicketModel {
     public void setDevuelto(double devuelto) {
         this.devuelto = devuelto;
     }
+
+    public String getId_ticket() {
+        return id_ticket;
+    }
+    public void setId_ticket(String id_ticket) {this.id_ticket = id_ticket;}
 }

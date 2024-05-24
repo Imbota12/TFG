@@ -16,11 +16,13 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Date;
 
 public class ConexionBBDD {
 
@@ -288,7 +290,7 @@ public class ConexionBBDD {
         conectarBD();
         try {
             // Construir la consulta SQL para actualizar el stock del producto
-            String query = "UPDATE Producto SET cantidad_stock = cantidad_stock - ? WHERE codigo_barras = ?";
+            String query = "UPDATE producto SET cantidad_stock = cantidad_stock - ? WHERE codigo_barras = ?";
             PreparedStatement preparedStatement = conexion.prepareStatement(query);
             preparedStatement.setInt(1, cantidad); // La cantidad puede ser positiva (para incrementar el stock) o negativa (para reducir el stock)
             preparedStatement.setString(2, codigoBarras);
@@ -314,7 +316,7 @@ public class ConexionBBDD {
 
         try {
             // Construir la consulta SQL para insertar un nuevo ticket
-            String query = "INSERT INTO ticket (codigo_barras_ticket, total_precio, fecha_ticket, fecha_limite_devolucion, isdevolucion, isventa, entregado, devuelto) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+            String query = "INSERT INTO ticket (codigo_barras_ticket, total_precio, fecha_ticket, fecha_limite_devolucion, isdevolucion, isventa, entregado, devuelto, cif) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
             PreparedStatement preparedStatement = conexion.prepareStatement(query);
             preparedStatement.setString(1, ticket.getCodigo_barras_ticket());
             preparedStatement.setDouble(2, ticket.getTotal_precio());
@@ -324,6 +326,7 @@ public class ConexionBBDD {
             preparedStatement.setBoolean(6, ticket.isVenta());
             preparedStatement.setDouble(7, ticket.getEntregado());
             preparedStatement.setDouble(8, ticket.getDevuelto());
+            preparedStatement.setString(9, ticket.getId_ticket());
 
             preparedStatement.executeUpdate();
             preparedStatement.close();
@@ -968,15 +971,16 @@ public class ConexionBBDD {
         return listaProductos;
     }
 
-    public boolean verificarExistenciaTicket(String codigoTicket) {
+    public boolean verificarExistenciaTicket(String codigoTicket, String idTienda) {
         conectarBD(); // Supongamos que esta función establece la conexión a la base de datos
 
         boolean existe = false;
 
         try {
-            String query = "SELECT COUNT(*) FROM ticket WHERE codigo_barras_ticket = ?";
+            String query = "SELECT COUNT(*) FROM ticket WHERE codigo_barras_ticket = ? AND cif = ?";
             PreparedStatement preparedStatement = conexion.prepareStatement(query);
             preparedStatement.setString(1, codigoTicket);
+            preparedStatement.setString(2,idTienda);
             ResultSet resultSet = preparedStatement.executeQuery();
 
             if (resultSet.next()) {
@@ -1256,7 +1260,65 @@ public class ConexionBBDD {
         return nombreTienda;
     }
 
+public Date obtenerFechaLimiteDevolucion(String idTicket){
+        Date fechaLimite=Date.from(Instant.now());
 
+        conectarBD();
+
+    try {
+        // Construir la consulta SQL con los parámetros proporcionados
+        String query = "SELECT fecha_limite_devolucion FROM ticket WHERE codigo_barras_ticket = ?";
+        PreparedStatement preparedStatement = conexion.prepareStatement(query);
+        preparedStatement.setString(1, idTicket);
+
+        ResultSet resultSet = preparedStatement.executeQuery();
+
+        // Si se encuentra al menos un resultado, el usuario existe
+        if (resultSet.next()) {
+            fechaLimite = resultSet.getDate("fecha_limite_devolucion");
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    } finally {
+        try {
+            cerrarConnection(conexion); // Supongo que tienes un método cerrarConnection() para cerrar la conexión
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+        return fechaLimite;
+}
+
+
+
+    public Date obtenerFechaTicket(String idTicket){
+        Date fechaTicket=Date.from(Instant.now());
+
+        conectarBD();
+
+        try {
+            // Construir la consulta SQL con los parámetros proporcionados
+            String query = "SELECT fecha_ticket FROM ticket WHERE codigo_barras_ticket = ?";
+            PreparedStatement preparedStatement = conexion.prepareStatement(query);
+            preparedStatement.setString(1, idTicket);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            // Si se encuentra al menos un resultado, el usuario existe
+            if (resultSet.next()) {
+                fechaTicket = resultSet.getDate("fecha_ticket");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                cerrarConnection(conexion); // Supongo que tienes un método cerrarConnection() para cerrar la conexión
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return fechaTicket;
+    }
 
 }
 

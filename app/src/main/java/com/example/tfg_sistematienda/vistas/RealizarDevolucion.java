@@ -10,9 +10,12 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -39,6 +42,7 @@ import com.dantsu.escposprinter.exceptions.EscPosBarcodeException;
 import com.dantsu.escposprinter.exceptions.EscPosConnectionException;
 import com.dantsu.escposprinter.exceptions.EscPosEncodingException;
 import com.dantsu.escposprinter.exceptions.EscPosParserException;
+import com.dantsu.escposprinter.textparser.PrinterTextParserImg;
 import com.example.tfg_sistematienda.Adaptadores.AdaptadorProductoDevuelto;
 import com.example.tfg_sistematienda.Adaptadores.AdaptadorProductoTicket;
 import com.example.tfg_sistematienda.Adaptadores.AdaptadorProductosComprados;
@@ -49,17 +53,24 @@ import com.example.tfg_sistematienda.controladores.BBDDController;
 import com.example.tfg_sistematienda.modelos.ProductoModel;
 import com.example.tfg_sistematienda.modelos.Producto_TicketModel;
 import com.example.tfg_sistematienda.modelos.TicketModel;
+import com.example.tfg_sistematienda.modelos.UsuarioModel;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 import com.journeyapps.barcodescanner.CaptureActivity;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
+import java.util.TimeZone;
 import java.util.stream.Collectors;
 
 public class RealizarDevolucion extends AppCompatActivity implements AdaptadorProductoTicket.OnProductoSeleccionadoListener, AdaptadorProductoDevuelto.OnProductRemovedListener, AdaptadorProductoDevuelto.OnQuantityChangedListener, AdaptadorProductoDevuelto.OnQuantityChangedListenerUp {
@@ -87,6 +98,7 @@ public class RealizarDevolucion extends AppCompatActivity implements AdaptadorPr
     private EscPosPrinter printer;
     private BluetoothAdapter bluetoothAdapter;
     private static final int CAMERA_PERMISSION_REQUEST_CODE = 250;
+    private UsuarioModel usuario;
 
 
     @Override
@@ -100,6 +112,14 @@ public class RealizarDevolucion extends AppCompatActivity implements AdaptadorPr
             return insets;
         });
 
+        // Obtiene el Intent que inició esta actividad
+        Intent intent = getIntent();
+
+        // Captura el DNI del usuario pasado desde la actividad anterior
+        String usuarioDNI = intent.getStringExtra("usuarioDNI");
+
+        // Recupera la información del usuario desde la base de datos utilizando el controlador de la base de datos
+        usuario = bbddController.obtenerEmpleado(usuarioDNI);
 
         codigosBarrasTickets= bbddController.obtenerListaCodigosTicket();
         todosProductosTicket=findViewById(R.id.rv_productos_ticket);
@@ -192,7 +212,11 @@ public class RealizarDevolucion extends AppCompatActivity implements AdaptadorPr
             @Override
             public void onClick(View v) {
                codigoEscaneado = codigoTicketBuscar.getText().toString();
-                verificarCodigoEscaneado();
+                try {
+                    verificarCodigoEscaneado();
+                } catch (ParseException e) {
+                    throw new RuntimeException(e);
+                }
 
             }
         });
@@ -217,21 +241,27 @@ public class RealizarDevolucion extends AppCompatActivity implements AdaptadorPr
 
         entregado=0;
         devuelto=totalDevolucion;
-        ticket = new TicketModel(id_ticket, totalDevolucion, true, false, entregado, devuelto);
+        ticket = new TicketModel(id_ticket, totalDevolucion, true, false, entregado, devuelto, usuario.getIdTienda());
         if (bbddController.insertarTicket(ticket)) {
-            for (ProductoModel producto : listaProductosDevueltos){
-                Producto_TicketModel nuevoProductoTicket = new Producto_TicketModel(producto.getCodigoBarras(), ticket_devo.getText().toString(), producto.getCantidad());
-                if (bbddController.insertarProductoTicket(nuevoProductoTicket)) {
-                    if (bbddController.modificarStockProducto(nuevoProductoTicket.getCodigoBarras_producto(), -nuevoProductoTicket.getCantidad())) {
-                        Log.d(TAG, "Stock del producto actualizado: " + nuevoProductoTicket.getCodigoBarras_producto());
+            for (ProductoModel producto : listaProductosTicket){
+                if (producto.getCantidad() >0) {
+                    Producto_TicketModel nuevoProductoTicket = new Producto_TicketModel(producto.getCodigoBarras(), ticket_devo.getText().toString(), producto.getCantidad());
+
+                    if (bbddController.insertarProductoTicket(nuevoProductoTicket)) {
+
                     } else {
-                        Log.e(TAG, "Error al actualizar el stock del producto: " + nuevoProductoTicket.getCodigoBarras_producto());
+                        Log.e(TAG, "Error al insertar el producto en ticket_producto: " + nuevoProductoTicket.toString());
                     }
-                    if(bbddController.incrementarVecesDevuelto(producto.getCodigoBarras(), producto.getCantidad())) {
-                        Log.d(TAG, "Veces devueltas del producto actualizado: " + nuevoProductoTicket.getCodigoBarras_producto());
-                    }
+                }
+            }
+            for (ProductoModel productoDevuelto : listaProductosDevueltos){
+                if(bbddController.incrementarVecesDevuelto(productoDevuelto.getCodigoBarras(), productoDevuelto.getCantidad())) {
+                    Log.d(TAG, "Veces devueltas del producto actualizado: " + productoDevuelto.getCodigoBarras());
+                }
+                if (bbddController.modificarStockProducto(productoDevuelto.getCodigoBarras(), -productoDevuelto.getCantidad())) {
+                    Log.d(TAG, "Stock del producto actualizado: " + productoDevuelto.getCodigoBarras());
                 } else {
-                    Log.e(TAG, "Error al insertar el producto en ticket_producto: " + nuevoProductoTicket.toString());
+                    Log.e(TAG, "Error al actualizar el stock del producto: " + productoDevuelto.getCodigoBarras());
                 }
             }
             try {
@@ -240,6 +270,8 @@ public class RealizarDevolucion extends AppCompatActivity implements AdaptadorPr
                      EscPosConnectionException e) {
                 throw new RuntimeException(e);
             }
+
+
         } else {
             Toast.makeText(this, "Error al crear el ticket", Toast.LENGTH_SHORT).show();
         }
@@ -305,20 +337,54 @@ public class RealizarDevolucion extends AppCompatActivity implements AdaptadorPr
                             printer = new EscPosPrinter(connection, 200, 50f, 45);
 
                             String textoTicket = "[C]\n";
+                            String nombreTienda = bbddController.obtenerNombreTienda(usuario.getIdTienda());
+                            LocalDateTime fecha = LocalDateTime.now();
+                            String fechaString = fecha.getDayOfMonth() + "/" + fecha.getMonthValue() + "/" + fecha.getYear()+ "   "+ fecha.getHour() + ":" + fecha.getMinute() + ":" + fecha.getSecond();
+                            Bitmap logo = BitmapFactory.decodeResource(getResources(), R.mipmap.imbott);
+                            String imagen= PrinterTextParserImg.bitmapToHexadecimalString(printer, logo );
+                            byte[] decodedString = Base64.decode(imagen, Base64.DEFAULT);
+                            Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
 
+                            DecimalFormat df = new DecimalFormat("#.##");
+                            df.setMinimumFractionDigits(2); // Establecer el mínimo de dos decimales
+                            df.setMaximumFractionDigits(2);
+                            String devueltoFormateado = df.format(devuelto);
+                            String totalDevolver = df.format(totalDevolucion);
+
+
+
+                            textoTicket += "[C]<b><font size='tall'>TICKET DEVOLUCION</font></b>\n";
+                            textoTicket += "[C]<img>" + imagen + "</img>\n";
+                            textoTicket += "[C]\n";
+                            textoTicket += "[L]<b>FECHA: </b>" + fechaString + "\n";
+                            textoTicket += "[L]Por vendedor: "+usuario.getNombre()+"\n";
+                            textoTicket += "[L]En tienda: "+nombreTienda+"\n";
+                            textoTicket += "[L]Con CIF: <b>"+usuario.getIdTienda()+"</b>\n";
+                            textoTicket += "[L]*****************************\n";
+
+                            textoTicket += "[L]<b>Productos restantes:<b>\n";
+                            textoTicket += "[L]+++++++++++++++\n";
                             for (ProductoModel producto : listaProductosTicket) {
                                 if (producto.getCantidad() > 0) {
                                     textoTicket += "[L]<b>" + producto.getNombre() + "</b>[L] " + producto.getPrecioUnidad() + "e/Uni[L] " + producto.getCantidad() + "\n";
                                     textoTicket += "[L] PRECIO TOTAL PRODUCTO: " + producto.getPrecioUnidad() * producto.getCantidad() + "e\n";
                                     textoTicket += "[L]  Cod Producto : " + producto.getCodigoBarras() + "\n";
                                     textoTicket += "[L]===========================\n";
-                                    break; // Romper el bucle interior cuando se encuentre la coincidencia
-
-
                                 }
                             }
-                                textoTicket += "[L]<b> TOTAL A DEVOLVER:<b> " + totalDevolucion + "\n";
-                                textoTicket += "[L] DEVUELTO:<b> " + devuelto + "\n";
+
+                            textoTicket += "[L]<b>Productos devueltos:<b>\n";
+                            textoTicket += "[L]--------------\n";
+                            for (ProductoModel producto : listaProductosDevueltos){
+                                textoTicket += "[L]<b>" + producto.getNombre() + "</b>[L] " + producto.getPrecioUnidad() + "e/Uni[L] " + producto.getCantidad() + "\n";
+                                textoTicket += "[L] PRECIO TOTAL PRODUCTO: " + producto.getPrecioUnidad() * producto.getCantidad() + "e\n";
+                                textoTicket += "[L]  Cod Producto : " + producto.getCodigoBarras() + "\n";
+                                textoTicket += "[L]===========================\n";
+                            }
+
+
+                                textoTicket += "[L]<b> TOTAL A DEVOLVER:<b> " + totalDevolver + "\n";
+                                textoTicket += "[L] DEVUELTO:<b> " + devueltoFormateado + "\n";
                                 textoTicket += "[C]<barcode type='128' height='10'>" + id_ticket + "</barcode>\n";
                                 printer.printFormattedText(textoTicket);
 
@@ -354,7 +420,8 @@ public class RealizarDevolucion extends AppCompatActivity implements AdaptadorPr
             public void onClick(DialogInterface dialog, int which) {
                 // Implementa lo que deseas hacer cuando se presiona el botón "Volver al Menú"
                 // Por ejemplo, puedes iniciar la actividad del menú principal
-                Intent intent = new Intent(RealizarDevolucion.this, MainActivity.class);
+                Intent intent = new Intent(RealizarDevolucion.this, GeneralVendedor.class);
+                intent.putExtra("usuarioDNI", usuario.getDni());
                 startActivity(intent);
                 finish(); // Esto evita que el usuario pueda volver atrás al menú principal desde esta actividad
             }
@@ -366,7 +433,7 @@ public class RealizarDevolucion extends AppCompatActivity implements AdaptadorPr
                 // Implementa lo que deseas hacer cuando se presiona el botón "Realizar Otra Venta"
                 // Por ejemplo, puedes iniciar la actividad de realizar venta sin datos
                 Intent intent = new Intent(RealizarDevolucion.this, RealizarDevolucion.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK); // Limpiar el historial de actividades
+                intent.putExtra("usuarioDNI", usuario.getDni());
                 startActivity(intent);
             }
         });
@@ -426,7 +493,11 @@ public class RealizarDevolucion extends AppCompatActivity implements AdaptadorPr
                 codigoEscaneado = result.getContents();
                 codigoTicketBuscar.setText(codigoEscaneado);
                 Log.d(TAG, "Código de barras escaneado: " + codigoEscaneado);
-                verificarCodigoEscaneado();
+                try {
+                    verificarCodigoEscaneado();
+                } catch (ParseException e) {
+                    throw new RuntimeException(e);
+                }
 
             }
         }
@@ -458,21 +529,36 @@ public class RealizarDevolucion extends AppCompatActivity implements AdaptadorPr
 
 
 
-    private void verificarCodigoEscaneado() {
+    private void verificarCodigoEscaneado() throws ParseException {
         // Realizar una consulta a la base de datos para verificar la existencia del ticket correspondiente al código escaneado
-        boolean ticketExistente = bbddController.verificarExistenciaTicket(String.valueOf(codigoEscaneado));
+        boolean ticketExistente = bbddController.verificarExistenciaTicket(String.valueOf(codigoEscaneado), usuario.getIdTienda());
+
+        Date fecha_limite = bbddController.obtenerFechaLimiteDevolucion(String.valueOf(codigoEscaneado));
+        Date fecha_actual = obtenerFechaActualFormato();
 
         if (ticketExistente) {
-            // Si el ticket existe, cargar los productos y configurar el RecyclerView
-            cargarProductos();
-            realizarDevolucion.setVisibility(View.VISIBLE);
+            if (!fecha_limite.before(fecha_actual)) {
+                cargarProductos();
+                realizarDevolucion.setVisibility(View.VISIBLE);
+            }else{
 
+                AlertDialog.Builder builder = new AlertDialog.Builder(RealizarDevolucion.this);
+                builder.setTitle("Ticket vencido");
+                builder.setMessage("Ya no se puede realizar la devolución al haber superado la fecha limite de devolucion : "+fecha_limite.toString());
+                builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+                builder.show();
+            }
 
         } else {
             // Si el ticket no existe, mostrar un AlertDialog informando al usuario que el ticket no está registrado
             AlertDialog.Builder builder = new AlertDialog.Builder(RealizarDevolucion.this);
             builder.setTitle("Ticket no registrado");
-            builder.setMessage("El ticket escaneado no se encuentra registrado en la base de datos.");
+            builder.setMessage("El ticket escaneado no se encuentra registrado en esta tienda.");
             builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
@@ -483,6 +569,17 @@ public class RealizarDevolucion extends AppCompatActivity implements AdaptadorPr
         }
     }
 
+    public Date obtenerFechaActualFormato() {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        sdf.setTimeZone(TimeZone.getTimeZone("UTC")); // Establecer zona horaria a UTC
+        String fechaActualStr = sdf.format(new Date());
+        try {
+            return sdf.parse(fechaActualStr);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
     private void cargarProductos() {
 

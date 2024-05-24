@@ -38,6 +38,8 @@
         android:layout_marginBottom="48dp"
         android:background="@color/white"
         android:ems="10"
+        android:textSize="28dp"
+        android:textStyle="bold"
         android:hint="EN STOCK"
         android:inputType="text"
         android:textAlignment="center"

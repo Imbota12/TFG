@@ -284,6 +284,7 @@ public class AdaptadorProducto extends RecyclerView.Adapter<ViewHolderProducto> 
         // Establecer los datos del producto en las vistas del diálogo
 
         nombre.setText(productoSeleccionado.getNombre());
+        stock.setEnabled(false);
 
         byte[] imagenProductoBytes = productoSeleccionado.getImagenProducto();
         if (imagenProductoBytes != null) {

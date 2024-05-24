@@ -212,7 +212,7 @@ public class RealizaVenta extends AppCompatActivity implements AdaptadorProducto
     }
 
     private void crearTicketconCodigo() {
-        ticket = new TicketModel(id_ticket, totalVenta, false, true, entregado, devuelto);
+        ticket = new TicketModel(id_ticket, totalVenta, false, true, entregado, devuelto, usuario.getIdTienda());
         if (bbddController.insertarTicket(ticket)) {
             for (Producto_TicketModel productoTicket : listaCantidades) {
                 // Crear un nuevo objeto Producto_TicketModel con el código de ticket actual
@@ -338,7 +338,7 @@ public class RealizaVenta extends AppCompatActivity implements AdaptadorProducto
                                         textoTicket+= "[L] DEVUELTO:<b> " + devuelto+" euros\n";
                                         textoTicket += "[C]<barcode type='128' height='10'>" + id_ticket + "</barcode>\n";
                                         textoTicket += "[L]\n";
-                                        textoTicket += "[L]Tiene 15 días para devolver\n";
+                                        textoTicket += "[L]Tiene 14 dias para devolver\n";
                                         textoTicket += "[L]\n";
                                         textoTicket += "[L]¡¡GRACIAS POR SU VISITA!!\n";
                             printer.printFormattedText(textoTicket);

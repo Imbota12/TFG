@@ -8,7 +8,9 @@ import com.example.tfg_sistematienda.modelos.TiendaModel;
 import com.example.tfg_sistematienda.modelos.UsuarioModel;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 public class BBDDController {
@@ -75,7 +77,7 @@ public class BBDDController {
 
     public List<ProductoModel> obtenerListaProductosparaDevo(String codigoTicket) {return conexionBBDD.obtenerListaProductosparaDevo(codigoTicket);}
 
-    public boolean verificarExistenciaTicket(String codigoTicket) {return conexionBBDD.verificarExistenciaTicket(codigoTicket);}
+    public boolean verificarExistenciaTicket(String codigoTicket, String idTienda) {return conexionBBDD.verificarExistenciaTicket(codigoTicket, idTienda);}
     public void actualizarCantidadProducto(String codigoBarrasProducto, String codigoBarrasTicket, int nuevaCantidad) {conexionBBDD.actualizarCantidadProducto(codigoBarrasProducto, codigoBarrasTicket, nuevaCantidad);}
 
     public boolean incrementarVecesDevuelto(String codigoBarras, int vecesDevuelto){return conexionBBDD.incrementarVecesDevuelto(codigoBarras, vecesDevuelto);}
@@ -92,5 +94,8 @@ public class BBDDController {
 
     public boolean insertarLog(String accion, LocalDateTime fechaHora, String dniEmpleado) {return conexionBBDD.insertarLog(accion,fechaHora,dniEmpleado);}
     public String obtenerNombreTienda(String idTienda) {return  conexionBBDD.obtenerNombreTienda(idTienda);}
+
+    public Date obtenerFechaLimiteDevolucion(String idTicket){return conexionBBDD.obtenerFechaLimiteDevolucion(idTicket);}
+    public Date obtenerFechaTicket(String idTicket){return conexionBBDD.obtenerFechaTicket(idTicket);}
 
 }
