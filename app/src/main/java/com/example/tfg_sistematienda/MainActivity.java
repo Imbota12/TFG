@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -193,9 +194,9 @@ public class MainActivity extends AppCompatActivity {
         TextView textoCr = dialogView.findViewById(R.id.tv_contraRR);
         EditText contra = dialogView.findViewById(R.id.passwd_reset);
         EditText contraVeri = dialogView.findViewById(R.id.passwd_reset_veri);
-        Button buscar = dialogView.findViewById(R.id.bt_buscar_credenciales);
-        Button cambiarContra = dialogView.findViewById(R.id.bt_restablecer_contra);
-        Button resetContra = dialogView.findViewById(R.id.reset_contra);
+        ImageButton buscar = dialogView.findViewById(R.id.bt_buscar_credenciales);
+        ImageButton cambiarContra = dialogView.findViewById(R.id.bt_restablecer_contra);
+        ImageButton resetContra = dialogView.findViewById(R.id.reset_contra);
 
         usuario.setVisibility(View.INVISIBLE);
         textoC.setVisibility(View.INVISIBLE);
@@ -213,7 +214,7 @@ public class MainActivity extends AppCompatActivity {
         builder.create().show();
     }
 
-    private void buscarUsuario(EditText nombre, EditText apellidos, EditText dni, EditText telefono, TextView usuario, Button resetContra) {
+    private void buscarUsuario(EditText nombre, EditText apellidos, EditText dni, EditText telefono, TextView usuario, ImageButton resetContra) {
         UsuarioModel usuarioEncontrado = bbddController.buscarUsuario(nombre.getText().toString(), apellidos.getText().toString(), dni.getText().toString(), telefono.getText().toString());
 
         if (usuarioEncontrado != null && usuarioEncontrado.isActivo()) {
@@ -227,7 +228,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void mostrarCamposRestablecerContrasena(TextView textoC, TextView textoCr, EditText contra, EditText contraVeri, Button cambiarContra) {
+    private void mostrarCamposRestablecerContrasena(TextView textoC, TextView textoCr, EditText contra, EditText contraVeri, ImageButton cambiarContra) {
         textoC.setVisibility(View.VISIBLE);
         textoCr.setVisibility(View.VISIBLE);
         contra.setVisibility(View.VISIBLE);
