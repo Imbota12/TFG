@@ -3,18 +3,43 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
+    android:background="@color/gray"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <ImageView
+        android:id="@+id/imageView3"
+        android:layout_width="878dp"
+        android:layout_height="622dp"
 
-    <com.google.android.material.button.MaterialButton
+        android:layout_marginStart="320dp"
+        android:layout_marginTop="12dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tx_inicio"
+        app:srcCompat="@mipmap/angulo2" />
+
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="843dp"
+        android:layout_height="673dp"
+
+        android:layout_marginStart="4dp"
+        android:layout_marginBottom="104dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@mipmap/angulo1" />
+
+    <ImageButton
         android:id="@+id/iniciar_sesion"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="128dp"
-        android:layout_marginBottom="172dp"
-        android:text="INICIAR SESION"
+        android:layout_width="200dp"
+        android:layout_height="120dp"
+        android:layout_marginStart="112dp"
+        android:layout_marginBottom="144dp"
+        android:background="@android:color/transparent"
+        android:contentDescription="añadirProducto"
+        android:scaleType="fitCenter"
+        android:src="@mipmap/acceder"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -23,8 +48,13 @@
         android:layout_width="233dp"
         android:layout_height="62dp"
         android:layout_marginStart="88dp"
-        android:layout_marginBottom="428dp"
+        android:layout_marginBottom="404dp"
+        android:background="@color/white"
         android:hint="USUARIO"
+        android:textAlignment="center"
+        android:textColor="@color/black"
+        android:textSize="22dp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -32,9 +62,13 @@
         android:id="@+id/tx_usuario"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="88dp"
-        android:layout_marginBottom="512dp"
+        android:layout_marginStart="80dp"
+        android:layout_marginBottom="476dp"
+        android:background="@color/black"
         android:text="INTRODUZCA SU USUARIO:"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -42,11 +76,16 @@
         android:id="@+id/contrasena"
         android:layout_width="240dp"
         android:layout_height="70dp"
-        android:layout_marginStart="88dp"
-        android:layout_marginBottom="268dp"
+        android:layout_marginStart="84dp"
+        android:layout_marginBottom="280dp"
+        android:background="@color/white"
         android:ems="10"
         android:hint="CONTRASEÑA"
         android:inputType="textPassword"
+        android:textAlignment="center"
+        android:textColor="@color/black"
+        android:textSize="22dp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -54,21 +93,30 @@
         android:id="@+id/tx_contra"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="88dp"
-        android:layout_marginBottom="356dp"
+        android:layout_marginStart="56dp"
+        android:layout_marginBottom="352dp"
+        android:background="@color/black"
         android:text="INTRODUZCA SU CONTRASEÑA:"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
         android:id="@+id/tx_inicio"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="408dp"
-        android:layout_marginBottom="608dp"
+        android:layout_width="552dp"
+        android:layout_height="113dp"
+        android:layout_marginStart="320dp"
+        android:layout_marginBottom="556dp"
+        android:background="@drawable/border_black"
+        android:paddingTop="19dp"
         android:text="INICIO DE SESION"
         android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textColorHighlight="@color/black"
         android:textSize="48sp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -76,81 +124,43 @@
         android:id="@+id/tx_olvido"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="692dp"
-        android:layout_marginBottom="388dp"
+        android:layout_marginStart="648dp"
+        android:layout_marginBottom="480dp"
         android:text="¿SE LE OLVIDÓ EL CORREO Y/O CONTRASEÑA?"
+        android:textAlignment="center"
+        android:textSize="22dp"
+        android:textStyle="bold|italic"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <Button
+    <ImageButton
         android:id="@+id/bt_recuperar"
-        android:layout_width="306dp"
-        android:layout_height="72dp"
-        android:layout_marginStart="692dp"
-        android:layout_marginBottom="296dp"
+        android:layout_width="248dp"
+        android:layout_height="188dp"
+        android:layout_marginStart="796dp"
+        android:layout_marginBottom="240dp"
+        android:background="@android:color/transparent"
+        android:contentDescription="añadirProducto"
+        android:scaleType="fitCenter"
+        android:src="@mipmap/recuperarcreden"
         android:text="RECUPERAR CREDENCIALES"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
         android:id="@+id/textView12"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="104dp"
-        android:layout_marginBottom="80dp"
-        android:text="PARA CUALQUIER PROBLEMA, CONTACTE A IOAN MARK BOTA AL CORREO ELECTRONICO ioanbota2002@outlook.es o llamando directamente a 641938476"
+        android:layout_width="677dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="88dp"
+        android:layout_marginBottom="28dp"
+        android:background="@color/white"
+        android:text="PARA CUALQUIER INCIDENCIA, PÓNGASE EN CONTACTO CON IOAN MARK BOTA AL TELÉFONO 641938476 O AL CORREO IOANBOTA2002@OUTLOOK.ES"
+        android:textAlignment="center"
+        android:textSize="18dp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <Button
-        android:id="@+id/crear_producto_ir"
-        android:layout_width="118dp"
-        android:layout_height="122dp"
-        android:layout_marginStart="724dp"
-        android:layout_marginBottom="464dp"
-        android:text="Crear Producto"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <Button
-        android:id="@+id/bt_lista"
-        android:layout_width="125dp"
-        android:layout_height="125dp"
-        android:layout_marginStart="872dp"
-        android:layout_marginBottom="464dp"
-        android:text="Lista Producto"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <Button
-        android:id="@+id/bt_ventas"
-        android:layout_width="120dp"
-        android:layout_height="125dp"
-        android:layout_marginStart="584dp"
-        android:layout_marginBottom="460dp"
-        android:text="IR VENTAS"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <Button
-        android:id="@+id/ir_devolucion"
-        android:layout_width="135dp"
-        android:layout_height="120dp"
-        android:layout_marginStart="432dp"
-        android:layout_marginBottom="460dp"
-        android:text="IR DEVOLUCION"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <Button
-        android:id="@+id/ir_empleados"
-        android:layout_width="132dp"
-        android:layout_height="119dp"
-        android:layout_marginStart="432dp"
-        android:layout_marginBottom="320dp"
-        android:text="IR EMPLEADOS"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 

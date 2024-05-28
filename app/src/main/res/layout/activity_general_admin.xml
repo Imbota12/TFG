@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
+    android:background="@color/gray"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".vistas.GeneralAdmin">
@@ -11,13 +12,65 @@
         android:id="@+id/textView55"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="92dp"
-        android:layout_marginBottom="668dp"
-        android:text="BIENVENIDO DE NUEVO ADMINISTRADOR IOAN MARK BOTA"
+        android:layout_marginStart="200dp"
+        android:layout_marginBottom="612dp"
+        android:text="BIENVENIDO DE NUEVO ADMINISTRADOR:  IOAN MARK BOTA"
         android:textAlignment="center"
         android:textSize="24sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageButton
+        android:id="@+id/anadirTienda"
+        android:layout_width="227dp"
+        android:layout_height="173dp"
+        android:layout_marginStart="28dp"
+        android:layout_marginBottom="404dp"
+        android:background="@android:color/transparent"
+        android:contentDescription="añadirProducto"
+        android:scaleType="fitXY"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@mipmap/anadirtienda" />
+
+    <ImageButton
+        android:id="@+id/adminEmpleados"
+        android:layout_width="227dp"
+        android:layout_height="173dp"
+        android:layout_marginStart="328dp"
+        android:layout_marginBottom="184dp"
+        android:background="@android:color/transparent"
+        android:contentDescription="añadirProducto"
+        android:scaleType="fitXY"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@mipmap/adminempleados" />
+
+    <ImageButton
+        android:id="@+id/adminTiendas"
+        android:layout_width="227dp"
+        android:layout_height="173dp"
+        android:layout_marginStart="28dp"
+        android:layout_marginBottom="184dp"
+        android:background="@android:color/transparent"
+        android:contentDescription="añadirProducto"
+        android:scaleType="fitXY"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@mipmap/admintiendas" />
+
+    <ImageButton
+        android:id="@+id/anadirEmpleado"
+        android:layout_width="227dp"
+        android:layout_height="173dp"
+        android:layout_marginStart="328dp"
+        android:layout_marginBottom="404dp"
+        android:background="@android:color/transparent"
+        android:contentDescription="añadirProducto"
+        android:scaleType="fitXY"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@mipmap/contratarempleado" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

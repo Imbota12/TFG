@@ -7,6 +7,7 @@ import android.text.InputFilter;
 import android.text.Spanned;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -23,7 +24,7 @@ import java.util.List;
 public class CrearTienda extends AppCompatActivity {
 
     private EditText nombreTienda, cifTienda, direccionTienda, telefonoTienda;
-    private Button crearTienda, cancelarCreacionTienda;
+    private ImageButton crearTienda, cancelarCreacionTienda;
 
     private BBDDController bbddController = new BBDDController();
 

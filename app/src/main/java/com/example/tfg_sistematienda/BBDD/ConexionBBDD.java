@@ -27,8 +27,8 @@ import java.util.Date;
 public class ConexionBBDD {
 
     private static final String DRIVER = "org.postgresql.Driver";
-    //private static final String URL = "jdbc:postgresql://192.168.10.150:5432/TiendaInfo";
-    private static final String URL = "jdbc:postgresql://10.0.2.2:5432/TiendaInfo";
+    private static final String URL = "jdbc:postgresql://192.168.104.244:5432/TiendaInfo";
+    //private static final String URL = "jdbc:postgresql://10.0.2.2:5432/TiendaInfo";
     private static final String USUARIO = "postgres";
     private static final String PASSWORD = "admin";
     private Connection conexion = null;
@@ -401,6 +401,36 @@ public class ConexionBBDD {
     }
 
 
+    public boolean modificarTienda(String cif, String nombreNuevo,
+                                     String direccionNueva, String telefonoNuevo) {
+        boolean modificarOK = false;
+        conectarBD();
+        try {
+            String query = "UPDATE tienda SET nombre = ?, direccion = ?, telefono = ? WHERE cif = ?";
+            PreparedStatement preparedStatement = conexion.prepareStatement(query);
+            preparedStatement.setString(1, nombreNuevo);
+            preparedStatement.setString(2, direccionNueva);
+            preparedStatement.setString(3, telefonoNuevo);
+            preparedStatement.setString(4, cif);
+
+            int filasModificadas = preparedStatement.executeUpdate();
+            preparedStatement.close();
+            if (filasModificadas > 0) {
+                modificarOK = true;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                cerrarConnection(conexion);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return modificarOK;
+    }
+
+
     public boolean borrarProducto(String codigoBarras) {
         boolean borrarOK = false;
         conectarBD();
@@ -408,6 +438,30 @@ public class ConexionBBDD {
             String query = "DELETE FROM producto WHERE codigo_barras = ?";
             PreparedStatement preparedStatement = conexion.prepareStatement(query);
             preparedStatement.setString(1, codigoBarras);
+            int filasBorradas = preparedStatement.executeUpdate();
+            preparedStatement.close();
+            if (filasBorradas > 0) {
+                borrarOK = true;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                cerrarConnection(conexion);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return borrarOK;
+    }
+
+    public boolean borrarTienda(String cifTienda) {
+        boolean borrarOK = false;
+        conectarBD();
+        try {
+            String query = "DELETE FROM tienda WHERE cif = ?";
+            PreparedStatement preparedStatement = conexion.prepareStatement(query);
+            preparedStatement.setString(1, cifTienda);
             int filasBorradas = preparedStatement.executeUpdate();
             preparedStatement.close();
             if (filasBorradas > 0) {
@@ -455,7 +509,31 @@ public class ConexionBBDD {
         boolean modificarOK = false;
         conectarBD();
         try {
-            String query = "UPDATE producto SET vecesDevuelto = vecesDevuelto + " + vecesDevuelto + " WHERE codigo_barras = ?";
+            String query = "UPDATE producto SET veces_devuelto = veces_devuelto + " + vecesDevuelto + " WHERE codigo_barras = ?";
+            PreparedStatement preparedStatement = conexion.prepareStatement(query);
+            preparedStatement.setString(1, codigoBarras);
+            int filasModificadas = preparedStatement.executeUpdate();
+            preparedStatement.close();
+            if (filasModificadas > 0) {
+                modificarOK = true;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                cerrarConnection(conexion);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return modificarOK;
+    }
+
+    public boolean incrementarVecesComprado(String codigoBarras, int vecesComprado) {
+        boolean modificarOK = false;
+        conectarBD();
+        try {
+            String query = "UPDATE producto SET veces_comprado = veces_comprado + " + vecesComprado + " WHERE codigo_barras = ?";
             PreparedStatement preparedStatement = conexion.prepareStatement(query);
             preparedStatement.setString(1, codigoBarras);
             int filasModificadas = preparedStatement.executeUpdate();

@@ -360,7 +360,6 @@ public class CrearUsuario extends AppCompatActivity {
 
         boolean todoOk=true;
 
-        // TODO: 2021-05-27 Añadir validaciones de campos vacíos y validaciones de telefono, nombre, apellidos, contraseña, dni .
         if (nombre.getText().toString().isEmpty()) {
             nombre.setError("Campo vacío");
             todoOk = false;
@@ -383,6 +382,11 @@ public class CrearUsuario extends AppCompatActivity {
         }
         if (telefono.getText().toString().isEmpty()) {
             telefono.setError("Campo vacío");
+            todoOk = false;
+        }
+
+        if (telefono.getText().length() < 9){
+            telefono.setError("El teléfono debe tener al menos 9 dígitos");
             todoOk = false;
         }
 

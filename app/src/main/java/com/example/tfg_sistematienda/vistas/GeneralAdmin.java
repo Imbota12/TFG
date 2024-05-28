@@ -2,6 +2,7 @@ package com.example.tfg_sistematienda.vistas;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
@@ -18,6 +19,8 @@ public class GeneralAdmin extends AppCompatActivity {
 
     private UsuarioModel usuario;
     private BBDDController bbddController= new BBDDController();
+
+    private ImageButton administrarTiendas, administrarEmpleados, anadirEmpleado, anadirTienda;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,6 +38,33 @@ public class GeneralAdmin extends AppCompatActivity {
         String usuarioDNI = intent.getStringExtra("usuarioDNI");
 
         usuario = bbddController.obtenerEmpleado(usuarioDNI);
+
+        administrarTiendas = findViewById(R.id.adminTiendas);
+        administrarEmpleados = findViewById(R.id.adminEmpleados);
+        anadirEmpleado = findViewById(R.id.anadirEmpleado);
+        anadirTienda = findViewById(R.id.anadirTienda);
+
+        administrarTiendas.setOnClickListener(v -> {
+            Intent i = new Intent(GeneralAdmin.this, ListaTiendas.class);
+            i.putExtra("usuarioDNI", usuarioDNI);
+            startActivity(i);
+        });
+        anadirEmpleado.setOnClickListener(v -> {
+            Intent i = new Intent(GeneralAdmin.this, CrearUsuario.class);
+            i.putExtra("usuarioDNI", usuarioDNI);
+            startActivity(i);
+        });
+        anadirTienda.setOnClickListener(v -> {
+            Intent i = new Intent(GeneralAdmin.this, CrearTienda.class);
+            i.putExtra("usuarioDNI", usuarioDNI);
+            startActivity(i);
+        });
+
+        administrarEmpleados.setOnClickListener(v -> {
+            Intent i = new Intent(GeneralAdmin.this, ListaEmpleados.class);
+            i.putExtra("usuarioDNI", usuarioDNI);
+            startActivity(i);
+        });
 
     }
 }

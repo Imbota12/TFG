@@ -66,6 +66,7 @@ public class BBDDController {
 
 
     public boolean borrarProducto(String codigoBarras) {return conexionBBDD.borrarProducto(codigoBarras);}
+    public boolean borrarTienda(String cifTienda) {return conexionBBDD.borrarTienda(cifTienda);}
 
     public double obtenerPrecioUnidadporCodigo(String codigoBarras) {return conexionBBDD.obtenerPrecioUnidadporCodigo(codigoBarras);}
 
@@ -81,6 +82,7 @@ public class BBDDController {
     public void actualizarCantidadProducto(String codigoBarrasProducto, String codigoBarrasTicket, int nuevaCantidad) {conexionBBDD.actualizarCantidadProducto(codigoBarrasProducto, codigoBarrasTicket, nuevaCantidad);}
 
     public boolean incrementarVecesDevuelto(String codigoBarras, int vecesDevuelto){return conexionBBDD.incrementarVecesDevuelto(codigoBarras, vecesDevuelto);}
+    public boolean incrementarVecesComprado(String codigoBarras, int vecesComprado) {return conexionBBDD.incrementarVecesComprado(codigoBarras, vecesComprado);}
 
     public void actualizarEstadoEmpleado(String dni, boolean estado){conexionBBDD.actualizarEstadoEmpleado(dni, estado);}
 
@@ -97,5 +99,7 @@ public class BBDDController {
 
     public Date obtenerFechaLimiteDevolucion(String idTicket){return conexionBBDD.obtenerFechaLimiteDevolucion(idTicket);}
     public Date obtenerFechaTicket(String idTicket){return conexionBBDD.obtenerFechaTicket(idTicket);}
+
+    public boolean modificarTienda(String cif, String nuevoNombre, String nuevaDireccion, String nuevoTelefono){return conexionBBDD.modificarTienda(cif, nuevoNombre, nuevaDireccion, nuevoTelefono);}
 
 }

@@ -22,10 +22,12 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -76,12 +78,16 @@ import java.util.stream.Collectors;
 public class RealizarDevolucion extends AppCompatActivity implements AdaptadorProductoTicket.OnProductoSeleccionadoListener, AdaptadorProductoDevuelto.OnProductRemovedListener, AdaptadorProductoDevuelto.OnQuantityChangedListener, AdaptadorProductoDevuelto.OnQuantityChangedListenerUp {
 
     private static final int REQUEST_ENABLE_BT = 37;
+    public static final int PERMISSION_BLUETOOTH = 31;
+    public static final int PERMISSION_BLUETOOTH_ADMIN = 32;
+    public static final int PERMISSION_BLUETOOTH_CONNECT = 33;
+    public static final int PERMISSION_BLUETOOTH_SCAN = 34;
+
     private RecyclerView todosProductosTicket, productosDevueltos;
-    private EditText  codigoProductoBuscar, totalDevolver;
+    private EditText totalDevolver;
     private AutoCompleteTextView codigoTicketBuscar;
-    private Button escanearProducto, realizarDevolucion, cancelarDevolucion, escanearTicket, buscarTicket;
+    private ImageButton realizarDevolucion, cancelarDevolucion, escanearTicket, buscarTicket;
     private String id_ticket, codigoEscaneado, productoEscaneado, aDevolver;
-    private TextView ticket_devo;
     private AdaptadorProductoDevuelto adaptadorDevuelto;
     private List<ProductoModel> listaProductosTicket;
 
@@ -99,6 +105,7 @@ public class RealizarDevolucion extends AppCompatActivity implements AdaptadorPr
     private BluetoothAdapter bluetoothAdapter;
     private static final int CAMERA_PERMISSION_REQUEST_CODE = 250;
     private UsuarioModel usuario;
+    private boolean allowBackPress=false;
 
 
     @Override
@@ -130,8 +137,7 @@ public class RealizarDevolucion extends AppCompatActivity implements AdaptadorPr
         productosDevueltos.setAdapter(adaptadorDevuelto);
 
 
-        ticket_devo=findViewById(R.id.tx_ticket_devo);
-        ticket_devo.setText("");
+
 
         List<String> listaCodigosBarras = obtenerListaCodigosTicketDesdeBD();
 
@@ -143,7 +149,6 @@ public class RealizarDevolucion extends AppCompatActivity implements AdaptadorPr
 
         // Mostrar el nuevo código de barras
         id_ticket = nuevoIdBarras;
-        ticket_devo.setText(id_ticket);
 
 
         codigoTicketBuscar=findViewById(R.id.cod_barras_ticket);
@@ -159,12 +164,10 @@ public class RealizarDevolucion extends AppCompatActivity implements AdaptadorPr
 
 
 
-        codigoProductoBuscar=findViewById(R.id.cod_produ_devo);
         totalDevolver=findViewById(R.id.total_a_devolver);
         totalDevolver.setText("0.00");
         totalDevolver.setEnabled(false);
 
-        escanearProducto=findViewById(R.id.escanear_prod_devo);
         escanearTicket = findViewById(R.id.escanear_ticket);
         buscarTicket = findViewById(R.id.buscar_ticket);
 
@@ -177,6 +180,14 @@ public class RealizarDevolucion extends AppCompatActivity implements AdaptadorPr
 
         realizarDevolucion.setVisibility(View.INVISIBLE);
 
+        cancelarDevolucion.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View v) {
+               Intent i = new Intent(RealizarDevolucion.this, GeneralVendedor.class);
+               i.putExtra("usuarioDNI", usuario.getDni());
+               startActivity(i);
+           }
+        });
         realizarDevolucion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -236,6 +247,15 @@ public class RealizarDevolucion extends AppCompatActivity implements AdaptadorPr
 
     }
 
+    @Override
+    public void onBackPressed() {
+        if (allowBackPress) {
+            super.onBackPressed();
+        } else {
+            Toast.makeText(this, "Pulse el botón CANCELAR DEVOLUCIÓN para volver atrás", Toast.LENGTH_SHORT).show();
+        }
+    }
+
 
     private void tramitarDevolucion(){
 
@@ -245,7 +265,7 @@ public class RealizarDevolucion extends AppCompatActivity implements AdaptadorPr
         if (bbddController.insertarTicket(ticket)) {
             for (ProductoModel producto : listaProductosTicket){
                 if (producto.getCantidad() >0) {
-                    Producto_TicketModel nuevoProductoTicket = new Producto_TicketModel(producto.getCodigoBarras(), ticket_devo.getText().toString(), producto.getCantidad());
+                    Producto_TicketModel nuevoProductoTicket = new Producto_TicketModel(producto.getCodigoBarras(), id_ticket, producto.getCantidad());
 
                     if (bbddController.insertarProductoTicket(nuevoProductoTicket)) {
 
@@ -279,19 +299,29 @@ public class RealizarDevolucion extends AppCompatActivity implements AdaptadorPr
 
 
     private void checkBluetoothConnectPermission() throws EscPosEncodingException, EscPosBarcodeException, EscPosParserException, EscPosConnectionException {
-        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.S && ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.BLUETOOTH}, MainActivity.PERMISSION_BLUETOOTH);
-        } else if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.S && ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_ADMIN) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.BLUETOOTH_ADMIN}, MainActivity.PERMISSION_BLUETOOTH_ADMIN);
-        } else if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S && ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.BLUETOOTH_CONNECT}, MainActivity.PERMISSION_BLUETOOTH_CONNECT);
-        } else if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S && ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.BLUETOOTH_SCAN}, MainActivity.PERMISSION_BLUETOOTH_SCAN);
+        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.S) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.BLUETOOTH}, MainActivity.PERMISSION_BLUETOOTH);
+                return;
+            }
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_ADMIN) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.BLUETOOTH_ADMIN}, MainActivity.PERMISSION_BLUETOOTH_ADMIN);
+                return;
+            }
         } else {
-            // Ya se tienen todos los permisos necesarios
-            conectarImpresora(); // Intenta conectar la impresora
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.BLUETOOTH_CONNECT}, MainActivity.PERMISSION_BLUETOOTH_CONNECT);
+                return;
+            }
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.BLUETOOTH_SCAN}, MainActivity.PERMISSION_BLUETOOTH_SCAN);
+                return;
+            }
         }
+        // Ya se tienen todos los permisos necesarios
+        conectarImpresora();
     }
+
 
 
     private boolean conectarImpresora() {
@@ -477,6 +507,29 @@ public class RealizarDevolucion extends AppCompatActivity implements AdaptadorPr
         integrator.setDesiredBarcodeFormats(IntentIntegrator.ALL_CODE_TYPES);
         integrator.setPrompt("Escanea un código de barras");
         integrator.initiateScan();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            try {
+                switch (requestCode) {
+                    case PERMISSION_BLUETOOTH:
+                    case PERMISSION_BLUETOOTH_ADMIN:
+                    case PERMISSION_BLUETOOTH_CONNECT:
+                    case PERMISSION_BLUETOOTH_SCAN:
+                        checkBluetoothConnectPermission();
+                        break;
+                }
+            } catch (EscPosEncodingException | EscPosBarcodeException | EscPosParserException | EscPosConnectionException e) {
+                e.printStackTrace();
+            }
+        } else {
+            // Permiso denegado, manejar el caso aquí
+            Toast.makeText(this, "Permiso de Bluetooth denegado", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override

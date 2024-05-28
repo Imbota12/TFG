@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="500dp"
+    android:layout_height="700dp"
+    android:background="@color/gray"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <EditText
+        android:id="@+id/et_direccionTienda_a_editar"
+        android:layout_width="373dp"
+        android:layout_height="64dp"
+        android:layout_marginStart="64dp"
+        android:layout_marginBottom="168dp"
+        android:background="@drawable/border_black"
+        android:ems="10"
+        android:hint="NOMBRE DE TIENDA"
+        android:inputType="textMultiLine"
+        android:textAlignment="center"
+        android:textColor="@color/black"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <EditText
+        android:id="@+id/et_cifTienda_a_editar"
+        android:layout_width="373dp"
+        android:layout_height="64dp"
+        android:layout_marginStart="60dp"
+        android:layout_marginBottom="448dp"
+        android:background="@drawable/border_black"
+        android:ems="10"
+        android:hint="CIF DE TIENDA"
+        android:inputType="textMultiLine"
+        android:textAlignment="center"
+        android:textColor="@color/black"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <EditText
+        android:id="@+id/et_nombreTienda_a_editar"
+        android:layout_width="371dp"
+        android:layout_height="61dp"
+        android:layout_marginStart="64dp"
+        android:layout_marginBottom="304dp"
+        android:background="@drawable/border_black"
+        android:ems="10"
+        android:hint="NOMBRE DE TIENDA"
+        android:inputType="text"
+        android:textAlignment="center"
+        android:textColor="@color/black"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <EditText
+        android:id="@+id/et_telefonoTienda_a_editar"
+        android:layout_width="371dp"
+        android:layout_height="61dp"
+        android:layout_marginStart="64dp"
+        android:layout_marginBottom="36dp"
+        android:background="@drawable/border_black"
+        android:ems="10"
+        android:hint="NOMBRE DE TIENDA"
+        android:inputType="text"
+        android:textAlignment="center"
+        android:textColor="@color/black"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/textView35"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="64dp"
+        android:layout_marginBottom="512dp"
+        android:text="CIF TIENDA : "
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/textView42"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="64dp"
+        android:layout_marginBottom="368dp"
+        android:text="NOMBRE TIENDA :"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/textView58"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="64dp"
+        android:layout_marginBottom="236dp"
+        android:text="DIRECCIÓN TIENDA :"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/textView59"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="64dp"
+        android:layout_marginBottom="96dp"
+        android:text="TELEFONO TIENDA :"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

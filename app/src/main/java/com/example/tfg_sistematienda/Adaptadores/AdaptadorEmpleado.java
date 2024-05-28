@@ -363,6 +363,11 @@ public class AdaptadorEmpleado extends RecyclerView.Adapter<ViewHolderEmpleados>
             telefono.setError("Campo vacío");
             datosValidos = false;
         }
+        if (telefono.getText().length() < 9) {
+            telefono.setError("Teléfono demasiado corto");
+            datosValidos = false;
+        }
+
         if (contrasena.getText().length() < 4) {
             contrasena.setError("Contraseña demasiado corta");
             datosValidos = false;

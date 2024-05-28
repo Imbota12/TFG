@@ -63,23 +63,12 @@ public class MainActivity extends AppCompatActivity {
 
         usuario = findViewById(R.id.usuario);
         contrasena = findViewById(R.id.contrasena);
-        Button iniciar = findViewById(R.id.iniciar_sesion);
-        Button recuperar = findViewById(R.id.bt_recuperar);
-        Button irCrearProducto = findViewById(R.id.crear_producto_ir);
-        Button listaProductos = findViewById(R.id.bt_lista);
-        Button irVenta = findViewById(R.id.bt_ventas);
-        Button irDevolucion = findViewById(R.id.ir_devolucion);
-        Button irEmpleados = findViewById(R.id.ir_empleados);
+        ImageButton iniciar = findViewById(R.id.iniciar_sesion);
+        ImageButton recuperar = findViewById(R.id.bt_recuperar);
 
         // Request permissions
         requestPermissions();
 
-        // Set button click listeners
-        setButtonClickListeners(irDevolucion, RealizarDevolucion.class);
-        setButtonClickListeners(irCrearProducto, CrearProducto.class);
-        setButtonClickListeners(irEmpleados, ListaEmpleados.class);
-        setButtonClickListeners(irVenta, RealizaVenta.class);
-        setButtonClickListeners(listaProductos, ListaInventario.class);
 
         iniciar.setOnClickListener(v -> iniciarSesion());
         recuperar.setOnClickListener(v -> mostrarDialogoRecuperarCredenciales());
@@ -130,12 +119,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void setButtonClickListeners(Button button, Class<?> cls) {
-        button.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, cls);
-            startActivity(intent);
-        });
-    }
 
     private void iniciarSesion() {
         String contraseñaIntroducida = contrasena.getText().toString();
@@ -179,7 +162,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void mostrarDialogoRecuperarCredenciales() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this, R.style.FullScreenDialog);
         builder.setTitle("Recuperar Credenciales");
 
         View dialogView = LayoutInflater.from(MainActivity.this).inflate(R.layout.popup_recuperarcredenciales, null);

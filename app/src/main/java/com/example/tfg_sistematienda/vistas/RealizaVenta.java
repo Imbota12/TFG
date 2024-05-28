@@ -217,8 +217,12 @@ public class RealizaVenta extends AppCompatActivity implements AdaptadorProducto
             for (Producto_TicketModel productoTicket : listaCantidades) {
                 // Crear un nuevo objeto Producto_TicketModel con el código de ticket actual
                 Producto_TicketModel nuevoProductoTicket = new Producto_TicketModel(productoTicket.getCodigoBarras_producto(), id_ticket, productoTicket.getCantidad());
+
                 // Insertar el producto en la base de datos
                 if (bbddController.insertarProductoTicket(nuevoProductoTicket)) {
+                    if(bbddController.incrementarVecesComprado(nuevoProductoTicket.getCodigoBarras_producto(), nuevoProductoTicket.getCantidad())) {
+                        Log.d(TAG, "Veces compradas del producto actualizado: " + nuevoProductoTicket.getCodigoBarras_producto());
+                    }
                     // Modificar el stock del producto en la base de datos
                     if (bbddController.modificarStockProducto(nuevoProductoTicket.getCodigoBarras_producto(), nuevoProductoTicket.getCantidad())) {
                         Log.d(TAG, "Stock del producto actualizado: " + nuevoProductoTicket.getCodigoBarras_producto());
@@ -241,18 +245,27 @@ public class RealizaVenta extends AppCompatActivity implements AdaptadorProducto
     }
 
     private void checkBluetoothConnectPermission() throws EscPosEncodingException, EscPosBarcodeException, EscPosParserException, EscPosConnectionException {
-        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.S && ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.BLUETOOTH}, MainActivity.PERMISSION_BLUETOOTH);
-        } else if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.S && ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_ADMIN) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.BLUETOOTH_ADMIN}, MainActivity.PERMISSION_BLUETOOTH_ADMIN);
-        } else if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S && ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.BLUETOOTH_CONNECT}, MainActivity.PERMISSION_BLUETOOTH_CONNECT);
-        } else if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S && ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.BLUETOOTH_SCAN}, MainActivity.PERMISSION_BLUETOOTH_SCAN);
+        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.S) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.BLUETOOTH}, MainActivity.PERMISSION_BLUETOOTH);
+                return;
+            }
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_ADMIN) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.BLUETOOTH_ADMIN}, MainActivity.PERMISSION_BLUETOOTH_ADMIN);
+                return;
+            }
         } else {
-            // Ya se tienen todos los permisos necesarios
-            conectarImpresora(); // Intenta conectar la impresora
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.BLUETOOTH_CONNECT}, MainActivity.PERMISSION_BLUETOOTH_CONNECT);
+                return;
+            }
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.BLUETOOTH_SCAN}, MainActivity.PERMISSION_BLUETOOTH_SCAN);
+                return;
+            }
         }
+        // Ya se tienen todos los permisos necesarios
+        conectarImpresora();
     }
 
     private void desconectarImpresora() {
