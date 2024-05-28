@@ -15,6 +15,8 @@ import com.example.tfg_sistematienda.R;
 import com.example.tfg_sistematienda.controladores.BBDDController;
 import com.example.tfg_sistematienda.modelos.UsuarioModel;
 
+import java.time.LocalDateTime;
+
 public class GeneralAdmin extends AppCompatActivity {
 
     private UsuarioModel usuario;
@@ -45,22 +47,26 @@ public class GeneralAdmin extends AppCompatActivity {
         anadirTienda = findViewById(R.id.anadirTienda);
 
         administrarTiendas.setOnClickListener(v -> {
+            bbddController.insertarLog("Acceso lista tiendas", LocalDateTime.now(), usuario.getDni());
             Intent i = new Intent(GeneralAdmin.this, ListaTiendas.class);
             i.putExtra("usuarioDNI", usuarioDNI);
             startActivity(i);
         });
         anadirEmpleado.setOnClickListener(v -> {
+            bbddController.insertarLog("Acceso formulario añadir empleados", LocalDateTime.now(), usuario.getDni());
             Intent i = new Intent(GeneralAdmin.this, CrearUsuario.class);
             i.putExtra("usuarioDNI", usuarioDNI);
             startActivity(i);
         });
         anadirTienda.setOnClickListener(v -> {
+            bbddController.insertarLog("Acceso formulario creacion tienda", LocalDateTime.now(), usuario.getDni());
             Intent i = new Intent(GeneralAdmin.this, CrearTienda.class);
             i.putExtra("usuarioDNI", usuarioDNI);
             startActivity(i);
         });
 
         administrarEmpleados.setOnClickListener(v -> {
+            bbddController.insertarLog("Acceso lista empleados", LocalDateTime.now(), usuario.getDni());
             Intent i = new Intent(GeneralAdmin.this, ListaEmpleados.class);
             i.putExtra("usuarioDNI", usuarioDNI);
             startActivity(i);

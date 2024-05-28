@@ -52,6 +52,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -118,6 +119,7 @@ public class ListaInventario extends AppCompatActivity {
         volverMenu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                bbddController.insertarLog("Acceso menu reponedor", LocalDateTime.now(), usuario.getDni());
                 Intent intent = new Intent(ListaInventario.this, GeneralReponedor.class);
                 intent.putExtra("usuarioDNI", usuarioDNI);
                 startActivity(intent);
@@ -199,7 +201,7 @@ public class ListaInventario extends AppCompatActivity {
                 mensaje.append("Descripción: ").append(producto.getDescripcion()).append("\n");
                 mensaje.append("Cantidad Stock: ").append(producto.getCantidadStock()).append("\n\n");
             }
-
+            bbddController.insertarLog("Notifica bajo stock", LocalDateTime.now(), usuario.getDni());
             enviarCorreo("ioanbota2002@outlook.es", "Notificación de Stock Bajo", mensaje.toString());
         } else {
             Toast.makeText(this, "No hay productos con stock bajo.", Toast.LENGTH_SHORT).show();
@@ -212,6 +214,7 @@ public class ListaInventario extends AppCompatActivity {
         intent.putExtra(Intent.EXTRA_EMAIL, new String[]{destinatario});
         intent.putExtra(Intent.EXTRA_SUBJECT, asunto);
         intent.putExtra(Intent.EXTRA_TEXT, mensaje);
+        bbddController.insertarLog("Envio de correo", LocalDateTime.now(), usuario.getDni());
 
         try {
             startActivity(Intent.createChooser(intent, "Enviar correo..."));
@@ -298,6 +301,7 @@ public class ListaInventario extends AppCompatActivity {
         fileOut.close();
         workbook.close();
 
+        bbddController.insertarLog("Generar excel inventario", LocalDateTime.now(), usuario.getDni());
         // Informar al usuario que el archivo se ha generado
         Toast.makeText(this, "Archivo Excel generado en " + file.getAbsolutePath(), Toast.LENGTH_LONG).show();
     }

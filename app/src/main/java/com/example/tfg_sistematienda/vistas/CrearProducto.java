@@ -120,7 +120,6 @@ public class CrearProducto extends AppCompatActivity {
     private boolean allowBackPress=false;
 
 
-    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

@@ -2,6 +2,7 @@ package com.example.tfg_sistematienda.vistas;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.InputFilter;
 import android.text.Spanned;
@@ -18,7 +19,9 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.tfg_sistematienda.R;
 import com.example.tfg_sistematienda.controladores.BBDDController;
+import com.example.tfg_sistematienda.modelos.UsuarioModel;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class CrearTienda extends AppCompatActivity {
@@ -27,6 +30,8 @@ public class CrearTienda extends AppCompatActivity {
     private ImageButton crearTienda, cancelarCreacionTienda;
 
     private BBDDController bbddController = new BBDDController();
+    private boolean allowBackPress=false;
+    private UsuarioModel usuario;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +43,12 @@ public class CrearTienda extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        Intent intent = getIntent();
+        // Capturar el putExtra enviado desde MainActivity
+        String usuarioDNI = intent.getStringExtra("usuarioDNI");
+
+        usuario = bbddController.obtenerEmpleado(usuarioDNI);
 
         nombreTienda = findViewById(R.id.et_nombre_tienda);
         cifTienda = findViewById(R.id.et_cif_tienda);
@@ -93,12 +104,21 @@ public class CrearTienda extends AppCompatActivity {
     }
 
 
+    @Override
+    public void onBackPressed() {
+        if (allowBackPress) {
+            super.onBackPressed();
+        } else {
+            Toast.makeText(this, "Para volver pulse el botón VOLVER MENÚ", Toast.LENGTH_SHORT).show();
+        }
+    }
 
 
     private void creacionTienda() {
 
         if (comprobarDatosTienda()){
             if(bbddController.insertarTienda(cifTienda.getText().toString(), nombreTienda.getText().toString(),  direccionTienda.getText().toString(), telefonoTienda.getText().toString())){
+                bbddController.insertarLog("Creación tienda", LocalDateTime.now(), usuario.getDni());
                 mostrarDialogoCrearOtraTienda();
             }else{
                 mostrarAlertaErrorBBDD();
@@ -128,12 +148,17 @@ public class CrearTienda extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 vaciarCampos();
+                bbddController.insertarLog("Quiere crear otra tienda", LocalDateTime.now(), usuario.getDni());
+
             }
         });
         builder.setNegativeButton("Volver al menú", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                finish();
+                bbddController.insertarLog("Acceso menu admin", LocalDateTime.now(), usuario.getDni());
+                Intent intent = new Intent(CrearTienda.this, GeneralAdmin.class);
+                intent.putExtra("usuarioDNI", usuario.getDni());
+                startActivity(intent);
             }
         });
 
@@ -164,7 +189,10 @@ public class CrearTienda extends AppCompatActivity {
         builder.setPositiveButton("SI", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-               finish();
+                bbddController.insertarLog("Acceso menu admin", LocalDateTime.now(), usuario.getDni());
+                Intent intent = new Intent(CrearTienda.this, GeneralAdmin.class);
+                intent.putExtra("usuarioDNI", usuario.getDni());
+                startActivity(intent);
             }
         });
         builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {

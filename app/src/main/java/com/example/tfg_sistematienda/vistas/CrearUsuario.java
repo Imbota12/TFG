@@ -3,9 +3,12 @@ package com.example.tfg_sistematienda.vistas;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.media.Image;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputFilter;
+import android.text.Spanned;
 import android.text.TextWatcher;
 import android.util.Patterns;
 import android.view.View;
@@ -14,6 +17,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -29,7 +33,9 @@ import com.example.tfg_sistematienda.MainActivity;
 import com.example.tfg_sistematienda.R;
 import com.example.tfg_sistematienda.controladores.BBDDController;
 import com.example.tfg_sistematienda.modelos.TiendaModel;
+import com.example.tfg_sistematienda.modelos.UsuarioModel;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import org.mindrot.jbcrypt.BCrypt;
@@ -42,13 +48,15 @@ public class CrearUsuario extends AppCompatActivity {
     private BBDDController bbddController = new BBDDController();
     private EditText nombre, apellidos, usuario, contrasena, dni, telefono, veriContra;
     private Spinner tienda;
-    private Button crear;
+    private ImageButton crear, cancelar;
     private Switch vendedor, reponedor;
-    private TextView error;
     private String nifTienda;
     private boolean isVendedor, isReponedor;
+    private boolean allowBackPress=false;
 
-    @SuppressLint("MissingInflatedId")
+    private UsuarioModel usuarioo;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,7 +67,6 @@ public class CrearUsuario extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-
 
 
         nombre = findViewById(R.id.et_nombre_usuario);
@@ -74,12 +81,17 @@ public class CrearUsuario extends AppCompatActivity {
 
         crear = findViewById(R.id.bt_crear_usuario);
 
+        cancelar = findViewById(R.id.anular);
+
         vendedor = findViewById(R.id.switch1);
         reponedor = findViewById(R.id.switch2);
 
-        error = findViewById(R.id.tx_error);
 
-        error.setVisibility(View.INVISIBLE);
+        Intent intent = getIntent();
+        // Capturar el putExtra enviado desde MainActivity
+        String usuarioDNI = intent.getStringExtra("usuarioDNI");
+
+        usuarioo = bbddController.obtenerEmpleado(usuarioDNI);
 
         vendedor.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -107,6 +119,12 @@ public class CrearUsuario extends AppCompatActivity {
 
 
 
+        cancelar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+               confirmarCancelar();
+            }
+        });
 
         crear.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -122,6 +140,7 @@ public class CrearUsuario extends AppCompatActivity {
 
                     if (bbddController.insertarUsuario(dniUsuario, nombreUsuario, apellidosUsuario, telefonoUsuario,
                             correoUsuario, hashPassword(contraseñaUsuario), nifTienda, false, isVendedor, isReponedor)) {
+                        bbddController.insertarLog("Crea nuevo empleado", LocalDateTime.now(), usuarioo.getDni());
                         mostrarDialogoCrearOtroUsuario();
                         vaciarCampos();
                     } else {
@@ -134,174 +153,102 @@ public class CrearUsuario extends AppCompatActivity {
 
 
 
-        nombre.addTextChangedListener(new TextWatcher() {
+        InputFilter filter = new InputFilter() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                // No se requiere acción antes del cambio de texto
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                // No se requiere acción durante el cambio de texto
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                // Verificar si el texto contiene solo letras y espacios
-                String nombre = s.toString();
-                if (!nombre.matches("[a-zA-Z\\s]+")) {
-                    // Si el texto contiene caracteres que no son letras ni espacios, mostrar un mensaje de error
-                    error.setVisibility(View.VISIBLE);
-                    error.setText("El nombre solo puede contener letras y espacios");
-                    crear.setEnabled(false);
-                } else {
-                    error.setText(" ");
-                    crear.setEnabled(true);
+            public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
+                for (int i = start; i < end; i++) {
+                    if (!Character.isLetter(source.charAt(i)) && !Character.isWhitespace(source.charAt(i))) {
+                        return ""; // Rechazar el carácter
+                    }
                 }
+                return null; // Aceptar el carácter
             }
-        });
+        };
 
-        apellidos.addTextChangedListener(new TextWatcher() {
+// Establece el InputFilter en el EditText
+        nombre.setFilters(new InputFilter[] { filter });
+        apellidos.setFilters(new InputFilter[] { filter });
+
+
+        InputFilter dniFilter = new InputFilter() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                // No se requiere acción antes del cambio de texto
-            }
+            public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
+                String currentText = dest.toString();
+                String newText = currentText.substring(0, dstart) + source.toString() + currentText.substring(dend);
 
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                // No se requiere acción durante el cambio de texto
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                // Verificar si el texto contiene solo letras y espacios
-                String apellido = s.toString();
-                if (!apellido.matches("[a-zA-Z\\s]+")) {
-                    // Si el texto contiene caracteres que no son letras ni espacios, mostrar un mensaje de error
-
-                    error.setVisibility(View.VISIBLE);
-                    error.setText("El apellido solo puede contener letras y espacios");
-                    crear.setEnabled(false);
-                } else {
-                    error.setText(" ");
-                    crear.setEnabled(true);
+                // Verifica que la longitud no exceda 9 caracteres
+                if (newText.length() > 9) {
+                    return "";
                 }
-            }
 
-        });
-
-        dni.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                // No se requiere acción antes del cambio de texto
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                // No se requiere acción durante el cambio de texto
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                // Verificar si el texto contiene solo letras o números
-                String dnia = s.toString();
-                if (!dnia.matches("[a-zA-Z0-9]+")) {
-                    // Si el texto contiene caracteres que no son letras ni números, mostrar un mensaje de error
-                    error.setVisibility(View.VISIBLE);
-                    error.setText("El DNI solo puede contener letras o números");
-                    crear.setEnabled(false);
-                } else {
-                    // Si el texto contiene solo letras o números, eliminar el mensaje de error si estaba presente
-                    error.setText(" ");
-                    crear.setEnabled(true);
+                // Verifica el formato: 8 dígitos seguidos de una letra mayúscula
+                if (newText.length() <= 8) {
+                    // Permitir solo dígitos en las primeras 8 posiciones
+                    for (int i = start; i < end; i++) {
+                        if (!Character.isDigit(source.charAt(i))) {
+                            return "";
+                        }
+                    }
+                } else if (newText.length() == 9) {
+                    // Permitir solo una letra mayúscula en la última posición
+                    char lastChar = source.charAt(source.length() - 1);
+                    if (!Character.isUpperCase(lastChar)) {
+                        return "";
+                    }
                 }
-            }
-        });
 
-        telefono.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                // No se requiere acción antes del cambio de texto
+                return null; // Aceptar el carácter
             }
+        };
 
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                // No se requiere acción durante el cambio de texto
-            }
+// Establece el InputFilter en el EditText de DNI
+        dni.setFilters(new InputFilter[] { dniFilter });
 
+        // Define el InputFilter para el teléfono
+        InputFilter phoneFilter = new InputFilter() {
             @Override
-            public void afterTextChanged(Editable s) {
-                // Verificar si el texto contiene solo números y cumple con los criterios adicionales
-                String telefono = s.toString();
-                if (!telefono.matches("[6-9]\\d{8}")) {
-                    // Si el texto no cumple con los criterios, mostrar un mensaje de error
-                    error.setVisibility(View.VISIBLE);
-                    error.setText("El teléfono debe tener exactamente 9 dígitos y empezar por 6, 7 u 9");
-                    crear.setEnabled(false);
-                } else {
-                    // Si el texto cumple con los criterios, eliminar el mensaje de error si estaba presente
-                    error.setText(" ");
-                    crear.setEnabled(true);
+            public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
+                String currentText = dest.toString();
+                String newText = currentText.substring(0, dstart) + source.toString() + currentText.substring(dend);
+
+                // Verifica que la longitud no exceda 9 caracteres
+                if (newText.length() > 9) {
+                    return "";
                 }
-            }
-        });
 
-        usuario.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                // No se requiere acción antes del cambio de texto
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                // No se requiere acción durante el cambio de texto
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                // Verificar si el texto cumple con la estructura de un correo electrónico válido
-                String correoText = s.toString();
-                if (!Patterns.EMAIL_ADDRESS.matcher(correoText).matches()) {
-                    // Si el texto no cumple con los criterios, mostrar un mensaje de error
-                    error.setVisibility(View.VISIBLE);
-                    error.setText("Por favor, introduce un correo electrónico válido");
-                    crear.setEnabled(false);
-                } else {
-                    // Si el texto cumple con los criterios, eliminar el mensaje de error si estaba presente
-                    error.setText(" ");
-                    crear.setEnabled(true);
+                // Verifica el formato: empieza con 6, 7, 8 o 9 y consiste solo de dígitos
+                if (newText.length() == 1 && !newText.matches("[6-9]")) {
+                    return "";
                 }
-            }
-        });
-
-
-        contrasena.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                // No se requiere acción antes del cambio de texto
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                // No se requiere acción durante el cambio de texto
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                // Verificar si la contraseña cumple con los criterios
-                String contrasena = s.toString();
-                if (contrasena.isEmpty() || contrasena.length() < 4 || contrasena.length() > 16) {
-                    // Si la contraseña está vacía o no cumple con los criterios, mostrar un mensaje de error
-                    error.setVisibility(View.VISIBLE);
-                    error.setText("La contraseña debe tener entre 4 y 16 caracteres");
-                    crear.setEnabled(false);
-                } else {
-                    // Si la contraseña cumple con los criterios, eliminar el mensaje de error si estaba presente
-                    error.setText(null);
-                    crear.setEnabled(true);
+                for (int i = start; i < end; i++) {
+                    if (!Character.isDigit(source.charAt(i))) {
+                        return "";
+                    }
                 }
+
+                return null; // Aceptar el carácter
             }
-        });
+        };
+
+// Establece el InputFilter en el EditText de teléfono
+        telefono.setFilters(new InputFilter[] { phoneFilter });
+
+        // Define el InputFilter para caracteres válidos en un correo electrónico
+        InputFilter emailFilter = new InputFilter() {
+            @Override
+            public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
+                for (int i = start; i < end; i++) {
+                    char c = source.charAt(i);
+                    if (!Character.isLetterOrDigit(c) && c != '@' && c != '.' && c != '-' && c != '_') {
+                        return "";
+                    }
+                }
+                return null;
+            }
+        };
+
+// Establece el InputFilter en el EditText de usuario
+        usuario.setFilters(new InputFilter[] { emailFilter });
 
 
         rellenarSpinnerTiendas();
@@ -323,19 +270,30 @@ public class CrearUsuario extends AppCompatActivity {
                 // Por ejemplo, puedes limpiar los campos del formulario
                 // y permitir al usuario ingresar los datos de otro usuario.
                 vaciarCampos();
+                bbddController.insertarLog("Acceso formulario creacion empleado", LocalDateTime.now(), usuarioo.getDni());
             }
         });
         builder.setNegativeButton("Volver al menú", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                // Aquí puedes agregar el código para volver al menú principal
-                // Por ejemplo, puedes iniciar una nueva actividad que muestre el menú.
-                //volverAlMenu();
+                bbddController.insertarLog("Acceso menu admin", LocalDateTime.now(), usuarioo.getDni());
+                Intent intent = new Intent( CrearUsuario.this, GeneralAdmin.class);
+                intent.putExtra("usuarioDNI", usuarioo.getDni());
+                startActivity(intent);
             }
         });
         builder.setCancelable(false); // Evitar que el diálogo se cierre al tocar fuera de él
         builder.show();
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (allowBackPress) {
+            super.onBackPressed();
+        } else {
+            Toast.makeText(this, "Para volver pulse el botón ANULAR CONTRATO", Toast.LENGTH_SHORT).show();
+        }
     }
 
 
@@ -347,12 +305,19 @@ public class CrearUsuario extends AppCompatActivity {
         contrasena.setText("");
         dni.setText("");
         telefono.setText("");
-        error.setText(null);
         veriContra.setText("");
         vendedor.setChecked(false);
         reponedor.setChecked(false);
-        error.setText("");
-        error.setVisibility(View.INVISIBLE);
+        vendedor.setError(null);
+        reponedor.setError(null);
+        usuario.setError(null);
+        contrasena.setError(null);
+        veriContra.setError(null);
+        dni.setError(null);
+        nombre.setError(null);
+        apellidos.setError(null);
+        telefono.setError(null);
+
 
     }
 
@@ -390,8 +355,19 @@ public class CrearUsuario extends AppCompatActivity {
             todoOk = false;
         }
 
+        if (contrasena.getText().toString().isEmpty()){
+            contrasena.setError("Campo vacío");
+            todoOk = false;
+        }
+
+        if (contrasena.getText().length()<4){
+            contrasena.setError("La contraseña tiene que tener minimo 4 digitos");
+            todoOk=false;
+        }
+
         if (!vendedor.isChecked() && !reponedor.isChecked()){
-            error.setText("Debe seleccionar un rol");
+            vendedor.setError("Debe seleccionar un rol");
+            reponedor.setError("Debe seleccionar un rol");
             todoOk = false;
         }
 
@@ -413,6 +389,34 @@ public class CrearUsuario extends AppCompatActivity {
 
         return todoOk;
     }
+
+
+
+
+    private void confirmarCancelar() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("¿ESTAS SEGURO?");
+        builder.setMessage("¿ESTAS SEGURO QUE QUIERE CANCELAR LA OPERACIÓN Y VOLVER AL MENÚ PRINCIPAL?");
+        builder.setPositiveButton("SI", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                bbddController.insertarLog("Acceso menu admin", LocalDateTime.now(), usuarioo.getDni());
+                Intent intent = new Intent(CrearUsuario.this, GeneralAdmin.class);
+                intent.putExtra("usuarioDNI", usuarioo.getDni());
+                startActivity(intent);
+            }
+        });
+        builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        builder.setCancelable(false); // Evitar que el diálogo se cierre al tocar fuera de él
+        builder.show();
+    }
+
 
     public void rellenarSpinnerTiendas(){
         List<TiendaModel> tiendas = bbddController.obtenerListaTiendas();
