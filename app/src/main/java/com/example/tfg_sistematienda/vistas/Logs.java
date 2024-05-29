@@ -1,6 +1,8 @@
 package com.example.tfg_sistematienda.vistas;
 
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -46,12 +48,12 @@ public class Logs extends AppCompatActivity {
     private List<LogModel> listaLogs;
     private boolean allowBackPress=false;
     private Spinner dnis, tiposFiltros;
-    private Button seleccionarFecha, filtrarDni, mostrarTodosLogs, filtrarFecha;
+    private ImageButton seleccionarFecha, filtrarDni, mostrarTodosLogs, filtrarFecha, filtrarDniyFecha, vaciarLogs;
     private TextView fecha;
     private String dniSeleccionado;
     private List<String> dni= new ArrayList<>();
     private int AnoSeleccionado, DiaSeleccionado, MesSeleccionado;
-    private LocalDate fechaSeleccionada;
+    private LocalDate fechaSeleccionada=null;
     private ArrayList<String> tipoFiltro = new ArrayList<>();
     private String filtroSeleccionado;
 
@@ -83,6 +85,8 @@ public class Logs extends AppCompatActivity {
         mostrarTodosLogs = findViewById(R.id.mostrar_todos);
         filtrarFecha = findViewById(R.id.filtro_log_fecha);
         tiposFiltros = findViewById(R.id.sp_tipofiltro);
+        filtrarDniyFecha = findViewById(R.id.filtro_log_fechaydni);
+        vaciarLogs = findViewById(R.id.vaciarLogs);
 
         cargarSpinnerDnis();
 
@@ -93,6 +97,36 @@ public class Logs extends AppCompatActivity {
         tipoFiltro.add("mayor que");
 
         cargarSpinnerTipoFiltro();
+        fecha.setVisibility(View.INVISIBLE);
+
+
+        vaciarLogs.setOnClickListener(v -> {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("¿ESTAS SEGURO?");
+            builder.setMessage("¿ESTAS SEGURO QUE QUIERE BORRAR LOS LOGS (¡¡¡ESTA OPERACIÓN NO SE PODRÁ REVERTIR¡¡¡)?");
+            builder.setPositiveButton("SI", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    if (bbddController.vaciarLogs()) {
+                        bbddController.insertarLog("Vacia logs", LocalDateTime.now(), usuario.getDni());
+                        Toast.makeText(Logs.this, "Logs borrados correctamente", Toast.LENGTH_SHORT).show();
+                        cargarLogs();
+                    } else {
+                        Toast.makeText(Logs.this, "Error al vaciar logs", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+            builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
+
+            builder.setCancelable(false); // Evitar que el diálogo se cierre al tocar fuera de él
+            builder.show();
+
+        });
 
 
         tiposFiltros.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -117,9 +151,13 @@ public class Logs extends AppCompatActivity {
             cargarLogsFiltradosFecha();
         });
 
+        filtrarDniyFecha.setOnClickListener(v -> {
+            cargarLogsFiltradosDniyFecha();
+        });
+
 
         volverMenu.setOnClickListener(v -> {
-            bbddController.insertarLog("Acceso a logs", LocalDateTime.now(), usuario.getDni());
+            bbddController.insertarLog("Acceso menu admin", LocalDateTime.now(), usuario.getDni());
             Intent intent1 = new Intent(Logs.this, GeneralAdmin.class);
             intent1.putExtra("usuarioDNI", usuarioDNI);
             startActivity(intent1);
@@ -137,6 +175,26 @@ public class Logs extends AppCompatActivity {
         });
     }
 
+    private void cargarLogsFiltradosDniyFecha() {
+        if (dniSeleccionado.equals("")) {
+            Toast.makeText(this, "Debes seleccionar un dni y fecha arriba", Toast.LENGTH_SHORT).show();
+        }else {
+            if (filtroSeleccionado.equals("igual")) {
+                listaLogs = bbddController.obtenerListaLogsPorFechaIgualconDNI(fechaSeleccionada, dniSeleccionado);
+                adaptadorLogs = new AdaptadorLog(this, listaLogs);
+                todosLogs.setAdapter(adaptadorLogs);
+            } else if (filtroSeleccionado.equals("mayor que")) {
+                listaLogs = bbddController.obtenerListaLogsPorFechaMayorconDNI(fechaSeleccionada, dniSeleccionado);
+                adaptadorLogs = new AdaptadorLog(this, listaLogs);
+                todosLogs.setAdapter(adaptadorLogs);
+            } else if (filtroSeleccionado.equals("menor que")) {
+                listaLogs = bbddController.obtenerListaLogsPorFechaMenorconDNI(fechaSeleccionada, dniSeleccionado);
+                adaptadorLogs = new AdaptadorLog(this, listaLogs);
+                todosLogs.setAdapter(adaptadorLogs);
+            }
+        }
+    }
+
     private void cargarSpinnerTipoFiltro() {
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, tipoFiltro);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -146,18 +204,22 @@ public class Logs extends AppCompatActivity {
     }
 
     private void cargarLogsFiltradosFecha() {
-        if (filtroSeleccionado.equals("igual")) {
-            listaLogs = bbddController.obtenerListaLogsPorFechaIgual(fechaSeleccionada);
-            adaptadorLogs = new AdaptadorLog(this, listaLogs);
-            todosLogs.setAdapter(adaptadorLogs);
-        }else if (filtroSeleccionado.equals("mayor que")) {
-            listaLogs = bbddController.obtenerListaLogsPorFechaMayor(fechaSeleccionada);
-            adaptadorLogs = new AdaptadorLog(this, listaLogs);
-            todosLogs.setAdapter(adaptadorLogs);
-        }else if (filtroSeleccionado.equals("menor que")) {
-            listaLogs = bbddController.obtenerListaLogsPorFechaMenor(fechaSeleccionada);
-            adaptadorLogs = new AdaptadorLog(this, listaLogs);
-            todosLogs.setAdapter(adaptadorLogs);
+        if (fechaSeleccionada!=null) {
+            if (filtroSeleccionado.equals("igual")) {
+                listaLogs = bbddController.obtenerListaLogsPorFechaIgual(fechaSeleccionada);
+                adaptadorLogs = new AdaptadorLog(this, listaLogs);
+                todosLogs.setAdapter(adaptadorLogs);
+            } else if (filtroSeleccionado.equals("mayor que")) {
+                listaLogs = bbddController.obtenerListaLogsPorFechaMayor(fechaSeleccionada);
+                adaptadorLogs = new AdaptadorLog(this, listaLogs);
+                todosLogs.setAdapter(adaptadorLogs);
+            } else if (filtroSeleccionado.equals("menor que")) {
+                listaLogs = bbddController.obtenerListaLogsPorFechaMenor(fechaSeleccionada);
+                adaptadorLogs = new AdaptadorLog(this, listaLogs);
+                todosLogs.setAdapter(adaptadorLogs);
+            }
+        }else{
+            Toast.makeText(this, "Debes seleccionar una fecha", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -180,6 +242,7 @@ public class Logs extends AppCompatActivity {
                         fechaSeleccionada = LocalDate.of(year, month + 1, dayOfMonth); // month+1 porque LocalDate usa 1-12 para los meses
 
                         fecha.setText(fechaSeleccionada.toString());
+                        fecha.setVisibility(View.VISIBLE);
                     }
                 }, year, month, day);
         datePickerDialog.show();

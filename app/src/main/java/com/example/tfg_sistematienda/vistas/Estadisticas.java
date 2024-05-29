@@ -40,7 +40,7 @@ private ImageButton volverMenu;
         volverMenu = findViewById(R.id.volvermenuEstadisticas);
 
         volverMenu.setOnClickListener(v -> {
-            bbddController.insertarLog("Acceso a estadisticas ingresos", LocalDateTime.now(), usuario.getDni());
+            bbddController.insertarLog("Acceso a menu admin", LocalDateTime.now(), usuario.getDni());
             Intent intent1 = new Intent(Estadisticas.this, GeneralAdmin.class);
             intent1.putExtra("usuarioDNI", usuarioDNI);
             startActivity(intent1);

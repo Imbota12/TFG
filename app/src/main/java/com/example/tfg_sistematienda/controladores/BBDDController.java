@@ -115,4 +115,11 @@ public class BBDDController {
 
     public List<LogModel> obtenerListaLogsPorFechaMenor(LocalDate fecha){return conexionBBDD.obtenerListaLogsPorFechaMenor(fecha);}
 
+    public List<LogModel> obtenerListaLogsPorFechaIgualconDNI(LocalDate fecha, String dni){return conexionBBDD.obtenerListaLogsPorFechaIgualconDNI(fecha,dni);}
+
+    public List<LogModel> obtenerListaLogsPorFechaMayorconDNI(LocalDate fecha, String dni){return conexionBBDD.obtenerListaLogsPorFechaMayorconDNI(fecha,dni);}
+
+    public List<LogModel> obtenerListaLogsPorFechaMenorconDNI(LocalDate fecha, String dni){return conexionBBDD.obtenerListaLogsPorFechaMenorconDNI(fecha,dni);}
+    public boolean vaciarLogs(){return conexionBBDD.vaciarLogs();}
+
 }

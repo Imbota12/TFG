@@ -40,7 +40,7 @@ public class EstadisticasEmpleados extends AppCompatActivity {
         volverMenu = findViewById(R.id.volvermenuEstadisticasEmpleados);
 
         volverMenu.setOnClickListener(v -> {
-            bbddController.insertarLog("Acceso a estadisticas empleados", LocalDateTime.now(), usuario.getDni());
+            bbddController.insertarLog("Acceso a menu admin", LocalDateTime.now(), usuario.getDni());
             Intent intent1 = new Intent(EstadisticasEmpleados.this, GeneralAdmin.class);
             intent1.putExtra("usuarioDNI", usuarioDNI);
             startActivity(intent1);

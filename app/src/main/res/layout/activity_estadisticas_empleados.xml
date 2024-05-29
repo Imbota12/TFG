@@ -8,6 +8,17 @@
     tools:context=".vistas.EstadisticasEmpleados"
     android:background="@color/gray">
 
+    <ImageView
+        android:id="@+id/imageView22"
+        android:layout_width="48dp"
+        android:layout_height="618dp"
+        android:layout_marginStart="528dp"
+        android:layout_marginBottom="4dp"
+        android:scaleType="fitXY"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@mipmap/linearecta" />
+
     <ImageButton
         android:id="@+id/volvermenuEstadisticasEmpleados"
         android:layout_width="138dp"
@@ -31,6 +42,21 @@
         android:background="@color/black"
         android:textColor="@color/white"
         android:textAlignment="center"
+        android:textSize="34sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/textView82"
+        android:layout_width="361dp"
+        android:layout_height="45dp"
+        android:layout_marginStart="104dp"
+        android:layout_marginBottom="564dp"
+        android:background="@color/black"
+        android:text="VENDEDOR "
+        android:textAlignment="center"
+        android:textColor="@color/white"
         android:textSize="34sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"

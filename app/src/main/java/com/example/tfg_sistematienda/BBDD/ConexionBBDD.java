@@ -1079,7 +1079,9 @@ public class ConexionBBDD {
             PreparedStatement preparedStatement = conexion.prepareStatement(query);
 
             String fechaString = fecha.toString();
-            preparedStatement.setDate(1, java.sql.Date.valueOf(fechaString));
+            java.sql.Date sqlDate = java.sql.Date.valueOf(fechaString);
+            preparedStatement.setDate(1, sqlDate);
+
 
             ResultSet resultSet = preparedStatement.executeQuery();
 
@@ -1109,12 +1111,13 @@ public class ConexionBBDD {
         conectarBD();
 
         try{
-            String query = "SELECT accion, fecha_y_hora, dni FROM logs WHERE DATE(fecha_y_hora) = ? ";
+            String query = "SELECT accion, fecha_y_hora, dni FROM logs WHERE DATE(fecha_y_hora) > ? ";
             PreparedStatement preparedStatement = conexion.prepareStatement(query);
 
-            Date utilDate = java.sql.Date.valueOf(String.valueOf(fecha));
+            String fechaString = fecha.toString();
+            java.sql.Date sqlDate = java.sql.Date.valueOf(fechaString);
+            preparedStatement.setDate(1, sqlDate);
 
-            preparedStatement.setDate(1, new java.sql.Date(utilDate.getTime()));
 
             ResultSet resultSet = preparedStatement.executeQuery();
 
@@ -1144,12 +1147,124 @@ public class ConexionBBDD {
         conectarBD();
 
         try{
-            String query = "SELECT accion, fecha_y_hora, dni FROM logs WHERE DATE(fecha_y_hora) = ? ";
+            String query = "SELECT accion, fecha_y_hora, dni FROM logs WHERE DATE(fecha_y_hora) < ? ";
             PreparedStatement preparedStatement = conexion.prepareStatement(query);
 
-            Date utilDate = java.sql.Date.valueOf(String.valueOf(fecha));
+            String fechaString = fecha.toString();
+            java.sql.Date sqlDate = java.sql.Date.valueOf(fechaString);
+            preparedStatement.setDate(1, sqlDate);
 
-            preparedStatement.setDate(1, new java.sql.Date(utilDate.getTime()));
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()){
+                LogModel log = new LogModel();
+                log.setFecha(resultSet.getDate("fecha_y_hora"));
+                log.setAccion(resultSet.getString("accion"));
+                log.setDni(resultSet.getString("dni"));
+
+                listaLogs.add(log);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                cerrarConnection(conexion);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        return listaLogs;
+    }
+
+    public List<LogModel> obtenerListaLogsPorFechaIgualconDNI(LocalDate fecha, String dni) {
+        List<LogModel> listaLogs = new ArrayList<>();
+        conectarBD();
+
+        try{
+            String query = "SELECT accion, fecha_y_hora, dni FROM logs WHERE DATE(fecha_y_hora) = ? AND dni = ? ";
+            PreparedStatement preparedStatement = conexion.prepareStatement(query);
+
+            String fechaString = fecha.toString();
+            java.sql.Date sqlDate = java.sql.Date.valueOf(fechaString);
+            preparedStatement.setDate(1, sqlDate);
+            preparedStatement.setString(2, dni);
+
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()){
+                LogModel log = new LogModel();
+                log.setFecha(resultSet.getDate("fecha_y_hora"));
+                log.setAccion(resultSet.getString("accion"));
+                log.setDni(resultSet.getString("dni"));
+
+                listaLogs.add(log);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                cerrarConnection(conexion);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        return listaLogs;
+    }
+
+    public List<LogModel> obtenerListaLogsPorFechaMayorconDNI(LocalDate fecha, String dni) {
+        List<LogModel> listaLogs = new ArrayList<>();
+        conectarBD();
+
+        try{
+            String query = "SELECT accion, fecha_y_hora, dni FROM logs WHERE DATE(fecha_y_hora) > ? AND dni = ? ";
+            PreparedStatement preparedStatement = conexion.prepareStatement(query);
+
+            String fechaString = fecha.toString();
+            java.sql.Date sqlDate = java.sql.Date.valueOf(fechaString);
+            preparedStatement.setDate(1, sqlDate);
+            preparedStatement.setString(2, dni);
+
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()){
+                LogModel log = new LogModel();
+                log.setFecha(resultSet.getDate("fecha_y_hora"));
+                log.setAccion(resultSet.getString("accion"));
+                log.setDni(resultSet.getString("dni"));
+
+                listaLogs.add(log);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                cerrarConnection(conexion);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        return listaLogs;
+    }
+
+    public List<LogModel> obtenerListaLogsPorFechaMenorconDNI(LocalDate fecha, String dni) {
+        List<LogModel> listaLogs = new ArrayList<>();
+        conectarBD();
+
+        try{
+            String query = "SELECT accion, fecha_y_hora, dni FROM logs WHERE DATE(fecha_y_hora) < ? AND dni = ? ";
+            PreparedStatement preparedStatement = conexion.prepareStatement(query);
+
+            String fechaString = fecha.toString();
+            java.sql.Date sqlDate = java.sql.Date.valueOf(fechaString);
+            preparedStatement.setDate(1, sqlDate);
+            preparedStatement.setString(2, dni);
+
 
             ResultSet resultSet = preparedStatement.executeQuery();
 
@@ -1634,6 +1749,30 @@ public Date obtenerFechaLimiteDevolucion(String idTicket){
         }
         return fechaTicket;
     }
+
+    public boolean vaciarLogs() {
+        boolean vaciarOK = false;
+        conectarBD();
+
+        try {
+            // Construir la consulta SQL con los parámetros proporcionados
+            String query = "TRUNCATE TABLE logs RESTART IDENTITY";
+            PreparedStatement preparedStatement = conexion.prepareStatement(query);
+            preparedStatement.executeUpdate(); // Ejecuta la consulta de actualización
+
+            vaciarOK = true; // Si llega aquí, la operación fue exitosa
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                cerrarConnection(conexion); // Supongo que tienes un método cerrarConnection() para cerrar la conexión
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return vaciarOK;
+    }
+
 
 }
 

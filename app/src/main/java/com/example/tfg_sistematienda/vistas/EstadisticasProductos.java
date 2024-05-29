@@ -40,7 +40,7 @@ public class EstadisticasProductos extends AppCompatActivity {
         volverMenu = findViewById(R.id.volvermenuEstadisticasProductos);
 
         volverMenu.setOnClickListener(v -> {
-            bbddController.insertarLog("Acceso a estadisticas productos", LocalDateTime.now(), usuario.getDni());
+            bbddController.insertarLog("Acceso a menu admin", LocalDateTime.now(), usuario.getDni());
             Intent intent1 = new Intent(EstadisticasProductos.this, GeneralAdmin.class);
             intent1.putExtra("usuarioDNI", usuarioDNI);
             startActivity(intent1);

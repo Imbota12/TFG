@@ -55,32 +55,33 @@ public class GeneralAdmin extends AppCompatActivity {
 
 
         cerrarSesion.setOnClickListener(v -> cerrarSesion());
+
         estadisticasEmpleados.setOnClickListener(v ->{
            bbddController.insertarLog("Acceso estadisticas empleados", LocalDateTime.now(), usuario.getDni());
            Intent i = new Intent(GeneralAdmin.this, EstadisticasEmpleados.class);
-           i.putExtra("ususarioDNI", usuarioDNI);
+           i.putExtra("usuarioDNI", usuarioDNI);
            startActivity(i);
         });
 
         estadisticasProductos.setOnClickListener(v ->{
-            bbddController.insertarLog("Acceso estadisticas empleados", LocalDateTime.now(), usuario.getDni());
+            bbddController.insertarLog("Acceso estadisticas productos", LocalDateTime.now(), usuario.getDni());
             Intent i = new Intent(GeneralAdmin.this, EstadisticasProductos.class);
-            i.putExtra("ususarioDNI", usuarioDNI);
+            i.putExtra("usuarioDNI", usuarioDNI);
             startActivity(i);
         });
 
         ingresos.setOnClickListener(v ->{
-            bbddController.insertarLog("Acceso estadisticas empleados", LocalDateTime.now(), usuario.getDni());
+            bbddController.insertarLog("Acceso estadisticas ingresos", LocalDateTime.now(), usuario.getDni());
             Intent i = new Intent(GeneralAdmin.this, Estadisticas.class);
-            i.putExtra("ususarioDNI", usuarioDNI);
+            i.putExtra("usuarioDNI", usuarioDNI);
             startActivity(i);
         });
 
 
         logs.setOnClickListener(v ->{
-            bbddController.insertarLog("Acceso estadisticas empleados", LocalDateTime.now(), usuario.getDni());
+            bbddController.insertarLog("Acceso a logs", LocalDateTime.now(), usuario.getDni());
             Intent i = new Intent(GeneralAdmin.this, Logs.class);
-            i.putExtra("ususarioDNI", usuarioDNI);
+            i.putExtra("usuarioDNI", usuarioDNI);
             startActivity(i);
         });
 
