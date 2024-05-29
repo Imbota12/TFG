@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -11,6 +12,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.tfg_sistematienda.MainActivity;
 import com.example.tfg_sistematienda.R;
 import com.example.tfg_sistematienda.controladores.BBDDController;
 import com.example.tfg_sistematienda.modelos.UsuarioModel;
@@ -21,8 +23,8 @@ public class GeneralAdmin extends AppCompatActivity {
 
     private UsuarioModel usuario;
     private BBDDController bbddController= new BBDDController();
-
-    private ImageButton administrarTiendas, administrarEmpleados, anadirEmpleado, anadirTienda;
+    private boolean allowBackPress = false;
+    private ImageButton administrarTiendas, administrarEmpleados, anadirEmpleado, anadirTienda, cerrarSesion, estadisticasEmpleados, estadisticasProductos, ingresos, logs;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,6 +47,42 @@ public class GeneralAdmin extends AppCompatActivity {
         administrarEmpleados = findViewById(R.id.adminEmpleados);
         anadirEmpleado = findViewById(R.id.anadirEmpleado);
         anadirTienda = findViewById(R.id.anadirTienda);
+        cerrarSesion= findViewById(R.id.cerrar_sesion_admin);
+        estadisticasEmpleados = findViewById(R.id.estadisticasEmpleado);
+        estadisticasProductos = findViewById(R.id.estadisticasProductos);
+        ingresos = findViewById(R.id.ingresos);
+        logs = findViewById(R.id.logs);
+
+
+        cerrarSesion.setOnClickListener(v -> cerrarSesion());
+        estadisticasEmpleados.setOnClickListener(v ->{
+           bbddController.insertarLog("Acceso estadisticas empleados", LocalDateTime.now(), usuario.getDni());
+           Intent i = new Intent(GeneralAdmin.this, EstadisticasEmpleados.class);
+           i.putExtra("ususarioDNI", usuarioDNI);
+           startActivity(i);
+        });
+
+        estadisticasProductos.setOnClickListener(v ->{
+            bbddController.insertarLog("Acceso estadisticas empleados", LocalDateTime.now(), usuario.getDni());
+            Intent i = new Intent(GeneralAdmin.this, EstadisticasProductos.class);
+            i.putExtra("ususarioDNI", usuarioDNI);
+            startActivity(i);
+        });
+
+        ingresos.setOnClickListener(v ->{
+            bbddController.insertarLog("Acceso estadisticas empleados", LocalDateTime.now(), usuario.getDni());
+            Intent i = new Intent(GeneralAdmin.this, Estadisticas.class);
+            i.putExtra("ususarioDNI", usuarioDNI);
+            startActivity(i);
+        });
+
+
+        logs.setOnClickListener(v ->{
+            bbddController.insertarLog("Acceso estadisticas empleados", LocalDateTime.now(), usuario.getDni());
+            Intent i = new Intent(GeneralAdmin.this, Logs.class);
+            i.putExtra("ususarioDNI", usuarioDNI);
+            startActivity(i);
+        });
 
         administrarTiendas.setOnClickListener(v -> {
             bbddController.insertarLog("Acceso lista tiendas", LocalDateTime.now(), usuario.getDni());
@@ -72,5 +110,20 @@ public class GeneralAdmin extends AppCompatActivity {
             startActivity(i);
         });
 
+    }
+    private void cerrarSesion() {
+        bbddController.insertarLog("Cierre sesión", LocalDateTime.now(), usuario.getDni());
+        Intent intent = new Intent(GeneralAdmin.this, MainActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (allowBackPress) {
+            super.onBackPressed();
+        } else {
+            Toast.makeText(this, "No puedes retroceder. Por favor, cierra sesión primero.", Toast.LENGTH_SHORT).show();
+        }
     }
 }

@@ -38,8 +38,8 @@
         android:id="@+id/adminEmpleados"
         android:layout_width="227dp"
         android:layout_height="173dp"
-        android:layout_marginStart="328dp"
-        android:layout_marginBottom="184dp"
+        android:layout_marginStart="292dp"
+        android:layout_marginBottom="192dp"
         android:background="@android:color/transparent"
         android:contentDescription="añadirProducto"
         android:scaleType="fitXY"
@@ -59,12 +59,24 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:srcCompat="@mipmap/admintiendas" />
+    <ImageButton
+        android:id="@+id/cerrar_sesion_admin"
+        android:layout_width="97dp"
+        android:layout_height="108dp"
+        android:layout_marginStart="1004dp"
+        android:layout_marginBottom="28dp"
+        android:background="@android:color/transparent"
+        android:contentDescription="cerrarSesion"
+        android:scaleType="fitCenter"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@mipmap/cerrarsesion" />
 
     <ImageButton
         android:id="@+id/anadirEmpleado"
         android:layout_width="227dp"
         android:layout_height="173dp"
-        android:layout_marginStart="328dp"
+        android:layout_marginStart="300dp"
         android:layout_marginBottom="404dp"
         android:background="@android:color/transparent"
         android:contentDescription="añadirProducto"
@@ -72,5 +84,58 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:srcCompat="@mipmap/contratarempleado" />
+
+    <ImageButton
+        android:id="@+id/estadisticasEmpleado"
+        android:layout_width="227dp"
+        android:layout_height="173dp"
+        android:layout_marginStart="576dp"
+        android:layout_marginBottom="404dp"
+        android:background="@android:color/transparent"
+        android:contentDescription="añadirProducto"
+        android:scaleType="fitXY"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@mipmap/estadisticasemple" />
+
+
+    <ImageButton
+        android:id="@+id/ingresos"
+        android:layout_width="227dp"
+        android:layout_height="173dp"
+        android:layout_marginStart="832dp"
+        android:layout_marginBottom="408dp"
+        android:background="@android:color/transparent"
+        android:contentDescription="añadirProducto"
+        android:scaleType="fitXY"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@mipmap/ingresos" />
+
+    <ImageButton
+        android:id="@+id/logs"
+        android:layout_width="227dp"
+        android:layout_height="173dp"
+        android:layout_marginStart="840dp"
+        android:layout_marginBottom="196dp"
+        android:background="@android:color/transparent"
+        android:contentDescription="añadirProducto"
+        android:scaleType="fitXY"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@mipmap/logs" />
+
+    <ImageButton
+        android:id="@+id/estadisticasProductos"
+        android:layout_width="227dp"
+        android:layout_height="173dp"
+        android:layout_marginStart="584dp"
+        android:layout_marginBottom="192dp"
+        android:background="@android:color/transparent"
+        android:contentDescription="añadirProducto"
+        android:scaleType="fitXY"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@mipmap/estadisticasprodu" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

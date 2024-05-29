@@ -1,16 +1,22 @@
 package com.example.tfg_sistematienda.modelos;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Date;
 
 public class LogModel {
     String accion;
-    LocalDate fecha;
+    Date fecha;
     String dni;
 
-    public LogModel(String accion, LocalDate fecha, String dni) {
+    public LogModel(String accion, Date fecha, String dni) {
         this.accion = accion;
         this.fecha = fecha;
         this.dni = dni;
+    }
+
+    public LogModel(){
+
     }
 
     public String getAccion() {
@@ -21,11 +27,11 @@ public class LogModel {
         this.accion = accion;
     }
 
-    public LocalDate getFecha() {
+    public Date getFecha() {
         return fecha;
     }
 
-    public void setFecha(LocalDate fecha) {
+    public void setFecha(Date fecha) {
         this.fecha = fecha;
     }
 

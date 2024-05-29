@@ -181,6 +181,8 @@ public class AdaptadorEmpleado extends RecyclerView.Adapter<ViewHolderEmpleados>
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle("Editar Empleado");
 
+        builder.setCancelable(false);
+
         // Inflar el diseño del diálogo de edición de producto
         View dialogView = LayoutInflater.from(context).inflate(R.layout.popup_editarempleado, null);
         builder.setView(dialogView);

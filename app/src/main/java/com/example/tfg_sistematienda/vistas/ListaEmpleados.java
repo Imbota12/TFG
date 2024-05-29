@@ -43,6 +43,7 @@ public class ListaEmpleados extends AppCompatActivity {
     private RecyclerView lista;
     private AdaptadorEmpleado adaptadorEmpleado;
     private List<UsuarioModel> listaEmpleados;
+    private boolean allowBackPress = false;
     private static final int MAX_CELL_LENGTH = 32767;
     private static final int REQUEST_EXTERNAL_STORAGE = 118;
 
@@ -97,6 +98,15 @@ public class ListaEmpleados extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (allowBackPress) {
+            super.onBackPressed();
+        } else {
+            Toast.makeText(this, "Para volver pulse el botón VOLVER MENÚ", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void generarExcel() throws IOException {

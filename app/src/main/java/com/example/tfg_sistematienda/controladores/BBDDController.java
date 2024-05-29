@@ -1,6 +1,7 @@
 package com.example.tfg_sistematienda.controladores;
 
 import com.example.tfg_sistematienda.BBDD.ConexionBBDD;
+import com.example.tfg_sistematienda.modelos.LogModel;
 import com.example.tfg_sistematienda.modelos.ProductoModel;
 import com.example.tfg_sistematienda.modelos.Producto_TicketModel;
 import com.example.tfg_sistematienda.modelos.TicketModel;
@@ -44,6 +45,7 @@ public class BBDDController {
     public String obtenerContraseñaPorCorreo(String correo) { return conexionBBDD.obtenerContraseñaPorCorreo(correo);}
 
     public UsuarioModel buscarUsuarioPorCorreo(String correo) { return conexionBBDD.buscarUsuarioPorCorreo(correo);}
+    public UsuarioModel buscarUsuarioPorDni(String dni) { return conexionBBDD.buscarUsuarioPorDni(dni);}
 
     public boolean insertarProducto(String codigoBarras, String nombre, String descripcion, int cantidadStock,
                                     double precioUnidad, int vecesComprado, int vecesDevuelto, byte[] imagenProducto,
@@ -101,5 +103,16 @@ public class BBDDController {
     public Date obtenerFechaTicket(String idTicket){return conexionBBDD.obtenerFechaTicket(idTicket);}
 
     public boolean modificarTienda(String cif, String nuevoNombre, String nuevaDireccion, String nuevoTelefono){return conexionBBDD.modificarTienda(cif, nuevoNombre, nuevaDireccion, nuevoTelefono);}
+
+    public List<LogModel> obtenerListaLogs(){return conexionBBDD.obtenerListaLogs();}
+    public List<LogModel> obtenerListaLogsPorDni(String dni){return conexionBBDD.obtenerListaLogsPorDni(dni);}
+
+    public List<String> obtenerDnis(){return conexionBBDD.obtenerDnis();}
+
+    public List<LogModel> obtenerListaLogsPorFechaIgual(LocalDate fecha){return conexionBBDD.obtenerListaLogsPorFechaIgual(fecha);}
+
+    public List<LogModel> obtenerListaLogsPorFechaMayor(LocalDate fecha){return conexionBBDD.obtenerListaLogsPorFechaMayor(fecha);}
+
+    public List<LogModel> obtenerListaLogsPorFechaMenor(LocalDate fecha){return conexionBBDD.obtenerListaLogsPorFechaMenor(fecha);}
 
 }

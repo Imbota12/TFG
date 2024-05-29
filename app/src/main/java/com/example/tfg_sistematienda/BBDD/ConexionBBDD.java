@@ -2,6 +2,7 @@ package com.example.tfg_sistematienda.BBDD;
 
 import android.os.StrictMode;
 
+import com.example.tfg_sistematienda.modelos.LogModel;
 import com.example.tfg_sistematienda.modelos.ProductoModel;
 import com.example.tfg_sistematienda.modelos.Producto_TicketModel;
 import com.example.tfg_sistematienda.modelos.TicketModel;
@@ -812,6 +813,51 @@ public class ConexionBBDD {
         return usuarioEncontrado;
     }
 
+    public UsuarioModel buscarUsuarioPorDni(String dni) {
+        UsuarioModel usuarioEncontrado = null;
+        conectarBD(); // Supongamos que esta función establece la conexión a la base de datos
+
+        try {
+            // Construir la consulta SQL con el correo proporcionado
+            String query = "SELECT * FROM usuario WHERE dni = ?";
+            PreparedStatement preparedStatement = conexion.prepareStatement(query);
+            preparedStatement.setString(1, dni);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            // Si se encuentra al menos un resultado, el usuario existe
+            if (resultSet.next()) {
+                // Crear un objeto UsuarioModel con los datos del resultado
+                usuarioEncontrado = new UsuarioModel(
+                        resultSet.getString("dni"),
+                        resultSet.getString("nombre"),
+                        resultSet.getString("apellido"),
+                        resultSet.getString("telefono"),
+                        resultSet.getString("correo"),
+                        resultSet.getBoolean("activo"),
+                        resultSet.getString("contraseña"),
+                        resultSet.getString("id_tienda"),
+                        resultSet.getBoolean("is_admin"),
+                        resultSet.getBoolean("is_vendedor"),
+                        resultSet.getBoolean("is_reponedor")
+                );
+            }
+
+            resultSet.close();
+            preparedStatement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                cerrarConnection(conexion); // Supongo que tienes un método cerrarConnection() para cerrar la conexión
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        return usuarioEncontrado;
+    }
+
 
     public List<String> obtenerListaCodigosBarras() {
         List<String> listaBarras = new ArrayList<>();
@@ -962,6 +1008,197 @@ public class ConexionBBDD {
         return listaCif;
     }
 
+    public List<LogModel> obtenerListaLogs() {
+        List<LogModel> listaLogs = new ArrayList<>();
+        conectarBD();
+
+        try{
+            String query = "SELECT accion, fecha_y_hora, dni FROM logs";
+            PreparedStatement preparedStatement = conexion.prepareStatement(query);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()){
+                LogModel log = new LogModel();
+                log.setFecha(resultSet.getDate("fecha_y_hora"));
+                log.setAccion(resultSet.getString("accion"));
+                log.setDni(resultSet.getString("dni"));
+
+                listaLogs.add(log);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                cerrarConnection(conexion); // Supongo que tienes un método cerrarConnection() para cerrar la conexión
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        return listaLogs;
+    }
+
+    public List<LogModel> obtenerListaLogsPorDni(String dni) {
+        List<LogModel> listaLogs = new ArrayList<>();
+        conectarBD();
+
+        try{
+            String query = "SELECT accion, fecha_y_hora, dni FROM logs WHERE dni = ?";
+            PreparedStatement preparedStatement = conexion.prepareStatement(query);
+            preparedStatement.setString(1, dni);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()){
+                LogModel log = new LogModel();
+                log.setFecha(resultSet.getDate("fecha_y_hora"));
+                log.setAccion(resultSet.getString("accion"));
+                log.setDni(resultSet.getString("dni"));
+
+                listaLogs.add(log);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                cerrarConnection(conexion);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        return listaLogs;
+    }
+
+
+    public List<LogModel> obtenerListaLogsPorFechaIgual(LocalDate fecha) {
+        List<LogModel> listaLogs = new ArrayList<>();
+        conectarBD();
+
+        try{
+            String query = "SELECT accion, fecha_y_hora, dni FROM logs WHERE DATE(fecha_y_hora) = ? ";
+            PreparedStatement preparedStatement = conexion.prepareStatement(query);
+
+            String fechaString = fecha.toString();
+            preparedStatement.setDate(1, java.sql.Date.valueOf(fechaString));
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()){
+                LogModel log = new LogModel();
+                log.setFecha(resultSet.getDate("fecha_y_hora"));
+                log.setAccion(resultSet.getString("accion"));
+                log.setDni(resultSet.getString("dni"));
+
+                listaLogs.add(log);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                cerrarConnection(conexion);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        return listaLogs;
+    }
+
+    public List<LogModel> obtenerListaLogsPorFechaMayor(LocalDate fecha) {
+        List<LogModel> listaLogs = new ArrayList<>();
+        conectarBD();
+
+        try{
+            String query = "SELECT accion, fecha_y_hora, dni FROM logs WHERE DATE(fecha_y_hora) = ? ";
+            PreparedStatement preparedStatement = conexion.prepareStatement(query);
+
+            Date utilDate = java.sql.Date.valueOf(String.valueOf(fecha));
+
+            preparedStatement.setDate(1, new java.sql.Date(utilDate.getTime()));
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()){
+                LogModel log = new LogModel();
+                log.setFecha(resultSet.getDate("fecha_y_hora"));
+                log.setAccion(resultSet.getString("accion"));
+                log.setDni(resultSet.getString("dni"));
+
+                listaLogs.add(log);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                cerrarConnection(conexion);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        return listaLogs;
+    }
+
+    public List<LogModel> obtenerListaLogsPorFechaMenor(LocalDate fecha) {
+        List<LogModel> listaLogs = new ArrayList<>();
+        conectarBD();
+
+        try{
+            String query = "SELECT accion, fecha_y_hora, dni FROM logs WHERE DATE(fecha_y_hora) = ? ";
+            PreparedStatement preparedStatement = conexion.prepareStatement(query);
+
+            Date utilDate = java.sql.Date.valueOf(String.valueOf(fecha));
+
+            preparedStatement.setDate(1, new java.sql.Date(utilDate.getTime()));
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()){
+                LogModel log = new LogModel();
+                log.setFecha(resultSet.getDate("fecha_y_hora"));
+                log.setAccion(resultSet.getString("accion"));
+                log.setDni(resultSet.getString("dni"));
+
+                listaLogs.add(log);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                cerrarConnection(conexion);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        return listaLogs;
+    }
+
+    public List<String> obtenerDnis() {
+        List<String> listaDnis = new ArrayList<>();
+        conectarBD();
+
+        try{
+            String query = "SELECT DISTINCT dni FROM usuario";
+            PreparedStatement preparedStatement = conexion.prepareStatement(query);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()){
+                String dni = resultSet.getString("dni");
+                listaDnis.add(dni);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                cerrarConnection(conexion); // Supongo que tienes un método cerrarConnection() para cerrar la conexión
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        return listaDnis;
+    }
 
     public List<ProductoModel> obtenerListaProductos(String idTienda) {
         List<ProductoModel> listaProductos = new ArrayList<>();
