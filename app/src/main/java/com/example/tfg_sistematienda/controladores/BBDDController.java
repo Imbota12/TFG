@@ -124,4 +124,7 @@ public class BBDDController {
 
     public boolean comprobarRegistrosTienda(){return conexionBBDD.comprobarRegistrosTienda();}
 
+    public List<ProductoModel> obtenerProductosMasVendidos() {return conexionBBDD.obtenerProductosMasVendidos();}
+    public List<ProductoModel> obtenerProductosMasDevueltos() {return conexionBBDD.obtenerProductosMasDevueltos();}
+
 }

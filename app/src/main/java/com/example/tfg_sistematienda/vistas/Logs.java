@@ -294,6 +294,7 @@ public class Logs extends AppCompatActivity {
         adaptadorLogs = new AdaptadorLog(this, listaLogs);
         todosLogs.setAdapter(adaptadorLogs);
     }
+
     @Override
     public void onBackPressed() {
         if (allowBackPress) {

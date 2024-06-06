@@ -1642,6 +1642,91 @@ public class ConexionBBDD {
         return usuarioEncontrado;
     }
 
+    public List<ProductoModel> obtenerProductosMasVendidos() {
+        List<ProductoModel> listaProductos = new ArrayList<>();
+        conectarBD(); // Supongamos que esta función establece la conexión a la base de datos
+
+        try {
+            // Construir la consulta SQL con los parámetros proporcionados
+            String query = "SELECT * FROM producto ORDER BY veces_comprado DESC LIMIT 5";
+            PreparedStatement preparedStatement = conexion.prepareStatement(query);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+
+            while (resultSet.next()) {
+                ProductoModel producto = new ProductoModel();
+                producto.setCodigoBarras(resultSet.getString("codigo_barras"));
+                producto.setNombre(resultSet.getString("nombre"));
+                producto.setDescripcion(resultSet.getString("descripcion"));
+                producto.setCantidadStock(resultSet.getInt("cantidad_stock"));
+                producto.setPrecioUnidad(resultSet.getDouble("precio_unidad"));
+                producto.setVecesComprado(resultSet.getInt("veces_comprado"));
+                producto.setVecesDevuelto(resultSet.getInt("veces_devuelto"));
+                producto.setImagenProducto(resultSet.getBytes("imagen_producto"));
+                producto.setIdTienda(resultSet.getString("id_tienda"));
+
+                listaProductos.add(producto);
+
+            }
+            resultSet.close();
+            preparedStatement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                cerrarConnection(conexion);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        return listaProductos;
+    }
+
+
+    public List<ProductoModel> obtenerProductosMasDevueltos() {
+        List<ProductoModel> listaProductos = new ArrayList<>();
+        conectarBD(); // Supongamos que esta función establece la conexión a la base de datos
+
+        try {
+            // Construir la consulta SQL con los parámetros proporcionados
+            String query = "SELECT * FROM producto ORDER BY veces_devuelto DESC LIMIT 5";
+            PreparedStatement preparedStatement = conexion.prepareStatement(query);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+
+            while (resultSet.next()) {
+                ProductoModel producto = new ProductoModel();
+                producto.setCodigoBarras(resultSet.getString("codigo_barras"));
+                producto.setNombre(resultSet.getString("nombre"));
+                producto.setDescripcion(resultSet.getString("descripcion"));
+                producto.setCantidadStock(resultSet.getInt("cantidad_stock"));
+                producto.setPrecioUnidad(resultSet.getDouble("precio_unidad"));
+                producto.setVecesComprado(resultSet.getInt("veces_comprado"));
+                producto.setVecesDevuelto(resultSet.getInt("veces_devuelto"));
+                producto.setImagenProducto(resultSet.getBytes("imagen_producto"));
+                producto.setIdTienda(resultSet.getString("id_tienda"));
+
+                listaProductos.add(producto);
+
+            }
+            resultSet.close();
+            preparedStatement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                cerrarConnection(conexion);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        return listaProductos;
+    }
+
     public boolean insertarLog(String accion, LocalDateTime fechaHora, String dniEmpleado) {
         boolean insertarOK = false;
         conectarBD();

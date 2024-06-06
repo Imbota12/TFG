@@ -5,15 +5,50 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".vistas.EstadisticasProductos"
-    android:background="@color/gray">
+    android:background="@color/gray"
+    tools:context=".vistas.EstadisticasProductos">
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="72dp"
+        android:layout_height="520dp"
+        android:layout_marginStart="528dp"
+        android:layout_marginBottom="72dp"
+        android:scaleType="fitXY"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@mipmap/linearecta" />
+
+    <ImageView
+        android:id="@+id/imageView21"
+        android:layout_width="72dp"
+        android:layout_height="520dp"
+        android:layout_marginStart="268dp"
+        android:layout_marginBottom="224dp"
+        android:rotation="90"
+        android:scaleType="fitXY"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@mipmap/linearecta" />
+
+    <ImageView
+        android:id="@+id/imageView22"
+        android:layout_width="72dp"
+        android:layout_height="520dp"
+        android:layout_marginStart="784dp"
+        android:layout_marginBottom="224dp"
+        android:rotation="90"
+        android:scaleType="fitXY"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@mipmap/linearecta" />
 
     <ImageButton
         android:id="@+id/volvermenuEstadisticasProductos"
-        android:layout_width="138dp"
-        android:layout_height="90dp"
-        android:layout_marginStart="936dp"
-        android:layout_marginBottom="20dp"
+        android:layout_width="111dp"
+        android:layout_height="63dp"
+        android:layout_marginStart="964dp"
+        android:layout_marginBottom="16dp"
         android:background="@android:color/transparent"
         android:contentDescription="generarExcel"
         android:scaleType="fitCenter"
@@ -23,16 +58,154 @@
 
     <TextView
         android:id="@+id/textView83"
-        android:layout_width="1161dp"
-        android:layout_height="45dp"
-        android:layout_marginStart="4dp"
-        android:layout_marginBottom="616dp"
-        android:text="ESTADISTICAS PRODUCTOS "
+        android:layout_width="513dp"
+        android:layout_height="58dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginBottom="536dp"
         android:background="@color/black"
-        android:textColor="@color/white"
+        android:text="PRODUCTOS MÁS VENDIDOS"
         android:textAlignment="center"
+        android:textColor="@color/white"
         android:textSize="34sp"
         android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/cb_masvendido"
+        android:layout_width="158dp"
+        android:layout_height="33dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginBottom="488dp"
+        android:text="CODIGO BARRAS"
+        android:textAlignment="center"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/vc_masvendido"
+        android:layout_width="101dp"
+        android:layout_height="52dp"
+        android:layout_marginStart="452dp"
+        android:layout_marginBottom="480dp"
+        android:text="VECES COMPRADO"
+        android:textAlignment="center"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/t_masvendido"
+        android:layout_width="111dp"
+        android:layout_height="29dp"
+        android:layout_marginStart="328dp"
+        android:layout_marginBottom="492dp"
+        android:text="TIENDA"
+        android:textAlignment="center"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/n_masvendido"
+        android:layout_width="115dp"
+        android:layout_height="33dp"
+        android:layout_marginStart="200dp"
+        android:layout_marginBottom="488dp"
+        android:text="NOMBRE"
+        android:textAlignment="center"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+
+    <TextView
+        android:id="@+id/cb_masdevuelto"
+        android:layout_width="141dp"
+        android:layout_height="34dp"
+        android:layout_marginStart="580dp"
+        android:layout_marginBottom="492dp"
+        android:text="CODIGO BARRAS"
+        android:textAlignment="center"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/t_masdevuelto"
+        android:layout_width="111dp"
+        android:layout_height="29dp"
+        android:layout_marginStart="868dp"
+        android:layout_marginBottom="496dp"
+        android:text="TIENDA"
+        android:textAlignment="center"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/n_masdevuelto"
+        android:layout_width="115dp"
+        android:layout_height="33dp"
+        android:layout_marginStart="736dp"
+        android:layout_marginBottom="492dp"
+        android:text="NOMBRE"
+        android:textAlignment="center"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/vecesdevuelto"
+        android:layout_width="121dp"
+        android:layout_height="44dp"
+        android:layout_marginStart="988dp"
+        android:layout_marginBottom="488dp"
+        android:text="VECES DEVUELTO"
+        android:textAlignment="center"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/textView85"
+        android:layout_width="513dp"
+        android:layout_height="58dp"
+        android:layout_marginStart="580dp"
+        android:layout_marginBottom="536dp"
+        android:background="@color/black"
+        android:text="PRODUCTOS MÁS DEVUELTOS"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="34sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/masvendidos"
+        android:layout_width="512dp"
+        android:layout_height="389dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginBottom="88dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/masdevueltos"
+        android:layout_width="512dp"
+        android:layout_height="389dp"
+        android:layout_marginStart="580dp"
+        android:layout_marginBottom="88dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
