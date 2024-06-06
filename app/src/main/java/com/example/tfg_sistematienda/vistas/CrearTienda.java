@@ -81,23 +81,38 @@ public class CrearTienda extends AppCompatActivity {
                 }
         });
 
-        cifTienda.setFilters(new InputFilter[] {
-                new InputFilter.LengthFilter(9), // Limita la cantidad de caracteres a 9
-                new InputFilter() {
-                    public CharSequence filter(CharSequence source, int start, int end,
-                                               Spanned dest, int dstart, int dend) {
-                        StringBuilder builder = new StringBuilder(dest);
-                        builder.replace(dstart, dend, source.subSequence(start, end).toString());
+        InputFilter cifFilter = new InputFilter() {
+            @Override
+            public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
+                String currentText = dest.toString();
+                String newText = currentText.substring(0, dstart) + source.toString() + currentText.substring(dend);
 
-                        // Verificar si el texto resultante tiene el formato adecuado (1 letra seguida de 8 números)
-                        if (!builder.toString().matches("[A-Z]\\d{0,8}")) {
-                            return ""; // Si no cumple con el formato, eliminar la entrada
+                // Verifica que la longitud no exceda 9 caracteres
+                if (newText.length() > 9) {
+                    return "";
+                }
+
+                // Verifica el formato: 8 dígitos seguidos de una letra mayúscula
+                if (newText.length() <= 8) {
+                    // Permitir solo dígitos en las primeras 8 posiciones
+                    for (int i = start; i < end; i++) {
+                        if (!Character.isDigit(source.charAt(i))) {
+                            return "";
                         }
-
-                        return null; // Aceptar este cambio de texto
+                    }
+                } else if (newText.length() == 9) {
+                    // Permitir solo una letra mayúscula en la última posición
+                    char lastChar = source.charAt(source.length() - 1);
+                    if (!Character.isUpperCase(lastChar)) {
+                        return "";
                     }
                 }
-        });
+
+                return null; // Aceptar el carácter
+            }
+        };
+
+        cifTienda.setFilters(new InputFilter[] {cifFilter});
 
 
 

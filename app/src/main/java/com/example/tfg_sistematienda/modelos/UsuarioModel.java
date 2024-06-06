@@ -7,7 +7,7 @@ public class UsuarioModel {
     private String telefono;
     private String correo;
     private boolean activo;
-    private String contraseña;
+    private String contrasena;
     private String idTienda;
     private boolean isAdmin;
     private boolean isVendedor;
@@ -19,14 +19,14 @@ public class UsuarioModel {
     }
 
     public UsuarioModel(String dni, String nombre, String apellido, String telefono, String correo, boolean activo,
-                        String contraseña, String idTienda, boolean isAdmin, boolean isVendedor, boolean isReponedor) {
+                        String contrasena, String idTienda, boolean isAdmin, boolean isVendedor, boolean isReponedor) {
         this.dni = dni;
         this.nombre = nombre;
         this.apellido = apellido;
         this.telefono = telefono;
         this.correo = correo;
         this.activo = activo;
-        this.contraseña = contraseña;
+        this.contrasena = contrasena;
         this.idTienda = idTienda;
         this.isAdmin = isAdmin;
         this.isVendedor = isVendedor;
@@ -83,12 +83,12 @@ public class UsuarioModel {
         this.activo = activo;
     }
 
-    public String getContraseña() {
-        return contraseña;
+    public String getContrasena() {
+        return contrasena;
     }
 
-    public void setContraseña(String contraseña) {
-        this.contraseña = contraseña;
+    public void setContrasena(String contrasena) {
+        this.contrasena = contrasena;
     }
 
     public String getIdTienda() {

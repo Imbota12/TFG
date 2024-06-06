@@ -24,7 +24,7 @@ public class GeneralAdmin extends AppCompatActivity {
     private UsuarioModel usuario;
     private BBDDController bbddController= new BBDDController();
     private boolean allowBackPress = false;
-    private ImageButton administrarTiendas, administrarEmpleados, anadirEmpleado, anadirTienda, cerrarSesion, estadisticasEmpleados, estadisticasProductos, ingresos, logs;
+    private ImageButton administrarTiendas, administrarEmpleados, anadirEmpleado, anadirTienda, cerrarSesion, estadisticasProductos, logs;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,20 +48,11 @@ public class GeneralAdmin extends AppCompatActivity {
         anadirEmpleado = findViewById(R.id.anadirEmpleado);
         anadirTienda = findViewById(R.id.anadirTienda);
         cerrarSesion= findViewById(R.id.cerrar_sesion_admin);
-        estadisticasEmpleados = findViewById(R.id.estadisticasEmpleado);
         estadisticasProductos = findViewById(R.id.estadisticasProductos);
-        ingresos = findViewById(R.id.ingresos);
         logs = findViewById(R.id.logs);
 
 
         cerrarSesion.setOnClickListener(v -> cerrarSesion());
-
-        estadisticasEmpleados.setOnClickListener(v ->{
-           bbddController.insertarLog("Acceso estadisticas empleados", LocalDateTime.now(), usuario.getDni());
-           Intent i = new Intent(GeneralAdmin.this, EstadisticasEmpleados.class);
-           i.putExtra("usuarioDNI", usuarioDNI);
-           startActivity(i);
-        });
 
         estadisticasProductos.setOnClickListener(v ->{
             bbddController.insertarLog("Acceso estadisticas productos", LocalDateTime.now(), usuario.getDni());
@@ -69,14 +60,6 @@ public class GeneralAdmin extends AppCompatActivity {
             i.putExtra("usuarioDNI", usuarioDNI);
             startActivity(i);
         });
-
-        ingresos.setOnClickListener(v ->{
-            bbddController.insertarLog("Acceso estadisticas ingresos", LocalDateTime.now(), usuario.getDni());
-            Intent i = new Intent(GeneralAdmin.this, Estadisticas.class);
-            i.putExtra("usuarioDNI", usuarioDNI);
-            startActivity(i);
-        });
-
 
         logs.setOnClickListener(v ->{
             bbddController.insertarLog("Acceso a logs", LocalDateTime.now(), usuario.getDni());
@@ -92,10 +75,14 @@ public class GeneralAdmin extends AppCompatActivity {
             startActivity(i);
         });
         anadirEmpleado.setOnClickListener(v -> {
-            bbddController.insertarLog("Acceso formulario añadir empleados", LocalDateTime.now(), usuario.getDni());
-            Intent i = new Intent(GeneralAdmin.this, CrearUsuario.class);
-            i.putExtra("usuarioDNI", usuarioDNI);
-            startActivity(i);
+            if (bbddController.comprobarRegistrosTienda()) {
+                bbddController.insertarLog("Acceso formulario añadir empleados", LocalDateTime.now(), usuario.getDni());
+                Intent i = new Intent(GeneralAdmin.this, CrearUsuario.class);
+                i.putExtra("usuarioDNI", usuarioDNI);
+                startActivity(i);
+            }else{
+                Toast.makeText(GeneralAdmin.this, "Debes crear una tienda primero", Toast.LENGTH_SHORT).show();
+            }
         });
         anadirTienda.setOnClickListener(v -> {
             bbddController.insertarLog("Acceso formulario creacion tienda", LocalDateTime.now(), usuario.getDni());
@@ -113,10 +100,11 @@ public class GeneralAdmin extends AppCompatActivity {
 
     }
     private void cerrarSesion() {
+        finish();
         bbddController.insertarLog("Cierre sesión", LocalDateTime.now(), usuario.getDni());
         Intent intent = new Intent(GeneralAdmin.this, MainActivity.class);
         startActivity(intent);
-        finish();
+
     }
 
     @Override

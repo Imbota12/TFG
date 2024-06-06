@@ -62,6 +62,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class CrearProducto extends AppCompatActivity {
 
@@ -118,6 +120,9 @@ public class CrearProducto extends AppCompatActivity {
     // Modelo del usuario que está utilizando la aplicación
     private UsuarioModel usuario;
     private boolean allowBackPress=false;
+
+    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
+
 
 
     @Override
@@ -673,11 +678,10 @@ public class CrearProducto extends AppCompatActivity {
                 // Mostrar un cuadro de diálogo para que el usuario elija el dispositivo
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setTitle("Selecciona un dispositivo Bluetooth");
-                builder.setItems(deviceNames.toArray(new String[0]), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        // Conectar al dispositivo seleccionado
-                        BluetoothDevice selectedDevice = devices.get(which);
+                builder.setItems(deviceNames.toArray(new String[0]), (dialog, which) -> {
+                    // Conectar al dispositivo seleccionado
+                    BluetoothDevice selectedDevice = devices.get(which);
+                    executorService.execute(() -> {
                         try {
                             connection = new BluetoothConnection(selectedDevice);
                             printer = new EscPosPrinter(connection, 200, 50f, 35);
@@ -687,9 +691,10 @@ public class CrearProducto extends AppCompatActivity {
                             desconectarImpresora();
                         } catch (Exception e) {
                             e.printStackTrace();
-                            // Manejar cualquier error de conexión o impresión aquí
+                            // Mostrar un Toast indicando que la impresora no está operativa
+                            runOnUiThread(() -> Toast.makeText(CrearProducto.this, "La impresora no está operativa", Toast.LENGTH_SHORT).show());
                         }
-                    }
+                    });
                 });
                 AlertDialog dialog = builder.create();
                 dialog.setCancelable(false);

@@ -60,8 +60,8 @@ public class ConexionBBDD {
         Connection conexion = null;
         final String DRIVER1 = "org.postgresql.Driver";
         //final String URL1 = "jdbc:postgresql://10.0.2.2:5432/";
-        final String URL1 = "jdbc:postgresql://192.168.129.244:5432/";
-        final String DATABASE_NAME1 = "TFG";
+        final String URL1 = "jdbc:postgresql://192.168.104.244:5432/";
+        final String DATABASE_NAME1 = "TiendaInfo";
         final String USUARIO1 = "postgres";
         final String PASSWORD1 = "admin";
 
@@ -97,100 +97,93 @@ public class ConexionBBDD {
     }
 
     public void crearTablas() {
-        conectarBD();
+        Statement statement = null;
+
         try {
-            Statement statement = conexion.createStatement();
+            // Conectar a la base de datos
+            conectarBD();
+            statement = conexion.createStatement();
+
+            // Crear un array de consultas SQL para crear las tablas
             String[] queries = {
-                    "CREATE TABLE IF NOT EXISTS Tienda (" +
-                            "cif VARCHAR(20) PRIMARY KEY," +
-                            "nombre VARCHAR(255)," +
-                            "direccion VARCHAR(255)," +
-                            "logo VARCHAR(255)," +
-                            "telefono VARCHAR(20)" +
-                            ")",
-                    "CREATE TABLE IF NOT EXISTS Usuario (" +
-                            "dni VARCHAR(20) PRIMARY KEY," +
-                            "nombre VARCHAR(255)," +
-                            "apellido VARCHAR(255)," +
-                            "telefono VARCHAR(20)," +
-                            "correo VARCHAR(255)," +
-                            "activo BOOLEAN," +
-                            "contraseña VARCHAR(255)," +
-                            "id_tienda VARCHAR(20)," +
-                            "FOREIGN KEY (id_tienda) REFERENCES Tienda(cif)" +
-                            ")",
-                    "CREATE TABLE IF NOT EXISTS Admin (" +
-                            "id_usuario VARCHAR(20) PRIMARY KEY," +
-                            "isAdmin BOOLEAN," +
-                            "FOREIGN KEY (id_usuario) REFERENCES Usuario(dni)" +
-                            ")",
-                    "CREATE TABLE IF NOT EXISTS Vendedor (" +
-                            "id_usuario VARCHAR(20) PRIMARY KEY," +
-                            "numero_clientes_atendidos INT," +
-                            "is_vendedor BOOLEAN," +
-                            "FOREIGN KEY (id_usuario) REFERENCES Usuario(dni)" +
-                            ")",
-                    "CREATE TABLE IF NOT EXISTS Reponedor (" +
-                            "id_usuario VARCHAR(20) PRIMARY KEY," +
-                            "numero_productos_repuestos INT," +
-                            "is_reponedor BOOLEAN," +
-                            "FOREIGN KEY (id_usuario) REFERENCES Usuario(dni)" +
-                            ")",
-                    "CREATE TABLE IF NOT EXISTS Producto (" +
-                            "codigo_barras VARCHAR(50) PRIMARY KEY," +
-                            "nombre VARCHAR(255)," +
-                            "descripcion TEXT," +
-                            "cantidad_stock INT," +
-                            "precio_unidad DECIMAL(10, 2)," +
-                            "veces_comprado INT," +
-                            "veces_devuelto INT," +
-                            "imagen_producto VARCHAR(255)" +
-                            ")",
-                    "CREATE TABLE IF NOT EXISTS Logs (" +
-                            "id_log INT PRIMARY KEY," +
-                            "accion VARCHAR(255)," +
-                            "fecha_y_hora TIMESTAMP," +
-                            "dni VARCHAR(20)," +
-                            "FOREIGN KEY (dni) REFERENCES Usuario(dni)" +
-                            ")",
-                    "CREATE TABLE IF NOT EXISTS Ticket (" +
-                            "id_ticket SERIAL PRIMARY KEY," +
-                            "total_precio DECIMAL(10, 2)," +
-                            "entregado BOOLEAN," +
-                            "devuelto BOOLEAN," +
-                            "fecha_ticket DATE," +
-                            "codigo_barras_ticket VARCHAR(50)," +
-                            "fechalimiteDevolucion DATE," +
-                            "isDevolucion BOOLEAN," +
-                            "isVenta BOOLEAN" +
-                            ")",
-                    "CREATE TABLE IF NOT EXISTS Ticket_Producto (" +
-                            "id_ticket INT," +
-                            "codigo_barras VARCHAR(50)," +
-                            "cantidad INT," +
-                            "PRIMARY KEY (id_ticket, codigo_barras)," +
-                            "FOREIGN KEY (id_ticket) REFERENCES Ticket(id_ticket)," +
-                            "FOREIGN KEY (codigo_barras) REFERENCES Producto(codigo_barras)" +
-                            ")",
-                    // Relaciones adicionales
-                    "ALTER TABLE Admin ADD CONSTRAINT fk_admin_usuario FOREIGN KEY (id_usuario) REFERENCES Usuario(dni)",
-                    "ALTER TABLE Vendedor ADD CONSTRAINT fk_vendedor_usuario FOREIGN KEY (id_usuario) REFERENCES Usuario(dni)",
-                    "ALTER TABLE Reponedor ADD CONSTRAINT fk_reponedor_usuario FOREIGN KEY (id_usuario) REFERENCES Usuario(dni)"
+                    "CREATE TABLE IF NOT EXISTS tienda (" +
+                            "cif VARCHAR PRIMARY KEY, " +
+                            "nombre VARCHAR NOT NULL, " +
+                            "direccion VARCHAR NOT NULL, " +
+                            "telefono VARCHAR NOT NULL" +
+                            ");",
+
+                    "CREATE TABLE IF NOT EXISTS usuario (" +
+                            "dni VARCHAR PRIMARY KEY, " +
+                            "nombre VARCHAR NOT NULL, " +
+                            "apellido VARCHAR NOT NULL, " +
+                            "telefono VARCHAR NOT NULL, " +
+                            "correo VARCHAR NOT NULL, " +
+                            "activo BOOLEAN NOT NULL, " +
+                            "contrasena VARCHAR NOT NULL, " +
+                            "id_tienda VARCHAR REFERENCES tienda(cif), " +
+                            "is_admin BOOLEAN NOT NULL, " +
+                            "is_vendedor BOOLEAN NOT NULL, " +
+                            "is_reponedor BOOLEAN NOT NULL" +
+                            ");",
+
+                    "CREATE TABLE IF NOT EXISTS producto (" +
+                            "codigo_barras VARCHAR PRIMARY KEY, " +
+                            "nombre VARCHAR NOT NULL, " +
+                            "descripcion TEXT, " +
+                            "cantidad_stock INTEGER NOT NULL, " +
+                            "precio_unidad DOUBLE PRECISION NOT NULL, " +
+                            "veces_comprado INTEGER NOT NULL, " +
+                            "veces_devuelto INTEGER NOT NULL, " +
+                            "imagen_producto BYTEA, " +
+                            "id_tienda VARCHAR REFERENCES tienda(cif)" +
+                            ");",
+
+                    "CREATE TABLE IF NOT EXISTS ticket (" +
+                            "codigo_barras_ticket VARCHAR PRIMARY KEY, " +
+                            "total_precio DOUBLE PRECISION NOT NULL, " +
+                            "fecha_ticket DATE NOT NULL, " +
+                            "fecha_limite_devolucion DATE NOT NULL, " +
+                            "isdevolucion BOOLEAN NOT NULL, " +
+                            "isventa BOOLEAN NOT NULL, " +
+                            "entregado DOUBLE PRECISION NOT NULL, " +
+                            "devuelto DOUBLE PRECISION NOT NULL, " +
+                            "cif VARCHAR REFERENCES tienda(cif)" +
+                            ");",
+
+                    "CREATE TABLE IF NOT EXISTS ticket_producto (" +
+                            "codigo_barras VARCHAR REFERENCES producto(codigo_barras), " +
+                            "codigo_barras_ticket VARCHAR REFERENCES ticket(codigo_barras_ticket), " +
+                            "cantidad DOUBLE PRECISION NOT NULL, " +
+                            "PRIMARY KEY (codigo_barras, codigo_barras_ticket)" +
+                            ");",
+
+                    "CREATE TABLE IF NOT EXISTS logs (" +
+                            "id_log SERIAL PRIMARY KEY, " +
+                            "accion VARCHAR NOT NULL, " +
+                            "fecha_y_hora TIMESTAMP WITHOUT TIME ZONE NOT NULL, " +
+                            "dni VARCHAR REFERENCES usuario(dni)" +
+                            ");"
             };
+
+            // Ejecutar cada consulta para crear las tablas
             for (String query : queries) {
                 statement.executeUpdate(query);
             }
-            statement.close();
+
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
+            // Cerrar recursos
             try {
-                cerrarConnection(conexion);
+                if (statement != null) statement.close();
+                if (conexion != null) cerrarConnection(conexion);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
     }
+
 
     public boolean insertarUsuario(String dni, String nombre, String apellido, String telefono,
                                    String correo, String contrasena, String idTienda,
@@ -198,7 +191,7 @@ public class ConexionBBDD {
         boolean insertarOK = false;
         conectarBD();
         try {
-            String query = "INSERT INTO Usuario (dni, nombre, apellido, telefono, correo, activo, contraseña, id_tienda, is_admin, is_vendedor, is_reponedor) " +
+            String query = "INSERT INTO Usuario (dni, nombre, apellido, telefono, correo, activo, contrasena, id_tienda, is_admin, is_vendedor, is_reponedor) " +
                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             PreparedStatement preparedStatement = conexion.prepareStatement(query);
             preparedStatement.setString(1, dni);
@@ -253,6 +246,30 @@ public class ConexionBBDD {
         return insertarOK;
     }
 
+    public boolean comprobarRegistrosTienda(){
+        boolean hayRegistros = false;
+        conectarBD();
+        try {
+            String checkQuery = "SELECT COUNT(*) FROM tienda";
+            PreparedStatement preparedStatement = conexion.prepareStatement(checkQuery);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next() && resultSet.getInt(1) > 0) {
+                hayRegistros=true;
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                cerrarConnection(conexion);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return hayRegistros;
+
+    }
     public boolean insertarProducto(String codigoBarras, String nombre, String descripcion, int cantidadStock,
                                     double precioUnidad, int vecesComprado, int vecesDevuelto, byte[] imagenProducto,
                                     String idTienda) {
@@ -670,7 +687,7 @@ public class ConexionBBDD {
                         resultSet.getString("telefono"),
                         resultSet.getString("correo"),
                         resultSet.getBoolean("activo"),
-                        resultSet.getString("contraseña"),
+                        resultSet.getString("contrasena"),
                         resultSet.getString("id_tienda"),
                         resultSet.getBoolean("is_admin"),
                         resultSet.getBoolean("is_vendedor"),
@@ -699,7 +716,7 @@ public class ConexionBBDD {
 
         try {
             // Construir la consulta SQL para actualizar el usuario
-            String query = "UPDATE usuario SET nombre = ?, apellido = ?, telefono = ?, correo = ?, activo = ?, contraseña = ?, id_tienda = ?, is_admin = ?, is_vendedor = ?, is_reponedor = ? WHERE dni = ?";
+            String query = "UPDATE usuario SET nombre = ?, apellido = ?, telefono = ?, correo = ?, activo = ?, contrasena = ?, id_tienda = ?, is_admin = ?, is_vendedor = ?, is_reponedor = ? WHERE dni = ?";
             PreparedStatement preparedStatement = conexion.prepareStatement(query);
 
             // Establecer los valores de los parámetros en la consulta SQL
@@ -708,7 +725,7 @@ public class ConexionBBDD {
             preparedStatement.setString(3, usuarioActualizado.getTelefono());
             preparedStatement.setString(4, usuarioActualizado.getCorreo());
             preparedStatement.setBoolean(5, usuarioActualizado.isActivo());
-            preparedStatement.setString(6, usuarioActualizado.getContraseña());
+            preparedStatement.setString(6, usuarioActualizado.getContrasena());
             preparedStatement.setString(7, usuarioActualizado.getIdTienda());
             preparedStatement.setBoolean(8, usuarioActualizado.isAdmin());
             preparedStatement.setBoolean(9, usuarioActualizado.isVendedor());
@@ -742,7 +759,7 @@ public class ConexionBBDD {
 
         try {
             // Construir la consulta SQL con el correo proporcionado
-            String query = "SELECT contraseña FROM usuario WHERE correo = ?";
+            String query = "SELECT contrasena FROM usuario WHERE correo = ?";
             PreparedStatement preparedStatement = conexion.prepareStatement(query);
             preparedStatement.setString(1, correo);
 
@@ -750,7 +767,7 @@ public class ConexionBBDD {
 
             // Si se encuentra al menos un resultado, se obtiene la contraseña
             if (resultSet.next()) {
-                contraseña = resultSet.getString("contraseña");
+                contraseña = resultSet.getString("contrasena");
             }
 
             resultSet.close();
@@ -790,7 +807,7 @@ public class ConexionBBDD {
                         resultSet.getString("telefono"),
                         resultSet.getString("correo"),
                         resultSet.getBoolean("activo"),
-                        resultSet.getString("contraseña"),
+                        resultSet.getString("contrasena"),
                         resultSet.getString("id_tienda"),
                         resultSet.getBoolean("is_admin"),
                         resultSet.getBoolean("is_vendedor"),
@@ -835,7 +852,7 @@ public class ConexionBBDD {
                         resultSet.getString("telefono"),
                         resultSet.getString("correo"),
                         resultSet.getBoolean("activo"),
-                        resultSet.getString("contraseña"),
+                        resultSet.getString("contrasena"),
                         resultSet.getString("id_tienda"),
                         resultSet.getBoolean("is_admin"),
                         resultSet.getBoolean("is_vendedor"),
@@ -1495,7 +1512,7 @@ public class ConexionBBDD {
                 empleado.setTelefono(resultSet.getString("telefono"));
                 empleado.setCorreo(resultSet.getString("correo"));
                 empleado.setActivo(resultSet.getBoolean("activo"));
-                empleado.setContraseña(resultSet.getString("contraseña"));
+                empleado.setContrasena(resultSet.getString("contrasena"));
                 empleado.setIdTienda(resultSet.getString("id_tienda"));
                 empleado.setAdmin(resultSet.getBoolean("is_admin"));
                 empleado.setVendedor(resultSet.getBoolean("is_vendedor"));
@@ -1524,7 +1541,7 @@ public class ConexionBBDD {
         boolean modificarOK = false;
         conectarBD();
         try {
-            String query = "UPDATE usuario SET nombre = ?, apellido = ?, telefono = ?, correo = ?, contraseña = ? WHERE dni = ?";
+            String query = "UPDATE usuario SET nombre = ?, apellido = ?, telefono = ?, correo = ?, contrasena = ? WHERE dni = ?";
             PreparedStatement preparedStatement = conexion.prepareStatement(query);
             preparedStatement.setString(1, nombreNuevo);
             preparedStatement.setString(2, apellidoNuevo);
@@ -1601,7 +1618,7 @@ public class ConexionBBDD {
                         resultSet.getString("telefono"),
                         resultSet.getString("correo"),
                         resultSet.getBoolean("activo"),
-                        resultSet.getString("contraseña"),
+                        resultSet.getString("contrasena"),
                         resultSet.getString("id_tienda"),
                         resultSet.getBoolean("is_admin"),
                         resultSet.getBoolean("is_vendedor"),

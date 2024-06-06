@@ -38,18 +38,17 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TFG_SistemaTienda"
         tools:targetApi="31">
+
         <activity
             android:name=".vistas.Logs"
             android:exported="false" />
-        <activity
-            android:name=".vistas.Estadisticas"
-            android:exported="false" />
+<!--        <activity-->
+<!--            android:name=".vistas.Estadisticas"-->
+<!--            android:exported="false" />-->
         <activity
             android:name=".vistas.EstadisticasProductos"
             android:exported="false" />
-        <activity
-            android:name=".vistas.EstadisticasEmpleados"
-            android:exported="false" />
+
         <activity
             android:name=".vistas.ListaTiendas"
             android:exported="false" />
@@ -84,14 +83,16 @@
             android:name=".vistas.CrearTienda"
             android:exported="false" />
         <activity
-            android:name=".MainActivity"
+            android:name=".vistas.PantallaCarga"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity android:name=".MainActivity"
+            android:exported="true"/>
     </application>
 
 </manifest>

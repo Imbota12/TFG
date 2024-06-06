@@ -65,6 +65,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class RealizaVenta extends AppCompatActivity implements AdaptadorProductosVenta.OnProductoSeleccionadoListener, AdaptadorProductosComprados.OnProductRemovedListener, AdaptadorProductosComprados.OnPriceUpdateListener, AdaptadorProductosComprados.OnQuantityChangedListener, AdaptadorProductosComprados.OnQuantityChangedListenerUp {
 
@@ -94,6 +96,8 @@ public class RealizaVenta extends AppCompatActivity implements AdaptadorProducto
     private BluetoothAdapter bluetoothAdapter;
     private UsuarioModel usuario;
     private boolean allowBackPress=false;
+    // Define un ExecutorService para manejar las operaciones en un hilo separado
+    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -279,6 +283,7 @@ public class RealizaVenta extends AppCompatActivity implements AdaptadorProducto
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (bluetoothAdapter == null) {
             // El dispositivo no soporta Bluetooth
+            runOnUiThread(() -> Toast.makeText(this, "El dispositivo no soporta Bluetooth", Toast.LENGTH_SHORT).show());
             return false;
         }
 
@@ -287,6 +292,7 @@ public class RealizaVenta extends AppCompatActivity implements AdaptadorProducto
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
                 // Manejar el caso en que los permisos no estén concedidos
+                runOnUiThread(() -> Toast.makeText(this, "Permiso Bluetooth no concedido", Toast.LENGTH_SHORT).show());
                 return false;
             }
             startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
@@ -308,72 +314,79 @@ public class RealizaVenta extends AppCompatActivity implements AdaptadorProducto
                 // Mostrar un cuadro de diálogo para que el usuario elija el dispositivo
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setTitle("Selecciona un dispositivo Bluetooth");
-                builder.setItems(deviceNames.toArray(new String[0]), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        // Conectar al dispositivo seleccionado
-                        BluetoothDevice selectedDevice = devices.get(which);
+                builder.setItems(deviceNames.toArray(new String[0]), (dialog, which) -> {
+                    // Conectar al dispositivo seleccionado
+                    BluetoothDevice selectedDevice = devices.get(which);
+                    executorService.execute(() -> {
                         try {
                             connection = new BluetoothConnection(selectedDevice);
                             printer = new EscPosPrinter(connection, 200, 50f, 45);
 
-                            String textoTicket = "[C]\n";
-                            String nombreTienda = bbddController.obtenerNombreTienda(usuario.getIdTienda());
-                            LocalDateTime fecha = LocalDateTime.now();
-                            String fechaString = fecha.getDayOfMonth() + "/" + fecha.getMonthValue() + "/" + fecha.getYear()+ "   "+ fecha.getHour() + ":" + fecha.getMinute() + ":" + fecha.getSecond();
-                            Bitmap logo = BitmapFactory.decodeResource(getResources(), R.mipmap.imbott);
-                            String imagen= PrinterTextParserImg.bitmapToHexadecimalString(printer, logo );
-                            byte[] decodedString = Base64.decode(imagen, Base64.DEFAULT);
-                            Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+                            String textoTicket = generarTextoTicket();
 
-                                textoTicket += "[L]<b><font size='big'>TICKET DE VENTA</font></b>\n";
-                                textoTicket += "[C]<img>" + imagen + "</img>\n";
-                                textoTicket += "[C]\n";
-                                textoTicket += "[L]<b>FECHA: </b>" + fechaString + "\n";
-                                textoTicket += "[L]Por vendedor: "+usuario.getNombre()+"\n";
-                                textoTicket += "[L]En tienda: "+nombreTienda+"\n";
-                                textoTicket += "[L]Con CIF: <b>"+usuario.getIdTienda()+"</b>\n";
-                                textoTicket += "[L]*****************************\n";
-
-                            for (ProductoModel producto : listaProductosComprados) {
-                                for (Producto_TicketModel prod : listaCantidades) {
-                                    if (producto.getCodigoBarras().equals(prod.getCodigoBarras_producto())) {
-                                        textoTicket += "[L]<b>" + producto.getNombre() + "</b>[L] " + producto.getPrecioUnidad() + "e/Uni[L] " + prod.getCantidad() +"\n";
-                                        textoTicket+= "[L] PRECIO TOTAL PRODUCTO: " + producto.getPrecioUnidad()*prod.getCantidad() + "e\n";
-                                        textoTicket += "[L]  Cod Producto : " + producto.getCodigoBarras() + "\n";
-                                        textoTicket += "[L]===========================\n";
-                                        break; // Romper el bucle interior cuando se encuentre la coincidencia
-                                    }
-                                }
-                            }
-                                        textoTicket+= "[L]<b> TOTAL A PAGAR:<b> "+totalVenta+" euros\n";
-                                        textoTicket+= "[L]<b> ENTREGADO:<b> " + entregado+" euros\n";
-                                        textoTicket+= "[L] DEVUELTO:<b> " + devuelto+" euros\n";
-                                        textoTicket += "[C]<barcode type='128' height='10'>" + id_ticket + "</barcode>\n";
-                                        textoTicket += "[L]\n";
-                                        textoTicket += "[L]Tiene 14 dias para devolver\n";
-                                        textoTicket += "[L]\n";
-                                        textoTicket += "[L]¡¡GRACIAS POR SU VISITA!!\n";
+                            // Imprimir
                             printer.printFormattedText(textoTicket);
-                            desconectarImpresora();
+
                             // Después de imprimir, muestra el diálogo de venta exitosa
-                            mostrarDialogoVentaExitosa();
+                            runOnUiThread(this::mostrarDialogoVentaExitosa);
+                            desconectarImpresora();
                         } catch (Exception e) {
                             e.printStackTrace();
-                            // Manejar cualquier error de conexión o impresión aquí
+                            // Mostrar un Toast indicando que la impresora no está operativa
+                            runOnUiThread(() -> Toast.makeText(this, "La impresora no está operativa", Toast.LENGTH_SHORT).show());
                         }
-                    }
+                    });
                 });
                 builder.show();
                 return true; // Impresora conectada con éxito
             } else {
                 // Manejar el caso en que no haya dispositivos emparejados
+                runOnUiThread(() -> Toast.makeText(this, "No hay dispositivos Bluetooth emparejados", Toast.LENGTH_SHORT).show());
                 return false;
             }
         }
         return false; // La impresora ya está conectada
     }
 
+    private String generarTextoTicket() {
+        String textoTicket = "[C]\n";
+        String nombreTienda = bbddController.obtenerNombreTienda(usuario.getIdTienda());
+        LocalDateTime fecha = LocalDateTime.now();
+        String fechaString = fecha.getDayOfMonth() + "/" + fecha.getMonthValue() + "/" + fecha.getYear() + "   " + fecha.getHour() + ":" + fecha.getMinute() + ":" + fecha.getSecond();
+        Bitmap logo = BitmapFactory.decodeResource(getResources(), R.mipmap.imbott);
+        String imagen = PrinterTextParserImg.bitmapToHexadecimalString(printer, logo);
+
+        textoTicket += "[L]<b><font size='big'>TICKET DE VENTA</font></b>\n";
+        textoTicket += "[C]<img>" + imagen + "</img>\n";
+        textoTicket += "[C]\n";
+        textoTicket += "[L]<b>FECHA: </b>" + fechaString + "\n";
+        textoTicket += "[L]Por vendedor: " + usuario.getNombre() + "\n";
+        textoTicket += "[L]En tienda: " + nombreTienda + "\n";
+        textoTicket += "[L]Con CIF: <b>" + usuario.getIdTienda() + "</b>\n";
+        textoTicket += "[L]*****************************\n";
+
+        for (ProductoModel producto : listaProductosComprados) {
+            for (Producto_TicketModel prod : listaCantidades) {
+                if (producto.getCodigoBarras().equals(prod.getCodigoBarras_producto())) {
+                    textoTicket += "[L]<b>" + producto.getNombre() + "</b>[L] " + producto.getPrecioUnidad() + "e/Uni[L] " + prod.getCantidad() + "\n";
+                    textoTicket += "[L] PRECIO TOTAL PRODUCTO: " + producto.getPrecioUnidad() * prod.getCantidad() + "e\n";
+                    textoTicket += "[L]  Cod Producto : " + producto.getCodigoBarras() + "\n";
+                    textoTicket += "[L]===========================\n";
+                    break; // Romper el bucle interior cuando se encuentre la coincidencia
+                }
+            }
+        }
+        textoTicket += "[L]<b> TOTAL A PAGAR:<b> " + totalVenta + " euros\n";
+        textoTicket += "[L]<b> ENTREGADO:<b> " + entregado + " euros\n";
+        textoTicket += "[L] DEVUELTO:<b> " + devuelto + " euros\n";
+        textoTicket += "[C]<barcode type='128' height='10'>" + id_ticket + "</barcode>\n";
+        textoTicket += "[L]\n";
+        textoTicket += "[L]Tiene 14 dias para devolver\n";
+        textoTicket += "[L]\n";
+        textoTicket += "[L]¡¡GRACIAS POR SU VISITA!!\n";
+
+        return textoTicket;
+    }
 
     private void mostrarDialogoVentaExitosa() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);

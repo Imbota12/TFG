@@ -122,4 +122,6 @@ public class BBDDController {
     public List<LogModel> obtenerListaLogsPorFechaMenorconDNI(LocalDate fecha, String dni){return conexionBBDD.obtenerListaLogsPorFechaMenorconDNI(fecha,dni);}
     public boolean vaciarLogs(){return conexionBBDD.vaciarLogs();}
 
+    public boolean comprobarRegistrosTienda(){return conexionBBDD.comprobarRegistrosTienda();}
+
 }

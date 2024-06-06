@@ -128,11 +128,6 @@ public class AdaptadorProductosComprados extends RecyclerView.Adapter<ViewHolder
                             onQuantityChangedListenerDown.onQuantityChangedDown(producto);
                         }
 
-                        // Calcular y notificar el nuevo precio total
-//                        if (onPriceUpdateListener != null) {
-//                            double newPrice = calcularPrecioTotal(listaCantidades);
-//                            onPriceUpdateListener.onPriceUpdated(newPrice);
-//                        }
                     }
                 }
             }

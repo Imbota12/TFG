@@ -13,6 +13,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -21,6 +23,8 @@ import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.fragment.app.FragmentManager;
+
 import com.example.tfg_sistematienda.controladores.BBDDController;
 import com.example.tfg_sistematienda.modelos.UsuarioModel;
 import com.example.tfg_sistematienda.vistas.CrearProducto;
@@ -31,6 +35,8 @@ import com.example.tfg_sistematienda.vistas.ListaEmpleados;
 import com.example.tfg_sistematienda.vistas.ListaInventario;
 import com.example.tfg_sistematienda.vistas.RealizaVenta;
 import com.example.tfg_sistematienda.vistas.RealizarDevolucion;
+import com.example.tfg_sistematienda.vistas.RecuperarCredencialesFragment;
+
 import org.mindrot.jbcrypt.BCrypt;
 
 import java.time.LocalDateTime;
@@ -48,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
 
     private BBDDController bbddController = new BBDDController();
     private EditText usuario, contrasena;
+    private boolean allowBackPress=false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +68,8 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
+        bbddController.crearBBDD();
+        bbddController.crearTablasBBDD();
         usuario = findViewById(R.id.usuario);
         contrasena = findViewById(R.id.contrasena);
         ImageButton iniciar = findViewById(R.id.iniciar_sesion);
@@ -74,7 +83,14 @@ public class MainActivity extends AppCompatActivity {
         recuperar.setOnClickListener(v -> mostrarDialogoRecuperarCredenciales());
     }
 
-
+    @Override
+    public void onBackPressed() {
+        if (allowBackPress) {
+            super.onBackPressed();
+        } else {
+            Toast.makeText(this, "Para salir de la aplicación, hagalo con el botón del sistema", Toast.LENGTH_SHORT).show();
+        }
+    }
 
     private void requestPermissions() {
         List<String> permissionsToRequest = new ArrayList<>();
@@ -162,88 +178,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void mostrarDialogoRecuperarCredenciales() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this, R.style.FullScreenDialog);
-        builder.setTitle("Recuperar Credenciales");
-
-        View dialogView = LayoutInflater.from(MainActivity.this).inflate(R.layout.popup_recuperarcredenciales, null);
-        builder.setView(dialogView);
-
-        EditText nombre = dialogView.findViewById(R.id.recupera_nombre);
-        EditText apellidos = dialogView.findViewById(R.id.recupera_apellido);
-        EditText dni = dialogView.findViewById(R.id.recupera_dni);
-        EditText telefono = dialogView.findViewById(R.id.recupera_telefono);
-        TextView usuario = dialogView.findViewById(R.id.mostrar_usuario);
-        TextView textoC = dialogView.findViewById(R.id.tv_contraR);
-        TextView textoCr = dialogView.findViewById(R.id.tv_contraRR);
-        EditText contra = dialogView.findViewById(R.id.passwd_reset);
-        EditText contraVeri = dialogView.findViewById(R.id.passwd_reset_veri);
-        ImageButton buscar = dialogView.findViewById(R.id.bt_buscar_credenciales);
-        ImageButton cambiarContra = dialogView.findViewById(R.id.bt_restablecer_contra);
-        ImageButton resetContra = dialogView.findViewById(R.id.reset_contra);
-
-        usuario.setVisibility(View.INVISIBLE);
-        textoC.setVisibility(View.INVISIBLE);
-        textoCr.setVisibility(View.INVISIBLE);
-        contra.setVisibility(View.INVISIBLE);
-        contraVeri.setVisibility(View.INVISIBLE);
-        cambiarContra.setVisibility(View.INVISIBLE);
-        resetContra.setVisibility(View.INVISIBLE);
-
-        buscar.setOnClickListener(v -> buscarUsuario(nombre, apellidos, dni, telefono, usuario, resetContra));
-        resetContra.setOnClickListener(v -> mostrarCamposRestablecerContrasena(textoC, textoCr, contra, contraVeri, cambiarContra));
-        cambiarContra.setOnClickListener(v -> restablecerContrasena(nombre, apellidos, dni, telefono, contra, contraVeri));
-
-        builder.setPositiveButton("Aceptar", (dialog, which) -> dialog.dismiss());
-        builder.create().show();
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            RecuperarCredencialesFragment newFragment = new RecuperarCredencialesFragment();
+            newFragment.show(fragmentManager, "dialog");
     }
 
-    private void buscarUsuario(EditText nombre, EditText apellidos, EditText dni, EditText telefono, TextView usuario, ImageButton resetContra) {
-        UsuarioModel usuarioEncontrado = bbddController.buscarUsuario(nombre.getText().toString(), apellidos.getText().toString(), dni.getText().toString(), telefono.getText().toString());
 
-        if (usuarioEncontrado != null && usuarioEncontrado.isActivo()) {
-            usuario.setVisibility(View.VISIBLE);
-            usuario.setText(usuarioEncontrado.getCorreo());
-            resetContra.setVisibility(View.VISIBLE);
-        } else if (usuarioEncontrado == null) {
-            mostrarAlerta("Usuario no encontrado", "No se encontró ningún usuario con los datos proporcionados.");
-        } else {
-            mostrarAlerta("Usuario no activo", "El usuario no está activo. Póngase en contacto con el administrador.");
-        }
-    }
 
-    private void mostrarCamposRestablecerContrasena(TextView textoC, TextView textoCr, EditText contra, EditText contraVeri, ImageButton cambiarContra) {
-        textoC.setVisibility(View.VISIBLE);
-        textoCr.setVisibility(View.VISIBLE);
-        contra.setVisibility(View.VISIBLE);
-        contraVeri.setVisibility(View.VISIBLE);
-        cambiarContra.setVisibility(View.VISIBLE);
-    }
 
-    private void restablecerContrasena(EditText nombre, EditText apellidos, EditText dni, EditText telefono, EditText contra, EditText contraVeri) {
-        if (contra.getText().toString().equals(contraVeri.getText().toString())) {
-            UsuarioModel usuarioEncontrado = bbddController.buscarUsuario(nombre.getText().toString(), apellidos.getText().toString(), dni.getText().toString(), telefono.getText().toString());
-            if (usuarioEncontrado != null) {
-                usuarioEncontrado.setContraseña(BCrypt.hashpw(contra.getText().toString(), BCrypt.gensalt()));
-                if (bbddController.actualizarUsuario(usuarioEncontrado)) {
-                    mostrarAlerta("Contraseña actualizada", "Su contraseña ha sido actualizada con éxito.");
-                    bbddController.insertarLog("Restablecimiento de contraseña", LocalDateTime.now(), usuarioEncontrado.getDni());
-                } else {
-                    mostrarAlerta("Error", "Hubo un error al actualizar su contraseña.");
-                }
-            }
-        } else {
-            contra.setError("Las contraseñas no coinciden");
-            contraVeri.setError("Las contraseñas no coinciden");
-        }
-    }
-
-    private void mostrarAlerta(String titulo, String mensaje) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-        builder.setTitle(titulo)
-                .setMessage(mensaje)
-                .setPositiveButton("Aceptar", (dialog, which) -> dialog.dismiss())
-                .show();
-    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -277,7 +219,16 @@ public class MainActivity extends AppCompatActivity {
         if (!allGranted) {
             mostrarAlerta("Permiso denegado", "El permiso para " + permissionName + " fue denegado. Algunas funcionalidades pueden no estar disponibles.");
         }
+
         }
+
+    private void mostrarAlerta(String titulo, String mensaje) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setTitle(titulo)
+                .setMessage(mensaje)
+                .setPositiveButton("Aceptar", (dialog, which) -> dialog.dismiss())
+                .show();
+    }
     }
 
 

@@ -19,8 +19,8 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_productos_a_devolver"
-        android:layout_width="438dp"
-        android:layout_height="358dp"
+        android:layout_width="476dp"
+        android:layout_height="350dp"
         android:layout_marginStart="580dp"
         android:layout_marginBottom="140dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -56,8 +56,8 @@
 
     <TextView
         android:id="@+id/textView40"
-        android:layout_width="438dp"
-        android:layout_height="33dp"
+        android:layout_width="472dp"
+        android:layout_height="35dp"
         android:layout_marginStart="580dp"
         android:layout_marginBottom="504dp"
         android:background="@color/black"

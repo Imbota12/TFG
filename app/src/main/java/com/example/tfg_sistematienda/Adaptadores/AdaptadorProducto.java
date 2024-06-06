@@ -1,5 +1,6 @@
 package com.example.tfg_sistematienda.Adaptadores;
 
+import static android.app.PendingIntent.getActivity;
 import static androidx.core.app.ActivityCompat.startActivityForResult;
 
 
@@ -16,6 +17,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.Image;
 import android.net.Uri;
+import android.os.Handler;
+import android.os.Looper;
 import android.provider.MediaStore;
 import android.text.InputFilter;
 import android.text.Spanned;
@@ -44,12 +47,15 @@ import com.example.tfg_sistematienda.MainActivity;
 import com.example.tfg_sistematienda.R;
 import com.example.tfg_sistematienda.controladores.BBDDController;
 import com.example.tfg_sistematienda.modelos.ProductoModel;
+import com.example.tfg_sistematienda.vistas.CrearProducto;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class AdaptadorProducto extends RecyclerView.Adapter<ViewHolderProducto> {
     private List<ProductoModel> listaProductos;
@@ -67,6 +73,10 @@ public class AdaptadorProducto extends RecyclerView.Adapter<ViewHolderProducto> 
     private BluetoothAdapter bluetoothAdapter;
     private BluetoothConnection connection;
     private EscPosPrinter printer;
+
+
+    // Define un ExecutorService para manejar las operaciones en un hilo separado
+    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
     public AdaptadorProducto(Context context, List<ProductoModel> listaProductos) {
         this.listaProductos = listaProductos;
@@ -190,11 +200,10 @@ public class AdaptadorProducto extends RecyclerView.Adapter<ViewHolderProducto> 
                 // Mostrar un cuadro de diálogo para que el usuario elija el dispositivo
                 AlertDialog.Builder builder = new AlertDialog.Builder(context);
                 builder.setTitle("Selecciona un dispositivo Bluetooth");
-                builder.setItems(deviceNames.toArray(new String[0]), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        // Conectar al dispositivo seleccionado
-                        BluetoothDevice selectedDevice = devices.get(which);
+                builder.setItems(deviceNames.toArray(new String[0]), (dialog, which) -> {
+                    // Conectar al dispositivo seleccionado
+                    BluetoothDevice selectedDevice = devices.get(which);
+                    executorService.execute(() -> {
                         try {
                             connection = new BluetoothConnection(selectedDevice);
                             printer = new EscPosPrinter(connection, 200, 50f, 35);
@@ -202,9 +211,10 @@ public class AdaptadorProducto extends RecyclerView.Adapter<ViewHolderProducto> 
                             printer.printFormattedText("[C]<barcode type='128' height='10'>" + productoSeleccionado.getCodigoBarras() + "</barcode>\n");
                         } catch (Exception e) {
                             e.printStackTrace();
-                            // Manejar cualquier error de conexión o impresión aquí
+                            // Mostrar un Toast indicando que la impresora no está operativa
+                            new Handler(Looper.getMainLooper()).post(() -> Toast.makeText(context, "La impresora no está operativa", Toast.LENGTH_SHORT).show());
                         }
-                    }
+                    });
                 });
                 builder.show();
             } else {
