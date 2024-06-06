@@ -36,7 +36,7 @@ public class AdaptadorMasDevueltos extends RecyclerView.Adapter<ViewHolderMasDev
     public void onBindViewHolder(@NonNull ViewHolderMasDevueltos holder, int position) {
         ProductoModel masDevuelto = masDevueltos.get(position);
         holder.nombreMasDevuelto.setText(masDevuelto.getNombre());
-        holder.cantidadMasDevuelto.setText(String.valueOf(masDevuelto.getCantidad()));
+        holder.cantidadMasDevuelto.setText(String.valueOf(masDevuelto.getVecesDevuelto()));
         holder.codigoMasDevuelto.setText(String.valueOf(masDevuelto.getCodigoBarras()));
         holder.tiendaMasDevuelto.setText(bbddController.obtenerNombreTienda(masDevuelto.getIdTienda()));
     }

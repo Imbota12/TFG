@@ -1875,6 +1875,54 @@ public Date obtenerFechaLimiteDevolucion(String idTicket){
         return vaciarOK;
     }
 
+    public double obtenerSumaVentas(){
+        double ventas = 0;
+        conectarBD();
+
+        try {
+            String query = "SELECT SUM(total_precio) AS suma_total_precio\n" +
+                    "FROM ticket\n" +
+                    "WHERE isventa = TRUE";
+            PreparedStatement preparedStatement = conexion.prepareStatement(query);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                ventas = resultSet.getDouble("suma_total_precio");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                cerrarConnection(conexion);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return ventas;
+    }
+
+    public double obtenerSumaDevoluciones(){
+        double devoluciones = 0;
+        conectarBD();
+        try {
+            String query = "SELECT SUM(total_precio) AS suma_total_devo\n" +
+                    "FROM ticket\n" +
+                    "WHERE isdevolucion = TRUE";
+            PreparedStatement preparedStatement = conexion.prepareStatement(query);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                devoluciones = resultSet.getDouble("suma_total_devo");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                cerrarConnection(conexion);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return devoluciones;
+    }
 
 }
 

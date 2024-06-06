@@ -353,7 +353,7 @@ public class RealizaVenta extends AppCompatActivity implements AdaptadorProducto
         String nombreTienda = bbddController.obtenerNombreTienda(usuario.getIdTienda());
         LocalDateTime fecha = LocalDateTime.now();
         String fechaString = fecha.getDayOfMonth() + "/" + fecha.getMonthValue() + "/" + fecha.getYear() + "   " + fecha.getHour() + ":" + fecha.getMinute() + ":" + fecha.getSecond();
-        Bitmap logo = BitmapFactory.decodeResource(getResources(), R.mipmap.imbott);
+        Bitmap logo = BitmapFactory.decodeResource(getResources(), R.mipmap.logoticket);
         String imagen = PrinterTextParserImg.bitmapToHexadecimalString(printer, logo);
 
         textoTicket += "[L]<b><font size='big'>TICKET DE VENTA</font></b>\n";

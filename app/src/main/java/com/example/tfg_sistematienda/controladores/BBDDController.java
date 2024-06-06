@@ -126,5 +126,8 @@ public class BBDDController {
 
     public List<ProductoModel> obtenerProductosMasVendidos() {return conexionBBDD.obtenerProductosMasVendidos();}
     public List<ProductoModel> obtenerProductosMasDevueltos() {return conexionBBDD.obtenerProductosMasDevueltos();}
+    public double obtenerSumaDevoluciones(){return conexionBBDD.obtenerSumaDevoluciones();}
+
+    public double obtenerSumaVentas(){return conexionBBDD.obtenerSumaVentas();}
 
 }

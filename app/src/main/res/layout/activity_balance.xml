@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".vistas.Balance"
+    android:background="@color/gray">
+
+    <TextView
+        android:id="@+id/textView89"
+        android:layout_width="513dp"
+        android:layout_height="58dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginBottom="468dp"
+        android:background="@color/black"
+        android:text="TOTAL EN VENTAS"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="34sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="343dp"
+        android:layout_height="502dp"
+        android:layout_marginStart="668dp"
+        android:layout_marginBottom="16dp"
+        android:rotation="90"
+        android:scaleType="fitXY"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@mipmap/linearecta" />
+
+    <TextView
+        android:id="@+id/textView85"
+        android:layout_width="513dp"
+        android:layout_height="58dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginBottom="332dp"
+        android:background="@color/black"
+        android:text="TOTAL EN DEVOLUCIÓNES"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="34sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+
+    <TextView
+        android:id="@+id/total_devo"
+        android:layout_width="450dp"
+        android:layout_height="60dp"
+        android:layout_marginStart="588dp"
+        android:layout_marginBottom="332dp"
+        android:background="@color/white"
+        android:text="TOTAL EN DEVOLUCIÓNES"
+        android:textAlignment="center"
+        android:textColor="@color/rojo"
+        android:textSize="34sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/total_ventas"
+        android:layout_width="450dp"
+        android:layout_height="60dp"
+        android:layout_marginStart="588dp"
+        android:layout_marginBottom="468dp"
+        android:background="@color/white"
+        android:text="TOTAL EN DEVOLUCIÓNES"
+        android:textAlignment="center"
+        android:textColor="@color/verde"
+        android:textSize="34sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/textView92"
+        android:layout_width="513dp"
+        android:layout_height="58dp"
+        android:layout_marginStart="48dp"
+        android:layout_marginBottom="156dp"
+        android:background="@color/white"
+        android:text="GANANCIAS TOTALES"
+        android:textAlignment="center"
+        android:textColor="@color/black"
+        android:textSize="34sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+
+    <TextView
+        android:id="@+id/total_gana"
+        android:layout_width="390dp"
+        android:layout_height="97dp"
+        android:layout_marginStart="588dp"
+        android:layout_marginBottom="132dp"
+        android:background="@color/white"
+        android:paddingVertical="22dp"
+        android:text="GANANCIAS TOTALES"
+        android:textAlignment="center"
+        android:textColor="@color/black"
+        android:textSize="38sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageButton
+        android:id="@+id/volvermenuIngresos"
+        android:layout_width="133dp"
+        android:layout_height="78dp"
+        android:layout_marginStart="964dp"
+        android:layout_marginBottom="16dp"
+        android:background="@android:color/transparent"
+        android:contentDescription="generarExcel"
+        android:scaleType="fitCenter"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@mipmap/volvermenu" />
+
+    <TextView
+        android:id="@+id/textView69"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="988dp"
+        android:layout_marginBottom="140dp"
+        android:text="€"
+        android:textAlignment="center"
+        android:textSize="55sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/textView99"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="1056dp"
+        android:layout_marginBottom="460dp"
+        android:text="€"
+        android:textAlignment="center"
+        android:textSize="55sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/textView100"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="1056dp"
+        android:layout_marginBottom="332dp"
+        android:text="€"
+        android:textAlignment="center"
+        android:textSize="55sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

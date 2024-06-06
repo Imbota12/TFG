@@ -24,7 +24,7 @@ public class GeneralAdmin extends AppCompatActivity {
     private UsuarioModel usuario;
     private BBDDController bbddController= new BBDDController();
     private boolean allowBackPress = false;
-    private ImageButton administrarTiendas, administrarEmpleados, anadirEmpleado, anadirTienda, cerrarSesion, estadisticasProductos, logs;
+    private ImageButton administrarTiendas, administrarEmpleados, anadirEmpleado, anadirTienda, cerrarSesion, estadisticasProductos, logs, ingresos;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,6 +50,7 @@ public class GeneralAdmin extends AppCompatActivity {
         cerrarSesion= findViewById(R.id.cerrar_sesion_admin);
         estadisticasProductos = findViewById(R.id.estadisticasProductos);
         logs = findViewById(R.id.logs);
+        ingresos = findViewById(R.id.ingresos);
 
 
         cerrarSesion.setOnClickListener(v -> cerrarSesion());
@@ -57,6 +58,13 @@ public class GeneralAdmin extends AppCompatActivity {
         estadisticasProductos.setOnClickListener(v ->{
             bbddController.insertarLog("Acceso estadisticas productos", LocalDateTime.now(), usuario.getDni());
             Intent i = new Intent(GeneralAdmin.this, EstadisticasProductos.class);
+            i.putExtra("usuarioDNI", usuarioDNI);
+            startActivity(i);
+        });
+
+        ingresos.setOnClickListener(v ->{
+            bbddController.insertarLog("Acceso a ingresos", LocalDateTime.now(), usuario.getDni());
+            Intent i = new Intent(GeneralAdmin.this, Balance.class);
             i.putExtra("usuarioDNI", usuarioDNI);
             startActivity(i);
         });

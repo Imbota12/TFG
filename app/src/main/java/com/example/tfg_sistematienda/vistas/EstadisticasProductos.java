@@ -50,7 +50,7 @@ public class EstadisticasProductos extends AppCompatActivity {
         String usuarioDNI = intent.getStringExtra("usuarioDNI");
 
         usuario = bbddController.obtenerEmpleado(usuarioDNI);
-        volverMenu = findViewById(R.id.volvermenuEstadisticasProductos);
+        volverMenu = findViewById(R.id.volvermenuIngresos);
 
         masDevueltos= findViewById(R.id.masdevueltos);
         masVendidos= findViewById(R.id.masvendidos);

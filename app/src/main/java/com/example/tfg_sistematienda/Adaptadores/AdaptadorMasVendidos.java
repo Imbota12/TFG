@@ -40,7 +40,7 @@ public class AdaptadorMasVendidos extends RecyclerView.Adapter<ViewHolderMasVend
         ProductoModel producto = masVendidos.get(position);
         holder.nombreMasVendidos.setText(producto.getNombre());
         holder.codigoMasVendidos.setText(producto.getCodigoBarras());
-        holder.cantidadMasVendidos.setText(String.valueOf(producto.getCantidad()));
+        holder.cantidadMasVendidos.setText(String.valueOf(producto.getVecesComprado()));
         holder.tiendaMasVendidos.setText(bbddController.obtenerNombreTienda(producto.getIdTienda()));
     }
 
