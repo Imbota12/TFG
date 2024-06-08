@@ -1,9 +1,11 @@
 package com.example.tfg_sistematienda.vistas;
 
-import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.AsyncTask;
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -56,6 +58,7 @@ public class Logs extends AppCompatActivity {
     private LocalDate fechaSeleccionada=null;
     private ArrayList<String> tipoFiltro = new ArrayList<>();
     private String filtroSeleccionado;
+    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,34 +91,26 @@ public class Logs extends AppCompatActivity {
         filtrarDniyFecha = findViewById(R.id.filtro_log_fechaydni);
         vaciarLogs = findViewById(R.id.vaciarLogs);
 
-        cargarSpinnerDnis();
-
-        cargarLogs();
-
         tipoFiltro.add("igual");
         tipoFiltro.add("menor que");
         tipoFiltro.add("mayor que");
 
+        cargarSpinnerDnis();
         cargarSpinnerTipoFiltro();
-        fecha.setVisibility(View.INVISIBLE);
+        new LoadLogsTask().execute();
 
+        fecha.setVisibility(View.INVISIBLE);
 
         vaciarLogs.setOnClickListener(v -> {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("¿ESTAS SEGURO?");
             builder.setMessage("¿ESTAS SEGURO QUE QUIERE BORRAR LOS LOGS (¡¡¡ESTA OPERACIÓN NO SE PODRÁ REVERTIR¡¡¡)?");
             builder.setPositiveButton("SI", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    if (bbddController.vaciarLogs()) {
-                        bbddController.insertarLog("Vacia logs", LocalDateTime.now(), usuario.getDni());
-                        Toast.makeText(Logs.this, "Logs borrados correctamente", Toast.LENGTH_SHORT).show();
-                        cargarLogs();
-                    } else {
-                        Toast.makeText(Logs.this, "Error al vaciar logs", Toast.LENGTH_SHORT).show();
-                    }
-                }
-            });
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            new VaciarLogsTask().execute();
+                        }
+                    });
             builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
@@ -147,13 +142,9 @@ public class Logs extends AppCompatActivity {
             }
         });
 
-        filtrarFecha.setOnClickListener(v -> {
-            cargarLogsFiltradosFecha();
-        });
+        filtrarFecha.setOnClickListener(v -> new FiltrarFechaTask().execute());
 
-        filtrarDniyFecha.setOnClickListener(v -> {
-            cargarLogsFiltradosDniyFecha();
-        });
+        filtrarDniyFecha.setOnClickListener(v -> new FiltrarDniyFechaTask().execute());
 
 
         volverMenu.setOnClickListener(v -> {
@@ -163,16 +154,11 @@ public class Logs extends AppCompatActivity {
             startActivity(intent1);
         });
 
-        filtrarDni.setOnClickListener(v -> {
-            cargarLogsFiltradosDni();
-        });
+        filtrarDni.setOnClickListener(v -> new FiltrarDniTask().execute());
 
-        mostrarTodosLogs.setOnClickListener(v -> {
-            cargarLogs();
-        });
-        seleccionarFecha.setOnClickListener(v -> {
-            mostarDialogoFecha();
-        });
+        mostrarTodosLogs.setOnClickListener(v -> new LoadLogsTask().execute());
+
+        seleccionarFecha.setOnClickListener(v -> mostarDialogoFecha());
     }
 
     private void cargarLogsFiltradosDniyFecha() {
@@ -195,33 +181,189 @@ public class Logs extends AppCompatActivity {
         }
     }
 
-    private void cargarSpinnerTipoFiltro() {
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, tipoFiltro);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+    private class LoadLogsTask extends AsyncTask<Void, Void, List<LogModel>> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog = new ProgressDialog(Logs.this);
+            progressDialog.setMessage("Cargando logs...");
+            progressDialog.setIndeterminate(true);
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+        }
 
-        tiposFiltros.setAdapter(adapter);
-        tiposFiltros.setSelection(0);
-    }
+        @Override
+        protected List<LogModel> doInBackground(Void... voids) {
+            return bbddController.obtenerListaLogs();
+        }
 
-    private void cargarLogsFiltradosFecha() {
-        if (fechaSeleccionada!=null) {
-            if (filtroSeleccionado.equals("igual")) {
-                listaLogs = bbddController.obtenerListaLogsPorFechaIgual(fechaSeleccionada);
-                adaptadorLogs = new AdaptadorLog(this, listaLogs);
-                todosLogs.setAdapter(adaptadorLogs);
-            } else if (filtroSeleccionado.equals("mayor que")) {
-                listaLogs = bbddController.obtenerListaLogsPorFechaMayor(fechaSeleccionada);
-                adaptadorLogs = new AdaptadorLog(this, listaLogs);
-                todosLogs.setAdapter(adaptadorLogs);
-            } else if (filtroSeleccionado.equals("menor que")) {
-                listaLogs = bbddController.obtenerListaLogsPorFechaMenor(fechaSeleccionada);
-                adaptadorLogs = new AdaptadorLog(this, listaLogs);
-                todosLogs.setAdapter(adaptadorLogs);
+        @Override
+        protected void onPostExecute(List<LogModel> logs) {
+            super.onPostExecute(logs);
+            if (progressDialog.isShowing()) {
+                progressDialog.dismiss();
             }
-        }else{
-            Toast.makeText(this, "Debes seleccionar una fecha", Toast.LENGTH_SHORT).show();
+            listaLogs = logs;
+            adaptadorLogs = new AdaptadorLog(Logs.this, listaLogs);
+            todosLogs.setAdapter(adaptadorLogs);
         }
     }
+
+    private class VaciarLogsTask extends AsyncTask<Void, Void, Boolean> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog = new ProgressDialog(Logs.this);
+            progressDialog.setMessage("Vaciando logs...");
+            progressDialog.setIndeterminate(true);
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... voids) {
+            return bbddController.vaciarLogs();
+        }
+
+        @Override
+        protected void onPostExecute(Boolean success) {
+            super.onPostExecute(success);
+            if (progressDialog.isShowing()) {
+                progressDialog.dismiss();
+            }
+            if (success) {
+                bbddController.insertarLog("Vacia logs", LocalDateTime.now(), usuario.getDni());
+                Toast.makeText(Logs.this, "Logs borrados correctamente", Toast.LENGTH_SHORT).show();
+                new LoadLogsTask().execute();
+            } else {
+                Toast.makeText(Logs.this, "Error al vaciar logs", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private class FiltrarDniTask extends AsyncTask<Void, Void, List<LogModel>> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog = new ProgressDialog(Logs.this);
+            progressDialog.setMessage("Filtrando logs por DNI...");
+            progressDialog.setIndeterminate(true);
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+        }
+
+        @Override
+        protected List<LogModel> doInBackground(Void... voids) {
+            if (dniSeleccionado != null && !dniSeleccionado.isEmpty()) {
+                return bbddController.obtenerListaLogsPorDni(dniSeleccionado);
+            } else {
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(List<LogModel> logs) {
+            super.onPostExecute(logs);
+            if (progressDialog.isShowing()) {
+                progressDialog.dismiss();
+            }
+            if (logs != null) {
+                listaLogs = logs;
+                adaptadorLogs = new AdaptadorLog(Logs.this, listaLogs);
+                todosLogs.setAdapter(adaptadorLogs);
+            } else {
+                Toast.makeText(Logs.this, "Debe seleccionar un DNI", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private class FiltrarDniyFechaTask extends AsyncTask<Void, Void, List<LogModel>> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog = new ProgressDialog(Logs.this);
+            progressDialog.setMessage("Filtrando logs por fecha y DNI...");
+            progressDialog.setIndeterminate(true);
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+        }
+
+        @Override
+        protected List<LogModel> doInBackground(Void... voids) {
+            if (dniSeleccionado != null && fechaSeleccionada != null && filtroSeleccionado != null) {
+                if (!dniSeleccionado.isEmpty()) {
+                    if (filtroSeleccionado.equals("igual")) {
+                        return bbddController.obtenerListaLogsPorFechaIgualconDNI(fechaSeleccionada, dniSeleccionado);
+                    } else if (filtroSeleccionado.equals("mayor que")) {
+                        return bbddController.obtenerListaLogsPorFechaMayorconDNI(fechaSeleccionada, dniSeleccionado);
+                    } else if (filtroSeleccionado.equals("menor que")) {
+                        return bbddController.obtenerListaLogsPorFechaMenorconDNI(fechaSeleccionada, dniSeleccionado);
+                    }
+                }
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(List<LogModel> logs) {
+            super.onPostExecute(logs);
+            if (progressDialog.isShowing()) {
+                progressDialog.dismiss();
+            }
+            if (logs != null) {
+                listaLogs = logs;
+                adaptadorLogs = new AdaptadorLog(Logs.this, listaLogs);
+                todosLogs.setAdapter(adaptadorLogs);
+            } else {
+                Toast.makeText(Logs.this, "Debe seleccionar un DNI y una fecha", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private class FiltrarFechaTask extends AsyncTask<Void, Void, List<LogModel>> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog = new ProgressDialog(Logs.this);
+            progressDialog.setMessage("Filtrando logs por fecha...");
+            progressDialog.setIndeterminate(true);
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+        }
+
+        @Override
+        protected List<LogModel> doInBackground(Void... voids) {
+            if (fechaSeleccionada != null) {
+                if (filtroSeleccionado != null) {
+                    switch (filtroSeleccionado) {
+                        case "igual":
+                            return bbddController.obtenerListaLogsPorFechaIgual(fechaSeleccionada);
+                        case "mayor que":
+                            return bbddController.obtenerListaLogsPorFechaMayor(fechaSeleccionada);
+                        case "menor que":
+                            return bbddController.obtenerListaLogsPorFechaMenor(fechaSeleccionada);
+                    }
+                }
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(List<LogModel> logs) {
+            super.onPostExecute(logs);
+            if (progressDialog.isShowing()) {
+                progressDialog.dismiss();
+            }
+            if (logs != null) {
+                listaLogs = logs;
+                adaptadorLogs = new AdaptadorLog(Logs.this, listaLogs);
+                todosLogs.setAdapter(adaptadorLogs);
+            } else {
+                Toast.makeText(Logs.this, "Debe seleccionar una fecha", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
 
     private void mostarDialogoFecha() {
         // Obtén la fecha actual para inicializar el DatePickerDialog con ella
@@ -248,15 +390,7 @@ public class Logs extends AppCompatActivity {
         datePickerDialog.show();
     }
 
-    private void cargarLogsFiltradosDni() {
-        if (dniSeleccionado.equals("")) {
-            Toast.makeText(this, "Debes seleccionar un dni", Toast.LENGTH_SHORT).show();
-        }else {
-            listaLogs = bbddController.obtenerListaLogsPorDni(dniSeleccionado);
-            adaptadorLogs = new AdaptadorLog(this, listaLogs);
-            todosLogs.setAdapter(adaptadorLogs);
-        }
-    }
+
 
     private void cargarSpinnerDnis() {
 
@@ -289,11 +423,14 @@ public class Logs extends AppCompatActivity {
 
     }
 
-    private void cargarLogs() {
-        listaLogs = bbddController.obtenerListaLogs();
-        adaptadorLogs = new AdaptadorLog(this, listaLogs);
-        todosLogs.setAdapter(adaptadorLogs);
+    private void cargarSpinnerTipoFiltro() {
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, tipoFiltro);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        tiposFiltros.setAdapter(adapter);
+        tiposFiltros.setSelection(0);
     }
+
 
     @Override
     public void onBackPressed() {

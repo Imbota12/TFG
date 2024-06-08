@@ -1,6 +1,8 @@
 package com.example.tfg_sistematienda.vistas;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.widget.ImageButton;
 import android.widget.Toast;
@@ -34,6 +36,8 @@ public class EstadisticasProductos extends AppCompatActivity {
     private List<ProductoModel> listaMasVendidos;
     private List<ProductoModel> listaMasDevueltos;
     private boolean allowBackPress=false;
+    private ProgressDialog progressDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,8 +61,8 @@ public class EstadisticasProductos extends AppCompatActivity {
 
         masDevueltos.setLayoutManager(new LinearLayoutManager(this));
         masVendidos.setLayoutManager(new LinearLayoutManager(this));
-        cargarMasDevueltos();
-        cargarMasVendidos();
+
+        new LoadDataAsyncTask().execute();
 
         volverMenu.setOnClickListener(v -> {
             bbddController.insertarLog("Acceso a menu admin", LocalDateTime.now(), usuario.getDni());
@@ -68,16 +72,36 @@ public class EstadisticasProductos extends AppCompatActivity {
         });
     }
 
-    private void cargarMasDevueltos() {
-        listaMasDevueltos = bbddController.obtenerProductosMasDevueltos();
-        adaptadorMasDevueltos = new AdaptadorMasDevueltos(this, listaMasDevueltos);
-        masDevueltos.setAdapter(adaptadorMasDevueltos);
-    }
+    private class LoadDataAsyncTask extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog = new ProgressDialog(EstadisticasProductos.this);
+            progressDialog.setMessage("Cargando datos...");
+            progressDialog.setIndeterminate(true);
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+        }
 
-    private void cargarMasVendidos(){
-        listaMasVendidos = bbddController.obtenerProductosMasVendidos();
-        adaptadorMasVendidos = new AdaptadorMasVendidos(this, listaMasVendidos);
-        masVendidos.setAdapter(adaptadorMasVendidos);
+        @Override
+        protected Void doInBackground(Void... params) {
+            listaMasDevueltos = bbddController.obtenerProductosMasDevueltos();
+            listaMasVendidos = bbddController.obtenerProductosMasVendidos();
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            super.onPostExecute(result);
+            if (progressDialog.isShowing()) {
+                progressDialog.dismiss();
+            }
+            adaptadorMasDevueltos = new AdaptadorMasDevueltos(EstadisticasProductos.this, listaMasDevueltos);
+            masDevueltos.setAdapter(adaptadorMasDevueltos);
+
+            adaptadorMasVendidos = new AdaptadorMasVendidos(EstadisticasProductos.this, listaMasVendidos);
+            masVendidos.setAdapter(adaptadorMasVendidos);
+        }
     }
 
     @Override
@@ -88,4 +112,5 @@ public class EstadisticasProductos extends AppCompatActivity {
             Toast.makeText(this, "Para volver pulse el botón VOLVER MENÚ", Toast.LENGTH_SHORT).show();
         }
     }
+
 }

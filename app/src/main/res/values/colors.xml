@@ -7,4 +7,6 @@
     <color name="contorno">#333f50</color>
     <color name="verde">#17AC2B</color>
     <color name="rojo">#AC1717</color>
+    <color name="iniciosesion">#2d2b41</color>
+
 </resources>

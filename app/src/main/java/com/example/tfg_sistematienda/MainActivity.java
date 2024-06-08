@@ -2,17 +2,16 @@ package com.example.tfg_sistematienda;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -27,14 +26,9 @@ import androidx.fragment.app.FragmentManager;
 
 import com.example.tfg_sistematienda.controladores.BBDDController;
 import com.example.tfg_sistematienda.modelos.UsuarioModel;
-import com.example.tfg_sistematienda.vistas.CrearProducto;
 import com.example.tfg_sistematienda.vistas.GeneralAdmin;
 import com.example.tfg_sistematienda.vistas.GeneralReponedor;
 import com.example.tfg_sistematienda.vistas.GeneralVendedor;
-import com.example.tfg_sistematienda.vistas.ListaEmpleados;
-import com.example.tfg_sistematienda.vistas.ListaInventario;
-import com.example.tfg_sistematienda.vistas.RealizaVenta;
-import com.example.tfg_sistematienda.vistas.RealizarDevolucion;
 import com.example.tfg_sistematienda.vistas.RecuperarCredencialesFragment;
 
 import org.mindrot.jbcrypt.BCrypt;
@@ -55,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
     private BBDDController bbddController = new BBDDController();
     private EditText usuario, contrasena;
     private boolean allowBackPress=false;
+    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,7 +73,6 @@ public class MainActivity extends AppCompatActivity {
         // Request permissions
         requestPermissions();
 
-
         iniciar.setOnClickListener(v -> iniciarSesion());
         recuperar.setOnClickListener(v -> mostrarDialogoRecuperarCredenciales());
     }
@@ -88,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
         if (allowBackPress) {
             super.onBackPressed();
         } else {
-            Toast.makeText(this, "Para salir de la aplicación, hagalo con el botón del sistema", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Para salir de la aplicación, hágalo con el botón del sistema", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -135,7 +129,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
     private void iniciarSesion() {
         String contraseñaIntroducida = contrasena.getText().toString();
         String contraseñaBBDDHasheada = bbddController.obtenerContraseñaPorCorreo(usuario.getText().toString());
@@ -159,17 +152,17 @@ public class MainActivity extends AppCompatActivity {
         Class<?> nextActivity;
         if (usuarioActual.isVendedor()) {
             nextActivity = GeneralVendedor.class;
+            new LoadNewActivityTask(usuarioActual, nextActivity, "Inicio de sesión del vendedor "+usuarioActual.getNombre()+" con DNI: "+usuarioActual.getDni()).execute();
         } else if (usuarioActual.isReponedor()) {
             nextActivity = GeneralReponedor.class;
+            new LoadNewActivityTask(usuarioActual, nextActivity, "Inicio de sesión del reponedor "+usuarioActual.getNombre()+" con DNI: "+usuarioActual.getDni()).execute();
         } else if (usuarioActual.isAdmin()) {
             nextActivity = GeneralAdmin.class;
+            new LoadNewActivityTask(usuarioActual, nextActivity, "Inicio de sesión del ADMINISTRADOR").execute();
         } else {
             return;
         }
-        bbddController.insertarLog("Inicio de sesión", LocalDateTime.now(), usuarioActual.getDni());
-        Intent i = new Intent(MainActivity.this, nextActivity);
-        i.putExtra("usuarioDNI", usuarioActual.getDni());
-        startActivity(i);
+
     }
 
     private void mostrarError(EditText usuario, EditText contrasena, String mensaje) {
@@ -178,21 +171,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void mostrarDialogoRecuperarCredenciales() {
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            RecuperarCredencialesFragment newFragment = new RecuperarCredencialesFragment();
-            newFragment.show(fragmentManager, "dialog");
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        RecuperarCredencialesFragment newFragment = new RecuperarCredencialesFragment();
+        newFragment.show(fragmentManager, "dialog");
     }
-
-
-
-
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         switch (requestCode) {
-
             case REQUEST_CODE_CAMERA:
                 handlePermissionsResult(grantResults, "Cámara");
                 break;
@@ -219,8 +207,7 @@ public class MainActivity extends AppCompatActivity {
         if (!allGranted) {
             mostrarAlerta("Permiso denegado", "El permiso para " + permissionName + " fue denegado. Algunas funcionalidades pueden no estar disponibles.");
         }
-
-        }
+    }
 
     private void mostrarAlerta(String titulo, String mensaje) {
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
@@ -229,6 +216,46 @@ public class MainActivity extends AppCompatActivity {
                 .setPositiveButton("Aceptar", (dialog, which) -> dialog.dismiss())
                 .show();
     }
+
+    private class LoadNewActivityTask extends AsyncTask<Void, Void, Void> {
+
+        private UsuarioModel usuario;
+        private Class<?> nextActivity;
+        private String logMessage;
+
+        public LoadNewActivityTask(UsuarioModel usuario, Class<?> nextActivity, String logMessage) {
+            this.usuario = usuario;
+            this.nextActivity = nextActivity;
+            this.logMessage = logMessage;
+        }
+
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog = new ProgressDialog(MainActivity.this);
+            progressDialog.setMessage("Cargando...");
+            progressDialog.setIndeterminate(true);
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            bbddController.insertarLog(logMessage, LocalDateTime.now(), usuario.getDni());
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            super.onPostExecute(result);
+            if (progressDialog.isShowing()) {
+                progressDialog.dismiss();
+            }
+            Intent intent = new Intent(MainActivity.this, nextActivity);
+            intent.putExtra("usuarioDNI", usuario.getDni());
+            startActivity(intent);
+
+                   }
     }
-
-
+}

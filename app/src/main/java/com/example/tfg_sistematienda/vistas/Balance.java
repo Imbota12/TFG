@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -24,6 +25,8 @@ public class Balance extends AppCompatActivity {
     private BBDDController bbddController= new BBDDController();
     private UsuarioModel usuario;
     private ImageButton volverMenu;
+    private boolean allowBackPress=false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,6 +67,14 @@ public class Balance extends AppCompatActivity {
         total_ganado.setText(String.valueOf(df.format(total)));
 
 
+    }
+    @Override
+    public void onBackPressed() {
+        if (allowBackPress) {
+            super.onBackPressed();
+        } else {
+            Toast.makeText(this, "Para volver pulse el botón VOLVER MENÚ", Toast.LENGTH_SHORT).show();
+        }
     }
 }
 

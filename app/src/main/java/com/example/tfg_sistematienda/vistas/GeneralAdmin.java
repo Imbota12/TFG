@@ -1,6 +1,8 @@
 package com.example.tfg_sistematienda.vistas;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -24,6 +26,7 @@ public class GeneralAdmin extends AppCompatActivity {
     private UsuarioModel usuario;
     private BBDDController bbddController= new BBDDController();
     private boolean allowBackPress = false;
+    private ProgressDialog progressDialog;
     private ImageButton administrarTiendas, administrarEmpleados, anadirEmpleado, anadirTienda, cerrarSesion, estadisticasProductos, logs, ingresos;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,64 +58,28 @@ public class GeneralAdmin extends AppCompatActivity {
 
         cerrarSesion.setOnClickListener(v -> cerrarSesion());
 
-        estadisticasProductos.setOnClickListener(v ->{
-            bbddController.insertarLog("Acceso estadisticas productos", LocalDateTime.now(), usuario.getDni());
-            Intent i = new Intent(GeneralAdmin.this, EstadisticasProductos.class);
-            i.putExtra("usuarioDNI", usuarioDNI);
-            startActivity(i);
-        });
+        estadisticasProductos.setOnClickListener(v -> new LoadNewActivityTask(usuario, EstadisticasProductos.class, "Acceso estadisticas productos").execute());
+        ingresos.setOnClickListener(v -> new LoadNewActivityTask(usuario, Balance.class, "Acceso a ingresos").execute());
+        logs.setOnClickListener(v -> new LoadNewActivityTask(usuario, Logs.class, "Acceso a logs").execute());
+        administrarTiendas.setOnClickListener(v -> new LoadNewActivityTask(usuario, ListaTiendas.class, "Acceso lista tiendas").execute());
 
-        ingresos.setOnClickListener(v ->{
-            bbddController.insertarLog("Acceso a ingresos", LocalDateTime.now(), usuario.getDni());
-            Intent i = new Intent(GeneralAdmin.this, Balance.class);
-            i.putExtra("usuarioDNI", usuarioDNI);
-            startActivity(i);
-        });
-
-        logs.setOnClickListener(v ->{
-            bbddController.insertarLog("Acceso a logs", LocalDateTime.now(), usuario.getDni());
-            Intent i = new Intent(GeneralAdmin.this, Logs.class);
-            i.putExtra("usuarioDNI", usuarioDNI);
-            startActivity(i);
-        });
-
-        administrarTiendas.setOnClickListener(v -> {
-            bbddController.insertarLog("Acceso lista tiendas", LocalDateTime.now(), usuario.getDni());
-            Intent i = new Intent(GeneralAdmin.this, ListaTiendas.class);
-            i.putExtra("usuarioDNI", usuarioDNI);
-            startActivity(i);
-        });
         anadirEmpleado.setOnClickListener(v -> {
             if (bbddController.comprobarRegistrosTienda()) {
-                bbddController.insertarLog("Acceso formulario añadir empleados", LocalDateTime.now(), usuario.getDni());
-                Intent i = new Intent(GeneralAdmin.this, CrearUsuario.class);
-                i.putExtra("usuarioDNI", usuarioDNI);
-                startActivity(i);
-            }else{
+                new LoadNewActivityTask(usuario, CrearUsuario.class, "Acceso formulario añadir empleados").execute();
+            } else {
                 Toast.makeText(GeneralAdmin.this, "Debes crear una tienda primero", Toast.LENGTH_SHORT).show();
             }
         });
-        anadirTienda.setOnClickListener(v -> {
-            bbddController.insertarLog("Acceso formulario creacion tienda", LocalDateTime.now(), usuario.getDni());
-            Intent i = new Intent(GeneralAdmin.this, CrearTienda.class);
-            i.putExtra("usuarioDNI", usuarioDNI);
-            startActivity(i);
-        });
 
-        administrarEmpleados.setOnClickListener(v -> {
-            bbddController.insertarLog("Acceso lista empleados", LocalDateTime.now(), usuario.getDni());
-            Intent i = new Intent(GeneralAdmin.this, ListaEmpleados.class);
-            i.putExtra("usuarioDNI", usuarioDNI);
-            startActivity(i);
-        });
-
+        anadirTienda.setOnClickListener(v -> new LoadNewActivityTask(usuario, CrearTienda.class, "Acceso formulario creacion tienda").execute());
+        administrarEmpleados.setOnClickListener(v -> new LoadNewActivityTask(usuario, ListaEmpleados.class, "Acceso lista empleados").execute());
     }
+
     private void cerrarSesion() {
         finish();
         bbddController.insertarLog("Cierre sesión", LocalDateTime.now(), usuario.getDni());
         Intent intent = new Intent(GeneralAdmin.this, MainActivity.class);
         startActivity(intent);
-
     }
 
     @Override
@@ -121,6 +88,46 @@ public class GeneralAdmin extends AppCompatActivity {
             super.onBackPressed();
         } else {
             Toast.makeText(this, "No puedes retroceder. Por favor, cierra sesión primero.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private class LoadNewActivityTask extends AsyncTask<Void, Void, Void> {
+
+        private UsuarioModel usuario;
+        private Class<?> nextActivity;
+        private String logMessage;
+
+        public LoadNewActivityTask(UsuarioModel usuario, Class<?> nextActivity, String logMessage) {
+            this.usuario = usuario;
+            this.nextActivity = nextActivity;
+            this.logMessage = logMessage;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog = new ProgressDialog(GeneralAdmin.this);
+            progressDialog.setMessage("Cargando...");
+            progressDialog.setIndeterminate(true);
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            bbddController.insertarLog(logMessage, LocalDateTime.now(), usuario.getDni());
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            super.onPostExecute(result);
+            if (progressDialog.isShowing()) {
+                progressDialog.dismiss();
+            }
+            Intent intent = new Intent(GeneralAdmin.this, nextActivity);
+            intent.putExtra("usuarioDNI", usuario.getDni());
+            startActivity(intent);
         }
     }
 }

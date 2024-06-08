@@ -28,7 +28,7 @@ import java.util.Date;
 public class ConexionBBDD {
 
     private static final String DRIVER = "org.postgresql.Driver";
-    private static final String URL = "jdbc:postgresql://192.168.104.244:5432/TiendaInfo";
+    private static final String URL = "jdbc:postgresql://192.168.10.150:5432/TiendaInfo";
     //private static final String URL = "jdbc:postgresql://10.0.2.2:5432/TiendaInfo";
     private static final String USUARIO = "postgres";
     private static final String PASSWORD = "admin";
@@ -60,7 +60,7 @@ public class ConexionBBDD {
         Connection conexion = null;
         final String DRIVER1 = "org.postgresql.Driver";
         //final String URL1 = "jdbc:postgresql://10.0.2.2:5432/";
-        final String URL1 = "jdbc:postgresql://192.168.104.244:5432/";
+        final String URL1 = "jdbc:postgresql://192.168.10.150:5432/";
         final String DATABASE_NAME1 = "TiendaInfo";
         final String USUARIO1 = "postgres";
         final String PASSWORD1 = "admin";

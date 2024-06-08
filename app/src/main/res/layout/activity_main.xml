@@ -63,7 +63,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="80dp"
-        android:layout_marginBottom="476dp"
+        android:layout_marginBottom="466dp"
         android:background="@color/black"
         android:text="INTRODUZCA SU USUARIO:"
         android:textAlignment="center"
@@ -107,9 +107,9 @@
         android:id="@+id/tx_inicio"
         android:layout_width="552dp"
         android:layout_height="113dp"
-        android:layout_marginStart="320dp"
+        android:layout_marginStart="325dp"
         android:layout_marginBottom="556dp"
-        android:background="@drawable/border_black"
+        android:background="@color/iniciosesion"
         android:paddingTop="19dp"
         android:text="INICIO DE SESION"
         android:textAlignment="center"
@@ -160,6 +160,16 @@
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageView
+        android:id="@+id/imageView9"
+        android:layout_width="188dp"
+        android:layout_height="164dp"
+        android:layout_marginStart="152dp"
+        android:layout_marginBottom="506dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@mipmap/paginaaa" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
