@@ -1,12 +1,10 @@
 package com.example.tfg_sistematienda.vistas;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -19,7 +17,6 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.InputFilter;
 import android.text.Spanned;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -81,6 +78,7 @@ public class CrearProducto extends AppCompatActivity {
     private static final int REQUEST_BLUETOOTH_CONNECT_PERMISSION = 22;
     // Constante para la solicitud de permiso de escritura en almacenamiento externo
     private static final int WRITE_EXTERNAL_STORAGE_PERMISSION_REQUEST_CODE = 1;
+    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
     // Declaración de botones de la interfaz
     ImageButton tomarFoto, subirFoto, crearProducto, generarCodigoBarras, imprimirCodigoBarras, cancelarCrearProducto;
     // Declaración de vistas de imagen de la interfaz
@@ -101,29 +99,19 @@ public class CrearProducto extends AppCompatActivity {
     private BluetoothSocket bluetoothSocket;
     // Bitmap para almacenar la imagen del producto
     private Bitmap bitmap;
-
     // Bitmap para almacenar la imagen del código de barras
     private Bitmap codigoBarrasBitmap;
-
     // Array de bytes para almacenar la imagen en formato de bytes
     private byte[] imagenenByte = null;
-
     // Array de bytes para almacenar la imagen por defecto en formato de bytes
     private byte[] imagenDefectoByte;
-
     // Conexión Bluetooth para la impresora
     private BluetoothConnection connection;
-
     // Impresora EscPos para imprimir etiquetas
     private EscPosPrinter printer;
-
     // Modelo del usuario que está utilizando la aplicación
     private UsuarioModel usuario;
-    private boolean allowBackPress=false;
-
-    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
-
-
+    private boolean allowBackPress = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -377,27 +365,6 @@ public class CrearProducto extends AppCompatActivity {
     }
 
 
-    // Método para limpiar los campos del formulario
-    private void vaciarCampos() {
-        // Limpia todos los campos del formulario y restablece los valores predeterminados
-        nombre.setText("");
-        descripcion.setText("");
-        cantidadStock.setText("");
-        precioUnidad.setText("");
-        codigoBarras.setText("SIN CODIGO DE BARRAS");
-        codigoBarras.setEnabled(false);
-        fotoProducto.setImageResource(R.mipmap.productosinimagen);
-        generarCodigoBarras.setEnabled(true);
-        imagenenByte = null;
-        nombre.setError(null);
-        descripcion.setError(null);
-        cantidadStock.setError(null);
-        precioUnidad.setError(null);
-        codigoBarras.setError(null);
-        imagenCodigoBarras.setImageResource(R.mipmap.codigobarrasvacio);
-    }
-
-
     // Método para mostrar una alerta en caso de error en la inserción en la base de datos
     private void mostrarAlertaErrorBBDD() {
         // Crea y muestra un diálogo de alerta con un mensaje de error personalizado
@@ -418,7 +385,7 @@ public class CrearProducto extends AppCompatActivity {
         // Opción para crear otro producto
         builder.setPositiveButton("Crear otro producto", (dialog, which) -> {
             // Limpia los campos del formulario para permitir al usuario crear otro producto
-            vaciarCampos();
+            reloadActivity();
             // Registra un mensaje de registro indicando que se desea crear otro producto
             bbddController.insertarLog("Desea crear otro producto", LocalDateTime.now(), usuario.getDni());
         });
@@ -433,6 +400,11 @@ public class CrearProducto extends AppCompatActivity {
         builder.show(); // Muestra el diálogo en la interfaz
     }
 
+    private void reloadActivity() {
+        Intent intent = getIntent();
+        finish();
+        startActivity(intent);
+    }
 
     // Método para obtener una lista de códigos de barras desde la base de datos
     private List<String> obtenerListaCodigosBarrasDesdeBD() {

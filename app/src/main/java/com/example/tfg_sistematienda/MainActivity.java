@@ -3,13 +3,11 @@ package com.example.tfg_sistematienda;
 import android.Manifest;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
@@ -38,17 +36,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-    private static final int REQUEST_CODE_STORAGE = 205;
-    private static final int REQUEST_CODE_CAMERA = 306;
-    private static final int REQUEST_CODE_BLUETOOTH = 407;
     public static final int PERMISSION_BLUETOOTH = 501;
     public static final int PERMISSION_BLUETOOTH_ADMIN = 602;
     public static final int PERMISSION_BLUETOOTH_CONNECT = 703;
     public static final int PERMISSION_BLUETOOTH_SCAN = 809;
-
+    private static final int REQUEST_CODE_STORAGE = 205;
+    private static final int REQUEST_CODE_CAMERA = 306;
+    private static final int REQUEST_CODE_BLUETOOTH = 407;
     private BBDDController bbddController = new BBDDController();
     private EditText usuario, contrasena;
-    private boolean allowBackPress=false;
+    private boolean allowBackPress = false;
     private ProgressDialog progressDialog;
 
     @Override
@@ -152,10 +149,10 @@ public class MainActivity extends AppCompatActivity {
         Class<?> nextActivity;
         if (usuarioActual.isVendedor()) {
             nextActivity = GeneralVendedor.class;
-            new LoadNewActivityTask(usuarioActual, nextActivity, "Inicio de sesión del vendedor "+usuarioActual.getNombre()+" con DNI: "+usuarioActual.getDni()).execute();
+            new LoadNewActivityTask(usuarioActual, nextActivity, "Inicio de sesión del vendedor " + usuarioActual.getNombre() + " con DNI: " + usuarioActual.getDni()).execute();
         } else if (usuarioActual.isReponedor()) {
             nextActivity = GeneralReponedor.class;
-            new LoadNewActivityTask(usuarioActual, nextActivity, "Inicio de sesión del reponedor "+usuarioActual.getNombre()+" con DNI: "+usuarioActual.getDni()).execute();
+            new LoadNewActivityTask(usuarioActual, nextActivity, "Inicio de sesión del reponedor " + usuarioActual.getNombre() + " con DNI: " + usuarioActual.getDni()).execute();
         } else if (usuarioActual.isAdmin()) {
             nextActivity = GeneralAdmin.class;
             new LoadNewActivityTask(usuarioActual, nextActivity, "Inicio de sesión del ADMINISTRADOR").execute();
@@ -256,6 +253,6 @@ public class MainActivity extends AppCompatActivity {
             intent.putExtra("usuarioDNI", usuario.getDni());
             startActivity(intent);
 
-                   }
+        }
     }
 }

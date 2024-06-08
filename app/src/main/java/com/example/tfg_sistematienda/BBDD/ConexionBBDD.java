@@ -15,21 +15,20 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Date;
+import java.util.List;
 
 public class ConexionBBDD {
 
     private static final String DRIVER = "org.postgresql.Driver";
-    private static final String URL = "jdbc:postgresql://192.168.10.150:5432/TiendaInfo";
-    //private static final String URL = "jdbc:postgresql://10.0.2.2:5432/TiendaInfo";
+    //private static final String URL = "jdbc:postgresql://192.168.10.150:5432/TiendaInfo";
+    private static final String URL = "jdbc:postgresql://10.0.2.2:5432/TiendaInfo";
     private static final String USUARIO = "postgres";
     private static final String PASSWORD = "admin";
     private Connection conexion = null;
@@ -59,8 +58,8 @@ public class ConexionBBDD {
     public void crearBaseDeDatosSiNoExiste() {
         Connection conexion = null;
         final String DRIVER1 = "org.postgresql.Driver";
-        //final String URL1 = "jdbc:postgresql://10.0.2.2:5432/";
-        final String URL1 = "jdbc:postgresql://192.168.10.150:5432/";
+        final String URL1 = "jdbc:postgresql://10.0.2.2:5432/";
+        //final String URL1 = "jdbc:postgresql://192.168.10.150:5432/";
         final String DATABASE_NAME1 = "TiendaInfo";
         final String USUARIO1 = "postgres";
         final String PASSWORD1 = "admin";
@@ -246,7 +245,7 @@ public class ConexionBBDD {
         return insertarOK;
     }
 
-    public boolean comprobarRegistrosTienda(){
+    public boolean comprobarRegistrosTienda() {
         boolean hayRegistros = false;
         conectarBD();
         try {
@@ -255,7 +254,7 @@ public class ConexionBBDD {
             ResultSet resultSet = preparedStatement.executeQuery();
 
             if (resultSet.next() && resultSet.getInt(1) > 0) {
-                hayRegistros=true;
+                hayRegistros = true;
             }
 
         } catch (SQLException e) {
@@ -270,6 +269,7 @@ public class ConexionBBDD {
         return hayRegistros;
 
     }
+
     public boolean insertarProducto(String codigoBarras, String nombre, String descripcion, int cantidadStock,
                                     double precioUnidad, int vecesComprado, int vecesDevuelto, byte[] imagenProducto,
                                     String idTienda) {
@@ -420,7 +420,7 @@ public class ConexionBBDD {
 
 
     public boolean modificarTienda(String cif, String nombreNuevo,
-                                     String direccionNueva, String telefonoNuevo) {
+                                   String direccionNueva, String telefonoNuevo) {
         boolean modificarOK = false;
         conectarBD();
         try {
@@ -1029,12 +1029,12 @@ public class ConexionBBDD {
         List<LogModel> listaLogs = new ArrayList<>();
         conectarBD();
 
-        try{
+        try {
             String query = "SELECT accion, fecha_y_hora, dni FROM logs";
             PreparedStatement preparedStatement = conexion.prepareStatement(query);
             ResultSet resultSet = preparedStatement.executeQuery();
 
-            while (resultSet.next()){
+            while (resultSet.next()) {
                 LogModel log = new LogModel();
                 log.setFecha(resultSet.getDate("fecha_y_hora"));
                 log.setAccion(resultSet.getString("accion"));
@@ -1059,13 +1059,13 @@ public class ConexionBBDD {
         List<LogModel> listaLogs = new ArrayList<>();
         conectarBD();
 
-        try{
+        try {
             String query = "SELECT accion, fecha_y_hora, dni FROM logs WHERE dni = ?";
             PreparedStatement preparedStatement = conexion.prepareStatement(query);
             preparedStatement.setString(1, dni);
             ResultSet resultSet = preparedStatement.executeQuery();
 
-            while (resultSet.next()){
+            while (resultSet.next()) {
                 LogModel log = new LogModel();
                 log.setFecha(resultSet.getDate("fecha_y_hora"));
                 log.setAccion(resultSet.getString("accion"));
@@ -1091,7 +1091,7 @@ public class ConexionBBDD {
         List<LogModel> listaLogs = new ArrayList<>();
         conectarBD();
 
-        try{
+        try {
             String query = "SELECT accion, fecha_y_hora, dni FROM logs WHERE DATE(fecha_y_hora) = ? ";
             PreparedStatement preparedStatement = conexion.prepareStatement(query);
 
@@ -1102,7 +1102,7 @@ public class ConexionBBDD {
 
             ResultSet resultSet = preparedStatement.executeQuery();
 
-            while (resultSet.next()){
+            while (resultSet.next()) {
                 LogModel log = new LogModel();
                 log.setFecha(resultSet.getDate("fecha_y_hora"));
                 log.setAccion(resultSet.getString("accion"));
@@ -1127,7 +1127,7 @@ public class ConexionBBDD {
         List<LogModel> listaLogs = new ArrayList<>();
         conectarBD();
 
-        try{
+        try {
             String query = "SELECT accion, fecha_y_hora, dni FROM logs WHERE DATE(fecha_y_hora) > ? ";
             PreparedStatement preparedStatement = conexion.prepareStatement(query);
 
@@ -1138,7 +1138,7 @@ public class ConexionBBDD {
 
             ResultSet resultSet = preparedStatement.executeQuery();
 
-            while (resultSet.next()){
+            while (resultSet.next()) {
                 LogModel log = new LogModel();
                 log.setFecha(resultSet.getDate("fecha_y_hora"));
                 log.setAccion(resultSet.getString("accion"));
@@ -1163,7 +1163,7 @@ public class ConexionBBDD {
         List<LogModel> listaLogs = new ArrayList<>();
         conectarBD();
 
-        try{
+        try {
             String query = "SELECT accion, fecha_y_hora, dni FROM logs WHERE DATE(fecha_y_hora) < ? ";
             PreparedStatement preparedStatement = conexion.prepareStatement(query);
 
@@ -1174,7 +1174,7 @@ public class ConexionBBDD {
 
             ResultSet resultSet = preparedStatement.executeQuery();
 
-            while (resultSet.next()){
+            while (resultSet.next()) {
                 LogModel log = new LogModel();
                 log.setFecha(resultSet.getDate("fecha_y_hora"));
                 log.setAccion(resultSet.getString("accion"));
@@ -1199,7 +1199,7 @@ public class ConexionBBDD {
         List<LogModel> listaLogs = new ArrayList<>();
         conectarBD();
 
-        try{
+        try {
             String query = "SELECT accion, fecha_y_hora, dni FROM logs WHERE DATE(fecha_y_hora) = ? AND dni = ? ";
             PreparedStatement preparedStatement = conexion.prepareStatement(query);
 
@@ -1211,7 +1211,7 @@ public class ConexionBBDD {
 
             ResultSet resultSet = preparedStatement.executeQuery();
 
-            while (resultSet.next()){
+            while (resultSet.next()) {
                 LogModel log = new LogModel();
                 log.setFecha(resultSet.getDate("fecha_y_hora"));
                 log.setAccion(resultSet.getString("accion"));
@@ -1236,7 +1236,7 @@ public class ConexionBBDD {
         List<LogModel> listaLogs = new ArrayList<>();
         conectarBD();
 
-        try{
+        try {
             String query = "SELECT accion, fecha_y_hora, dni FROM logs WHERE DATE(fecha_y_hora) > ? AND dni = ? ";
             PreparedStatement preparedStatement = conexion.prepareStatement(query);
 
@@ -1248,7 +1248,7 @@ public class ConexionBBDD {
 
             ResultSet resultSet = preparedStatement.executeQuery();
 
-            while (resultSet.next()){
+            while (resultSet.next()) {
                 LogModel log = new LogModel();
                 log.setFecha(resultSet.getDate("fecha_y_hora"));
                 log.setAccion(resultSet.getString("accion"));
@@ -1273,7 +1273,7 @@ public class ConexionBBDD {
         List<LogModel> listaLogs = new ArrayList<>();
         conectarBD();
 
-        try{
+        try {
             String query = "SELECT accion, fecha_y_hora, dni FROM logs WHERE DATE(fecha_y_hora) < ? AND dni = ? ";
             PreparedStatement preparedStatement = conexion.prepareStatement(query);
 
@@ -1285,7 +1285,7 @@ public class ConexionBBDD {
 
             ResultSet resultSet = preparedStatement.executeQuery();
 
-            while (resultSet.next()){
+            while (resultSet.next()) {
                 LogModel log = new LogModel();
                 log.setFecha(resultSet.getDate("fecha_y_hora"));
                 log.setAccion(resultSet.getString("accion"));
@@ -1310,12 +1310,12 @@ public class ConexionBBDD {
         List<String> listaDnis = new ArrayList<>();
         conectarBD();
 
-        try{
+        try {
             String query = "SELECT DISTINCT dni FROM usuario";
             PreparedStatement preparedStatement = conexion.prepareStatement(query);
             ResultSet resultSet = preparedStatement.executeQuery();
 
-            while (resultSet.next()){
+            while (resultSet.next()) {
                 String dni = resultSet.getString("dni");
                 listaDnis.add(dni);
             }
@@ -1427,7 +1427,7 @@ public class ConexionBBDD {
             String query = "SELECT COUNT(*) FROM ticket WHERE codigo_barras_ticket = ? AND cif = ?";
             PreparedStatement preparedStatement = conexion.prepareStatement(query);
             preparedStatement.setString(1, codigoTicket);
-            preparedStatement.setString(2,idTienda);
+            preparedStatement.setString(2, idTienda);
             ResultSet resultSet = preparedStatement.executeQuery();
 
             if (resultSet.next()) {
@@ -1763,8 +1763,8 @@ public class ConexionBBDD {
         return insertarOK;
     }
 
-    public String obtenerNombreTienda(String idTienda){
-        String nombreTienda="";
+    public String obtenerNombreTienda(String idTienda) {
+        String nombreTienda = "";
 
         conectarBD(); // Supongamos que esta función establece la conexión a la base de datos
 
@@ -1792,39 +1792,38 @@ public class ConexionBBDD {
         return nombreTienda;
     }
 
-public Date obtenerFechaLimiteDevolucion(String idTicket){
-        Date fechaLimite=Date.from(Instant.now());
+    public Date obtenerFechaLimiteDevolucion(String idTicket) {
+        Date fechaLimite = Date.from(Instant.now());
 
         conectarBD();
 
-    try {
-        // Construir la consulta SQL con los parámetros proporcionados
-        String query = "SELECT fecha_limite_devolucion FROM ticket WHERE codigo_barras_ticket = ?";
-        PreparedStatement preparedStatement = conexion.prepareStatement(query);
-        preparedStatement.setString(1, idTicket);
-
-        ResultSet resultSet = preparedStatement.executeQuery();
-
-        // Si se encuentra al menos un resultado, el usuario existe
-        if (resultSet.next()) {
-            fechaLimite = resultSet.getDate("fecha_limite_devolucion");
-        }
-    } catch (SQLException e) {
-        e.printStackTrace();
-    } finally {
         try {
-            cerrarConnection(conexion); // Supongo que tienes un método cerrarConnection() para cerrar la conexión
-        } catch (Exception e) {
+            // Construir la consulta SQL con los parámetros proporcionados
+            String query = "SELECT fecha_limite_devolucion FROM ticket WHERE codigo_barras_ticket = ?";
+            PreparedStatement preparedStatement = conexion.prepareStatement(query);
+            preparedStatement.setString(1, idTicket);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            // Si se encuentra al menos un resultado, el usuario existe
+            if (resultSet.next()) {
+                fechaLimite = resultSet.getDate("fecha_limite_devolucion");
+            }
+        } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            try {
+                cerrarConnection(conexion); // Supongo que tienes un método cerrarConnection() para cerrar la conexión
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
-    }
         return fechaLimite;
-}
+    }
 
 
-
-    public Date obtenerFechaTicket(String idTicket){
-        Date fechaTicket=Date.from(Instant.now());
+    public Date obtenerFechaTicket(String idTicket) {
+        Date fechaTicket = Date.from(Instant.now());
 
         conectarBD();
 
@@ -1875,7 +1874,7 @@ public Date obtenerFechaLimiteDevolucion(String idTicket){
         return vaciarOK;
     }
 
-    public double obtenerSumaVentas(){
+    public double obtenerSumaVentas() {
         double ventas = 0;
         conectarBD();
 
@@ -1900,7 +1899,7 @@ public Date obtenerFechaLimiteDevolucion(String idTicket){
         return ventas;
     }
 
-    public double obtenerSumaDevoluciones(){
+    public double obtenerSumaDevoluciones() {
         double devoluciones = 0;
         conectarBD();
         try {

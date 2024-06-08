@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.tfg_sistematienda.R;
 
-public class ViewHolderEmpleados extends RecyclerView.ViewHolder{
+public class ViewHolderEmpleados extends RecyclerView.ViewHolder {
     public TextView nombreEmpleado;
     public TextView apellidosEmpleado;
     public TextView dniEmpleado;
@@ -19,7 +19,7 @@ public class ViewHolderEmpleados extends RecyclerView.ViewHolder{
     public TextView correoEmpleado;
     public Switch tipoEmpleado;
     public CheckBox empleadoActivo;
-    public ImageButton llamada, correo, expulsar,contrato;
+    public ImageButton llamada, correo, expulsar, contrato;
 
     public ViewHolderEmpleados(@NonNull View itemView) {
         super(itemView);

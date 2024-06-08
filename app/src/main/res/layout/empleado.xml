@@ -153,15 +153,14 @@
 
     <Switch
         android:id="@+id/tipo"
-        android:layout_width="154dp"
-        android:layout_height="39dp"
+        android:layout_width="167dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="124dp"
+        android:layout_marginBottom="8dp"
         android:text="VENDEDOR     "
-        tools:layout_editor_absoluteX="86dp"
-        tools:layout_editor_absoluteY="173dp"
-        android:layout_marginStart="125dp"
-        android:layout_marginBottom="15dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
     <TextView
         android:layout_width="0dp"
         android:layout_height="wrap_content"

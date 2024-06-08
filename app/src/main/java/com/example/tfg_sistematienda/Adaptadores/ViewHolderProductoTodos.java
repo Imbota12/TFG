@@ -1,7 +1,6 @@
 package com.example.tfg_sistematienda.Adaptadores;
 
 import android.view.View;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -10,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.tfg_sistematienda.R;
 
-public class ViewHolderProductoTodos extends RecyclerView.ViewHolder{
+public class ViewHolderProductoTodos extends RecyclerView.ViewHolder {
 
     public ImageView imagenProducto;
     public TextView nombreProducto, codigoProducto, stockProducto;

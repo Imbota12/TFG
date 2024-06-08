@@ -22,7 +22,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.tfg_sistematienda.Adaptadores.AdaptadorTienda;
 import com.example.tfg_sistematienda.BBDD.ConexionBBDD;
 import com.example.tfg_sistematienda.R;
-import com.example.tfg_sistematienda.modelos.ProductoModel;
 import com.example.tfg_sistematienda.modelos.TiendaModel;
 import com.example.tfg_sistematienda.modelos.UsuarioModel;
 
@@ -39,45 +38,57 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * Clase que representa la actividad para mostrar la lista de tiendas.
+ */
 public class ListaTiendas extends AppCompatActivity {
 
-    private UsuarioModel usuario;
-    private ConexionBBDD bbddController=new ConexionBBDD();
     private static final int MAX_CELL_LENGTH = 32767;
+    private static final int REQUEST_EXTERNAL_STORAGE = 98;
+    // Declaración de variables miembro
+    private UsuarioModel usuario;
+    private ConexionBBDD bbddController = new ConexionBBDD();
     private RecyclerView lista;
     private AdaptadorTienda adaptadorTienda;
-    private static final int REQUEST_EXTERNAL_STORAGE = 98;
     private List<TiendaModel> listaTiendas;
     private ImageButton generarExcel, volverMenu;
-    private boolean allowBackPress=false;
+    private boolean allowBackPress = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_lista_tiendas);
+
+        // Ajuste del layout para tener EdgeToEdge
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
 
+        // Obtener el Intent que inició esta actividad
         Intent intent = getIntent();
         // Capturar el putExtra enviado desde MainActivity
         String usuarioDNI = intent.getStringExtra("usuarioDNI");
 
+        // Obtener el usuario de la base de datos utilizando el DNI recibido
         usuario = bbddController.obtenerEmpleado(usuarioDNI);
+
+        // Inicialización de botones y lista
         generarExcel = findViewById(R.id.excelListaTiendas);
         volverMenu = findViewById(R.id.volvermenuAdmin);
-
         lista = findViewById(R.id.listaTienda);
         lista.setLayoutManager(new LinearLayoutManager(this));
 
+        // Cargar la lista de tiendas desde la base de datos
         cargarTiendas();
 
+        // Configurar el adaptador para la lista de tiendas
         adaptadorTienda = new AdaptadorTienda(listaTiendas, this);
         lista.setAdapter(adaptadorTienda);
 
+        // Configurar el botón de volver al menú
         volverMenu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -87,6 +98,7 @@ public class ListaTiendas extends AppCompatActivity {
             }
         });
 
+        // Configurar el botón de generar Excel
         generarExcel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -99,17 +111,23 @@ public class ListaTiendas extends AppCompatActivity {
         });
     }
 
-
+    /**
+     * Método para generar un archivo Excel con la información de las tiendas.
+     *
+     * @throws IOException Si hay un error al escribir en el archivo.
+     */
     private void generarExcel() throws IOException {
+        // Crear o obtener el directorio donde se almacenará el archivo Excel
         File directory = new File(this.getExternalFilesDir(null), "MiCarpeta");
         if (!directory.exists()) {
             directory.mkdirs();
         }
 
+        // Crear un nuevo libro de Excel y una hoja de trabajo
         Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet("Tiendas");
 
-        // Crear encabezados
+        // Crear encabezados para la hoja de trabajo
         String[] encabezados = {"CIF", "Nombre", "Direccion", "Telefono"};
         Row headerRow = sheet.createRow(0);
         for (int i = 0; i < encabezados.length; i++) {
@@ -117,10 +135,11 @@ public class ListaTiendas extends AppCompatActivity {
             cell.setCellValue(encabezados[i]);
         }
 
-        // Llenar datos de productos
+        // Llenar la hoja de trabajo con datos de las tiendas
         int rowNum = 1;
         for (TiendaModel tienda : listaTiendas) {
             Row row = sheet.createRow(rowNum++);
+            // Verificar la longitud de los datos y escribirlos en las celdas correspondientes
             if (tienda.getCif().length() > MAX_CELL_LENGTH) {
                 Log.e("ExcelError", "CIF excede el límite de caracteres.");
             } else {
@@ -146,14 +165,15 @@ public class ListaTiendas extends AppCompatActivity {
             }
         }
 
+        // Solicitar permiso de almacenamiento externo
         requestStoragePermission();
 
+        // Obtener la fecha y hora actual para el nombre del archivo Excel
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        // Definir el nombre del archivo con la fecha y hora actual
         String fileName = "tiendas_" + timeStamp + ".xlsx";
 
+        // Crear el archivo Excel y escribir los datos
         File file = new File(directory, fileName);
-
         FileOutputStream fileOut = new FileOutputStream(file);
         workbook.write(fileOut);
         fileOut.close();
@@ -163,6 +183,9 @@ public class ListaTiendas extends AppCompatActivity {
         Toast.makeText(this, "Archivo Excel generado en " + file.getAbsolutePath(), Toast.LENGTH_LONG).show();
     }
 
+    /**
+     * Método para solicitar permiso de almacenamiento externo.
+     */
     private void requestStoragePermission() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -178,10 +201,14 @@ public class ListaTiendas extends AppCompatActivity {
         if (allowBackPress) {
             super.onBackPressed();
         } else {
+            // Mostrar un mensaje al usuario para informarle cómo volver al menú
             Toast.makeText(this, "Para volver pulse el botón VOLVER MENÚ", Toast.LENGTH_SHORT).show();
         }
     }
 
+    /**
+     * Método para cargar la lista de tiendas desde la base de datos.
+     */
     private void cargarTiendas() {
         listaTiendas = bbddController.obtenerListaTiendas();
     }

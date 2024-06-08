@@ -8,8 +8,6 @@ import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
-import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -18,7 +16,6 @@ import com.example.tfg_sistematienda.R;
 import com.example.tfg_sistematienda.controladores.BBDDController;
 import com.example.tfg_sistematienda.modelos.ProductoModel;
 import com.example.tfg_sistematienda.modelos.Producto_TicketModel;
-import com.example.tfg_sistematienda.vistas.RealizaVenta;
 
 import java.util.List;
 
@@ -35,23 +32,7 @@ public class AdaptadorProductosComprados extends RecyclerView.Adapter<ViewHolder
     private OnQuantityChangedListenerUp onQuantityChangedListenerUp;
 
 
-    public interface OnQuantityChangedListenerUp{
-        void onQuantityChangedListenerUp(Producto_TicketModel producto);
-    }
-    public interface OnQuantityChangedListener {
-        void onQuantityChangedDown(Producto_TicketModel producto);
-    }
-
-    public interface OnProductRemovedListener {
-        void onProductRemoved(int position);
-    }
-
-    public interface OnPriceUpdateListener {
-        void onPriceUpdated(double newPrice);
-    }
-
-
-    public AdaptadorProductosComprados(Context context, List<ProductoModel> listaProductosComprados, List<Producto_TicketModel> listaCantidades, List<ProductoModel> listaTodosProductos, OnProductRemovedListener listener,OnPriceUpdateListener listenerP, OnQuantityChangedListener listenerQD, OnQuantityChangedListenerUp listenerQU) {
+    public AdaptadorProductosComprados(Context context, List<ProductoModel> listaProductosComprados, List<Producto_TicketModel> listaCantidades, List<ProductoModel> listaTodosProductos, OnProductRemovedListener listener, OnPriceUpdateListener listenerP, OnQuantityChangedListener listenerQD, OnQuantityChangedListenerUp listenerQU) {
         this.listaProductos = listaProductosComprados;
         this.context = context;
         this.listaCantidades = listaCantidades;
@@ -133,45 +114,63 @@ public class AdaptadorProductosComprados extends RecyclerView.Adapter<ViewHolder
             }
         });
         holder.aumentarProducto_comprado.setOnClickListener(new View.OnClickListener() {
-           @Override
-           public void onClick(View v) {
-               int position = holder.getAdapterPosition();
-               Producto_TicketModel producto = listaCantidades.get(position);
+            @Override
+            public void onClick(View v) {
+                int position = holder.getAdapterPosition();
+                Producto_TicketModel producto = listaCantidades.get(position);
 
-               // Buscar el producto correspondiente en la lista de todos los productos
-               for (ProductoModel productoEnListaTodosProductos : listaTodosProductos) {
-                   if (productoEnListaTodosProductos.getCodigoBarras() == producto.getCodigoBarras_producto()) {
-                       // Verificar si hay suficiente stock para aumentar la cantidad
-                       if (productoEnListaTodosProductos.getCantidadStock() > producto.getCantidad()) {
-                           // Incrementar la cantidad
-                           producto.setCantidad(producto.getCantidad() + 1);
-                           holder.cantidadProducto_comprado.setText(String.valueOf(producto.getCantidad()));
+                // Buscar el producto correspondiente en la lista de todos los productos
+                for (ProductoModel productoEnListaTodosProductos : listaTodosProductos) {
+                    if (productoEnListaTodosProductos.getCodigoBarras() == producto.getCodigoBarras_producto()) {
+                        // Verificar si hay suficiente stock para aumentar la cantidad
+                        if (productoEnListaTodosProductos.getCantidadStock() > producto.getCantidad()) {
+                            // Incrementar la cantidad
+                            producto.setCantidad(producto.getCantidad() + 1);
+                            holder.cantidadProducto_comprado.setText(String.valueOf(producto.getCantidad()));
 
-                           // Notificar al listener de cambios en la cantidad
-                           if (onQuantityChangedListenerUp != null) {
-                               onQuantityChangedListenerUp.onQuantityChangedListenerUp(producto);
-                           }
-                           return; // Salir del bucle una vez que se encuentra el producto
-                       } else {
-                           // Mostrar mensaje de que no hay suficientes productos en stock
-                           AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                           builder.setTitle("Alerta");
-                           builder.setMessage("No hay suficiente stock disponible para este producto.");
-                           builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                               public void onClick(DialogInterface dialog, int which) {
-                                   // Cerrar el diálogo o ejecutar alguna acción adicional si es necesario
-                               }
-                           });
-                           builder.show();
-                           return; // Detener el proceso
-                       }
-                   }
-               }
+                            // Notificar al listener de cambios en la cantidad
+                            if (onQuantityChangedListenerUp != null) {
+                                onQuantityChangedListenerUp.onQuantityChangedListenerUp(producto);
+                            }
+                            return; // Salir del bucle una vez que se encuentra el producto
+                        } else {
+                            // Mostrar mensaje de que no hay suficientes productos en stock
+                            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                            builder.setTitle("Alerta");
+                            builder.setMessage("No hay suficiente stock disponible para este producto.");
+                            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    // Cerrar el diálogo o ejecutar alguna acción adicional si es necesario
+                                }
+                            });
+                            builder.show();
+                            return; // Detener el proceso
+                        }
+                    }
+                }
 
-           }
+            }
         });
 
 
+    }
+
+    @Override
+    public int getItemCount() {
+        return listaProductos.size();
+    }
+
+
+    public interface OnQuantityChangedListenerUp {
+        void onQuantityChangedListenerUp(Producto_TicketModel producto);
+    }
+
+    public interface OnQuantityChangedListener {
+        void onQuantityChangedDown(Producto_TicketModel producto);
+    }
+
+    public interface OnProductRemovedListener {
+        void onProductRemoved(int position);
     }
 
 //
@@ -187,8 +186,7 @@ public class AdaptadorProductosComprados extends RecyclerView.Adapter<ViewHolder
 //        return total;
 //        }
 
-    @Override
-    public int getItemCount() {
-        return listaProductos.size();
+    public interface OnPriceUpdateListener {
+        void onPriceUpdated(double newPrice);
     }
 }

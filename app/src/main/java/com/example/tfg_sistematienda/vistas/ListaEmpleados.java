@@ -22,7 +22,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.tfg_sistematienda.Adaptadores.AdaptadorEmpleado;
 import com.example.tfg_sistematienda.R;
 import com.example.tfg_sistematienda.controladores.BBDDController;
-import com.example.tfg_sistematienda.modelos.ProductoModel;
 import com.example.tfg_sistematienda.modelos.UsuarioModel;
 
 import org.apache.poi.ss.usermodel.Cell;
@@ -39,14 +38,16 @@ import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * Clase para mostrar la lista de empleados y generar un archivo Excel con la información.
+ */
 public class ListaEmpleados extends AppCompatActivity {
+    private static final int MAX_CELL_LENGTH = 32767;
+    private static final int REQUEST_EXTERNAL_STORAGE = 118;
     private RecyclerView lista;
     private AdaptadorEmpleado adaptadorEmpleado;
     private List<UsuarioModel> listaEmpleados;
     private boolean allowBackPress = false;
-    private static final int MAX_CELL_LENGTH = 32767;
-    private static final int REQUEST_EXTERNAL_STORAGE = 118;
-
     private BBDDController bbddController = new BBDDController();
     private UsuarioModel usuario;
     private ImageButton generarExcel, volverMenu;
@@ -81,6 +82,7 @@ public class ListaEmpleados extends AppCompatActivity {
         volverMenu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // Insertar log de acceso al menú admin
                 bbddController.insertarLog("Acceso menu admin", LocalDateTime.now(), usuario.getDni());
                 Intent intent = new Intent(ListaEmpleados.this, GeneralAdmin.class);
                 intent.putExtra("usuarioDNI", usuarioDNI);
@@ -109,6 +111,11 @@ public class ListaEmpleados extends AppCompatActivity {
         }
     }
 
+    /**
+     * Método para generar un archivo Excel con la lista de empleados.
+     *
+     * @throws IOException Si hay un error de entrada o salida al manipular el archivo.
+     */
     private void generarExcel() throws IOException {
         File directory = new File(this.getExternalFilesDir(null), "MiCarpeta");
         if (!directory.exists()) {
@@ -126,10 +133,11 @@ public class ListaEmpleados extends AppCompatActivity {
             cell.setCellValue(encabezados[i]);
         }
 
-        // Llenar datos de productos
+        // Llenar datos de empleados
         int rowNum = 1;
         for (UsuarioModel empleado : listaEmpleados) {
             Row row = sheet.createRow(rowNum++);
+            // Insertar datos en las celdas
             if (empleado.getDni().length() > MAX_CELL_LENGTH) {
                 Log.e("ExcelError", "DNI excede el límite de caracteres.");
             } else {
@@ -147,35 +155,40 @@ public class ListaEmpleados extends AppCompatActivity {
             } else {
                 row.createCell(2).setCellValue(empleado.getApellido());
             }
+
             if (empleado.getTelefono().length() > MAX_CELL_LENGTH) {
                 Log.e("ExcelError", "Telefono excede el límite de caracteres.");
             } else {
                 row.createCell(3).setCellValue(empleado.getTelefono());
             }
+
             if (empleado.getCorreo().length() > MAX_CELL_LENGTH) {
                 Log.e("ExcelError", "Correo excede el límite de caracteres.");
             } else {
                 row.createCell(4).setCellValue(empleado.getCorreo());
             }
 
-            if (empleado.isActivo() == true) {
+            // Insertar "SI" o "NO" en función del estado de activo
+            if (empleado.isActivo()) {
                 row.createCell(5).setCellValue("SI");
-            }else{
+            } else {
                 row.createCell(5).setCellValue("NO");
             }
 
             row.createCell(6).setCellValue(empleado.getIdTienda());
 
-            if (empleado.isReponedor()){
+            // Insertar el tipo de trabajador en función de su rol
+            if (empleado.isReponedor()) {
                 row.createCell(7).setCellValue("REPONEDOR");
-            }else if (empleado.isVendedor()){
+            } else if (empleado.isVendedor()) {
                 row.createCell(7).setCellValue("VENDEDOR");
             }
-
         }
 
+        // Solicitar permiso de almacenamiento
         requestStoragePermission();
 
+        // Obtener la fecha y hora actual para incluirla en el nombre del archivo
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         // Definir el nombre del archivo con la fecha y hora actual
         String fileName = "empleados_" + timeStamp + ".xlsx";
@@ -187,12 +200,15 @@ public class ListaEmpleados extends AppCompatActivity {
         fileOut.close();
         workbook.close();
 
+        // Insertar log de generación de archivo Excel
         bbddController.insertarLog("Generar excel empleados", LocalDateTime.now(), usuario.getDni());
         // Informar al usuario que el archivo se ha generado
         Toast.makeText(this, "Archivo Excel generado en " + file.getAbsolutePath(), Toast.LENGTH_LONG).show();
     }
 
-
+    /**
+     * Método para solicitar permiso de almacenamiento si no está concedido.
+     */
     private void requestStoragePermission() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -203,6 +219,9 @@ public class ListaEmpleados extends AppCompatActivity {
         }
     }
 
+    /**
+     * Método para cargar la lista de empleados desde la base de datos.
+     */
     private void cargarEmpleados() {
         listaEmpleados = bbddController.obtenerListaEmpleados();
     }

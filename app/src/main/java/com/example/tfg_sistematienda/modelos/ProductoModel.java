@@ -1,7 +1,5 @@
 package com.example.tfg_sistematienda.modelos;
 
-import java.math.BigDecimal;
-
 public class ProductoModel {
     private String codigoBarras;
     private String nombre;
@@ -27,6 +25,7 @@ public class ProductoModel {
         this.idTienda = idTienda;
         this.cantidad = 0;
     }
+
     public ProductoModel(String codigoBarras, String nombre, String descripcion, int cantidadStock, double precioUnidad, int vecesComprado, int vecesDevuelto, byte[] imagenProducto, String idTienda, int cantidad) {
         this.codigoBarras = codigoBarras;
         this.nombre = nombre;
@@ -40,7 +39,7 @@ public class ProductoModel {
         this.cantidad = cantidad;
     }
 
-    public ProductoModel(ProductoModel productoModel){
+    public ProductoModel(ProductoModel productoModel) {
         this.codigoBarras = productoModel.getCodigoBarras();
         this.nombre = productoModel.getNombre();
         this.descripcion = productoModel.getDescripcion();
@@ -53,12 +52,12 @@ public class ProductoModel {
         this.cantidad = productoModel.getCantidad();
     }
 
-    public ProductoModel(){
+    public ProductoModel() {
         // Constructor vacío
         this.cantidad = 0;
     }
 
-    public ProductoModel(String codigoBarras, String nombre, int cantidad){
+    public ProductoModel(String codigoBarras, String nombre, int cantidad) {
         this.codigoBarras = codigoBarras;
         this.nombre = nombre;
         this.cantidad = cantidad;

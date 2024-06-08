@@ -1,9 +1,7 @@
 package com.example.tfg_sistematienda.Adaptadores;
 
 import android.annotation.SuppressLint;
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
@@ -20,7 +18,7 @@ import com.example.tfg_sistematienda.modelos.Producto_TicketModel;
 
 import java.util.List;
 
-public class AdaptadorProductoDevuelto extends RecyclerView.Adapter<ViewHolderProductoDevolver>{
+public class AdaptadorProductoDevuelto extends RecyclerView.Adapter<ViewHolderProductoDevolver> {
 
     private List<ProductoModel> listaProductos;
     private Context context;
@@ -33,18 +31,6 @@ public class AdaptadorProductoDevuelto extends RecyclerView.Adapter<ViewHolderPr
     private OnQuantityChangedListener onQuantityChangedListenerDown;
     private OnQuantityChangedListenerUp onQuantityChangedListenerUp;
 
-
-
-    public interface OnQuantityChangedListenerUp{
-        void onQuantityChangedListenerUp(Producto_TicketModel producto);
-    }
-    public interface OnQuantityChangedListener {
-        void onQuantityChangedDown(ProductoModel producto);
-    }
-
-    public interface OnProductRemovedListener {
-        void onProductRemoved(int position);
-    }
 
     public AdaptadorProductoDevuelto(List<ProductoModel> listaProductos, Context context, List<Producto_TicketModel> listaCantidades, AdaptadorProductoDevuelto.OnProductRemovedListener listener, AdaptadorProductoDevuelto.OnQuantityChangedListener listenerQD, AdaptadorProductoDevuelto.OnQuantityChangedListenerUp listenerQU) {
         this.listaProductos = listaProductos;
@@ -94,5 +80,17 @@ public class AdaptadorProductoDevuelto extends RecyclerView.Adapter<ViewHolderPr
     @Override
     public int getItemCount() {
         return listaProductos.size();
+    }
+
+    public interface OnQuantityChangedListenerUp {
+        void onQuantityChangedListenerUp(Producto_TicketModel producto);
+    }
+
+    public interface OnQuantityChangedListener {
+        void onQuantityChangedDown(ProductoModel producto);
+    }
+
+    public interface OnProductRemovedListener {
+        void onProductRemoved(int position);
     }
 }

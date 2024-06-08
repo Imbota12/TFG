@@ -8,8 +8,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.tfg_sistematienda.R;
 
-public class ViewHolderMasDevueltos extends RecyclerView.ViewHolder{
+public class ViewHolderMasDevueltos extends RecyclerView.ViewHolder {
     public TextView codigoMasDevuelto, nombreMasDevuelto, tiendaMasDevuelto, cantidadMasDevuelto;
+
     public ViewHolderMasDevueltos(@NonNull View itemView) {
         super(itemView);
         codigoMasDevuelto = itemView.findViewById(R.id.coddevuelto);

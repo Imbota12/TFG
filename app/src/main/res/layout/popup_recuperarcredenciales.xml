@@ -254,6 +254,7 @@
         android:text=" "
         android:textColor="@color/design_default_color_error"
         android:textSize="34sp"
+        android:contentDescription="correo"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 

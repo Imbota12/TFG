@@ -1,16 +1,15 @@
 package com.example.tfg_sistematienda.vistas;
 
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.app.AlertDialog;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.ImageButton;
 import android.widget.Spinner;
@@ -29,33 +28,30 @@ import com.example.tfg_sistematienda.Adaptadores.AdaptadorLog;
 import com.example.tfg_sistematienda.R;
 import com.example.tfg_sistematienda.controladores.BBDDController;
 import com.example.tfg_sistematienda.modelos.LogModel;
-import com.example.tfg_sistematienda.modelos.TiendaModel;
 import com.example.tfg_sistematienda.modelos.UsuarioModel;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 public class Logs extends AppCompatActivity {
 
     private UsuarioModel usuario;
-    private BBDDController bbddController= new BBDDController();
+    private BBDDController bbddController = new BBDDController();
     private ImageButton volverMenu;
     private RecyclerView todosLogs;
     private AdaptadorLog adaptadorLogs;
     private List<LogModel> listaLogs;
-    private boolean allowBackPress=false;
+    private boolean allowBackPress = false;
     private Spinner dnis, tiposFiltros;
     private ImageButton seleccionarFecha, filtrarDni, mostrarTodosLogs, filtrarFecha, filtrarDniyFecha, vaciarLogs;
     private TextView fecha;
     private String dniSeleccionado;
-    private List<String> dni= new ArrayList<>();
+    private List<String> dni = new ArrayList<>();
     private int AnoSeleccionado, DiaSeleccionado, MesSeleccionado;
-    private LocalDate fechaSeleccionada=null;
+    private LocalDate fechaSeleccionada = null;
     private ArrayList<String> tipoFiltro = new ArrayList<>();
     private String filtroSeleccionado;
     private ProgressDialog progressDialog;
@@ -106,11 +102,11 @@ public class Logs extends AppCompatActivity {
             builder.setTitle("¿ESTAS SEGURO?");
             builder.setMessage("¿ESTAS SEGURO QUE QUIERE BORRAR LOS LOGS (¡¡¡ESTA OPERACIÓN NO SE PODRÁ REVERTIR¡¡¡)?");
             builder.setPositiveButton("SI", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            new VaciarLogsTask().execute();
-                        }
-                    });
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    new VaciarLogsTask().execute();
+                }
+            });
             builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
@@ -127,13 +123,13 @@ public class Logs extends AppCompatActivity {
         tiposFiltros.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-               if (position == 0) {
-                   filtroSeleccionado = tipoFiltro.get(0);
-               }else if (position == 1) {
-                   filtroSeleccionado = tipoFiltro.get(1);
-               }else if (position == 2) {
-                   filtroSeleccionado = tipoFiltro.get(2);
-               }
+                if (position == 0) {
+                    filtroSeleccionado = tipoFiltro.get(0);
+                } else if (position == 1) {
+                    filtroSeleccionado = tipoFiltro.get(1);
+                } else if (position == 2) {
+                    filtroSeleccionado = tipoFiltro.get(2);
+                }
             }
 
             @Override
@@ -164,7 +160,7 @@ public class Logs extends AppCompatActivity {
     private void cargarLogsFiltradosDniyFecha() {
         if (dniSeleccionado.equals("")) {
             Toast.makeText(this, "Debes seleccionar un dni y fecha arriba", Toast.LENGTH_SHORT).show();
-        }else {
+        } else {
             if (filtroSeleccionado.equals("igual")) {
                 listaLogs = bbddController.obtenerListaLogsPorFechaIgualconDNI(fechaSeleccionada, dniSeleccionado);
                 adaptadorLogs = new AdaptadorLog(this, listaLogs);
@@ -178,6 +174,78 @@ public class Logs extends AppCompatActivity {
                 adaptadorLogs = new AdaptadorLog(this, listaLogs);
                 todosLogs.setAdapter(adaptadorLogs);
             }
+        }
+    }
+
+    private void mostarDialogoFecha() {
+        // Obtén la fecha actual para inicializar el DatePickerDialog con ella
+        final Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+        DatePickerDialog datePickerDialog = new DatePickerDialog(this,
+                new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                        // Al seleccionar una fecha, se guarda en las variables
+                        AnoSeleccionado = year;
+                        MesSeleccionado = month;
+                        DiaSeleccionado = dayOfMonth;
+                        // Aquí puedes guardar la fecha en una variable o usarla según sea necesario
+                        fechaSeleccionada = LocalDate.of(year, month + 1, dayOfMonth); // month+1 porque LocalDate usa 1-12 para los meses
+
+                        fecha.setText(fechaSeleccionada.toString());
+                        fecha.setVisibility(View.VISIBLE);
+                    }
+                }, year, month, day);
+        datePickerDialog.show();
+    }
+
+    private void cargarSpinnerDnis() {
+
+        dni = bbddController.obtenerDnis();
+        dni.add(0, "---SELECCIONA UN DNI A FILTRAR---");
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, dni);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        dnis.setAdapter(adapter);
+        dnis.setSelection(0);
+
+        dnis.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (position > 0 && position < dni.size()) {
+                    dniSeleccionado = dni.get(position);
+                } else {
+                    dniSeleccionado = "";
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                // Manejar el caso en el que no se haya seleccionado ninguna tienda
+            }
+        });
+
+
+    }
+
+    private void cargarSpinnerTipoFiltro() {
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, tipoFiltro);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        tiposFiltros.setAdapter(adapter);
+        tiposFiltros.setSelection(0);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (allowBackPress) {
+            super.onBackPressed();
+        } else {
+            Toast.makeText(this, "Para volver pulse el botón VOLVER MENÚ", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -361,83 +429,6 @@ public class Logs extends AppCompatActivity {
             } else {
                 Toast.makeText(Logs.this, "Debe seleccionar una fecha", Toast.LENGTH_SHORT).show();
             }
-        }
-    }
-
-
-    private void mostarDialogoFecha() {
-        // Obtén la fecha actual para inicializar el DatePickerDialog con ella
-        final Calendar calendar = Calendar.getInstance();
-        int year = calendar.get(Calendar.YEAR);
-        int month = calendar.get(Calendar.MONTH);
-        int day = calendar.get(Calendar.DAY_OF_MONTH);
-
-        DatePickerDialog datePickerDialog = new DatePickerDialog(this,
-                new DatePickerDialog.OnDateSetListener() {
-                    @Override
-                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                        // Al seleccionar una fecha, se guarda en las variables
-                        AnoSeleccionado = year;
-                        MesSeleccionado = month;
-                        DiaSeleccionado = dayOfMonth;
-                        // Aquí puedes guardar la fecha en una variable o usarla según sea necesario
-                        fechaSeleccionada = LocalDate.of(year, month + 1, dayOfMonth); // month+1 porque LocalDate usa 1-12 para los meses
-
-                        fecha.setText(fechaSeleccionada.toString());
-                        fecha.setVisibility(View.VISIBLE);
-                    }
-                }, year, month, day);
-        datePickerDialog.show();
-    }
-
-
-
-    private void cargarSpinnerDnis() {
-
-        dni = bbddController.obtenerDnis();
-        dni.add(0, "---SELECCIONA UN DNI A FILTRAR---");
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, dni);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-        dnis.setAdapter(adapter);
-        dnis.setSelection(0);
-
-        dnis.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if (position>0 && position<dni.size()) {
-                    dniSeleccionado = dni.get(position);
-                }else{
-                    dniSeleccionado="";
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-                // Manejar el caso en el que no se haya seleccionado ninguna tienda
-            }
-        });
-
-
-
-    }
-
-    private void cargarSpinnerTipoFiltro() {
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, tipoFiltro);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-        tiposFiltros.setAdapter(adapter);
-        tiposFiltros.setSelection(0);
-    }
-
-
-    @Override
-    public void onBackPressed() {
-        if (allowBackPress) {
-            super.onBackPressed();
-        } else {
-            Toast.makeText(this, "Para volver pulse el botón VOLVER MENÚ", Toast.LENGTH_SHORT).show();
         }
     }
 

@@ -17,17 +17,12 @@ import com.example.tfg_sistematienda.modelos.ProductoModel;
 
 import java.util.List;
 
-public class AdaptadorProductoTicket  extends RecyclerView.Adapter<ViewHolderProductoTicket> {
+public class AdaptadorProductoTicket extends RecyclerView.Adapter<ViewHolderProductoTicket> {
     private List<ProductoModel> listaProductos;
     private Context context;
     private ProductoModel productoSeleccionado;
     private BBDDController bbddController = new BBDDController();
     private OnProductoSeleccionadoListener productoSeleccionadoListener;
-
-    public interface OnProductoSeleccionadoListener {
-        void onProductoSeleccionado(ProductoModel producto);
-    }
-
 
     public AdaptadorProductoTicket(Context context, List<ProductoModel> listaProductos, OnProductoSeleccionadoListener listener) {
         this.listaProductos = listaProductos;
@@ -76,5 +71,9 @@ public class AdaptadorProductoTicket  extends RecyclerView.Adapter<ViewHolderPro
     @Override
     public int getItemCount() {
         return listaProductos.size();
+    }
+
+    public interface OnProductoSeleccionadoListener {
+        void onProductoSeleccionado(ProductoModel producto);
     }
 }

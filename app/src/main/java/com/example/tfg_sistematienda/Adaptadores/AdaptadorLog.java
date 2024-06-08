@@ -17,7 +17,7 @@ import com.example.tfg_sistematienda.modelos.UsuarioModel;
 
 import java.util.List;
 
-public class AdaptadorLog extends RecyclerView.Adapter<ViewHolderLog>{
+public class AdaptadorLog extends RecyclerView.Adapter<ViewHolderLog> {
 
     private List<LogModel> listaLogs;
     private Context context;
@@ -28,6 +28,7 @@ public class AdaptadorLog extends RecyclerView.Adapter<ViewHolderLog>{
         this.listaLogs = listaLogs;
         this.context = context;
     }
+
     @NonNull
     @Override
     public ViewHolderLog onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -47,11 +48,11 @@ public class AdaptadorLog extends RecyclerView.Adapter<ViewHolderLog>{
         holder.telefonoLog.setText(usuario.getTelefono());
         holder.tiendaLog.setText(usuario.getIdTienda());
 
-        if (usuario.isAdmin()){
+        if (usuario.isAdmin()) {
             holder.tipoLog.setText("ADMIN");
-        }else if(usuario.isReponedor()){
+        } else if (usuario.isReponedor()) {
             holder.tipoLog.setText("REPONEDOR");
-        }else if (usuario.isVendedor()){
+        } else if (usuario.isVendedor()) {
             holder.tipoLog.setText("VENDEDOR");
         }
 

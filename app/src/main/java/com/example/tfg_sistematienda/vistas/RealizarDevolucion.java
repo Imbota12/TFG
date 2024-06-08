@@ -6,7 +6,6 @@ import android.Manifest;
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -15,15 +14,12 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -47,8 +43,6 @@ import com.dantsu.escposprinter.exceptions.EscPosParserException;
 import com.dantsu.escposprinter.textparser.PrinterTextParserImg;
 import com.example.tfg_sistematienda.Adaptadores.AdaptadorProductoDevuelto;
 import com.example.tfg_sistematienda.Adaptadores.AdaptadorProductoTicket;
-import com.example.tfg_sistematienda.Adaptadores.AdaptadorProductosComprados;
-import com.example.tfg_sistematienda.Adaptadores.AdaptadorProductosVenta;
 import com.example.tfg_sistematienda.MainActivity;
 import com.example.tfg_sistematienda.R;
 import com.example.tfg_sistematienda.controladores.BBDDController;
@@ -64,7 +58,6 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
@@ -76,8 +69,6 @@ import java.util.TimeZone;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class RealizarDevolucion extends AppCompatActivity implements AdaptadorProductoTicket.OnProductoSeleccionadoListener, AdaptadorProductoDevuelto.OnProductRemovedListener, AdaptadorProductoDevuelto.OnQuantityChangedListener, AdaptadorProductoDevuelto.OnQuantityChangedListenerUp {
 
@@ -97,11 +88,11 @@ public class RealizarDevolucion extends AppCompatActivity implements AdaptadorPr
 
     private double entregado, devuelto;
     private AdaptadorProductoTicket adaptadorProductoTicket;
-    private List<ProductoModel> listaProductosDevueltos=new ArrayList<>();
+    private List<ProductoModel> listaProductosDevueltos = new ArrayList<>();
     private List<Producto_TicketModel> listaCantidades = new ArrayList<>();
     private BBDDController bbddController = new BBDDController();
     private TicketModel ticket;
-    private List<String> codigosBarrasTickets=new ArrayList<>();
+    private List<String> codigosBarrasTickets = new ArrayList<>();
     private double totalDevolucion;
 
     private BluetoothConnection connection;
@@ -109,7 +100,7 @@ public class RealizarDevolucion extends AppCompatActivity implements AdaptadorPr
     private BluetoothAdapter bluetoothAdapter;
     private static final int CAMERA_PERMISSION_REQUEST_CODE = 250;
     private UsuarioModel usuario;
-    private boolean allowBackPress=false;
+    private boolean allowBackPress = false;
 
     // Define un ExecutorService para manejar las operaciones en un hilo separado
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
@@ -135,15 +126,13 @@ public class RealizarDevolucion extends AppCompatActivity implements AdaptadorPr
         // Recupera la información del usuario desde la base de datos utilizando el controlador de la base de datos
         usuario = bbddController.obtenerEmpleado(usuarioDNI);
 
-        codigosBarrasTickets= bbddController.obtenerListaCodigosTicket();
-        todosProductosTicket=findViewById(R.id.rv_productos_ticket);
-        productosDevueltos=findViewById(R.id.rv_productos_a_devolver);
+        codigosBarrasTickets = bbddController.obtenerListaCodigosTicket();
+        todosProductosTicket = findViewById(R.id.rv_productos_ticket);
+        productosDevueltos = findViewById(R.id.rv_productos_a_devolver);
 
         productosDevueltos.setLayoutManager(new LinearLayoutManager(RealizarDevolucion.this));
-        adaptadorDevuelto = new AdaptadorProductoDevuelto(listaProductosDevueltos, this,  listaCantidades, this, this, this);
+        adaptadorDevuelto = new AdaptadorProductoDevuelto(listaProductosDevueltos, this, listaCantidades, this, this, this);
         productosDevueltos.setAdapter(adaptadorDevuelto);
-
-
 
 
         List<String> listaCodigosBarras = obtenerListaCodigosTicketDesdeBD();
@@ -158,7 +147,7 @@ public class RealizarDevolucion extends AppCompatActivity implements AdaptadorPr
         id_ticket = nuevoIdBarras;
 
 
-        codigoTicketBuscar=findViewById(R.id.cod_barras_ticket);
+        codigoTicketBuscar = findViewById(R.id.cod_barras_ticket);
         // Crear un ArrayAdapter vacío
         ArrayAdapter<String> adapter = new ArrayAdapter<>(RealizarDevolucion.this, android.R.layout.simple_dropdown_item_1line);
 
@@ -169,9 +158,7 @@ public class RealizarDevolucion extends AppCompatActivity implements AdaptadorPr
         actualizarSugerencias(obtenerTodasLasSugerencias(), adapter);
 
 
-
-
-        totalDevolver=findViewById(R.id.total_a_devolver);
+        totalDevolver = findViewById(R.id.total_a_devolver);
         totalDevolver.setText("0.00");
         totalDevolver.setEnabled(false);
 
@@ -179,7 +166,7 @@ public class RealizarDevolucion extends AppCompatActivity implements AdaptadorPr
         buscarTicket = findViewById(R.id.buscar_ticket);
 
         realizarDevolucion = findViewById(R.id.realizar_devolucion);
-        cancelarDevolucion= findViewById(R.id.cancelar_devolucion);
+        cancelarDevolucion = findViewById(R.id.cancelar_devolucion);
 
         connection = null;
         printer = null;
@@ -188,12 +175,12 @@ public class RealizarDevolucion extends AppCompatActivity implements AdaptadorPr
         realizarDevolucion.setVisibility(View.INVISIBLE);
 
         cancelarDevolucion.setOnClickListener(new View.OnClickListener() {
-           @Override
-           public void onClick(View v) {
-               Intent i = new Intent(RealizarDevolucion.this, GeneralVendedor.class);
-               i.putExtra("usuarioDNI", usuario.getDni());
-               startActivity(i);
-           }
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(RealizarDevolucion.this, GeneralVendedor.class);
+                i.putExtra("usuarioDNI", usuario.getDni());
+                startActivity(i);
+            }
         });
         realizarDevolucion.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -201,7 +188,7 @@ public class RealizarDevolucion extends AppCompatActivity implements AdaptadorPr
                 if (totalDevolucion > 0) {
                     tramitarDevolucion();
                 } else {
-                   Toast.makeText(RealizarDevolucion.this, "Debe seleccionar algun producto para realizar una devolucion", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(RealizarDevolucion.this, "Debe seleccionar algun producto para realizar una devolucion", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -229,7 +216,7 @@ public class RealizarDevolucion extends AppCompatActivity implements AdaptadorPr
         buscarTicket.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               codigoEscaneado = codigoTicketBuscar.getText().toString();
+                codigoEscaneado = codigoTicketBuscar.getText().toString();
                 try {
                     verificarCodigoEscaneado();
                 } catch (ParseException e) {
@@ -239,16 +226,16 @@ public class RealizarDevolucion extends AppCompatActivity implements AdaptadorPr
             }
         });
         escanearTicket.setOnClickListener(new View.OnClickListener() {
-           @Override
-           public void onClick(View v){
-               if (ContextCompat.checkSelfPermission(RealizarDevolucion.this, Manifest.permission.CAMERA)
-                       != PackageManager.PERMISSION_GRANTED) {
-                   ActivityCompat.requestPermissions(RealizarDevolucion.this,
-                           new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSION_REQUEST_CODE);
-               } else {
-                   iniciarEscaner();
-               }
-           }
+            @Override
+            public void onClick(View v) {
+                if (ContextCompat.checkSelfPermission(RealizarDevolucion.this, Manifest.permission.CAMERA)
+                        != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(RealizarDevolucion.this,
+                            new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSION_REQUEST_CODE);
+                } else {
+                    iniciarEscaner();
+                }
+            }
         });
 
 
@@ -264,14 +251,14 @@ public class RealizarDevolucion extends AppCompatActivity implements AdaptadorPr
     }
 
 
-    private void tramitarDevolucion(){
+    private void tramitarDevolucion() {
 
-        entregado=0;
-        devuelto=totalDevolucion;
+        entregado = 0;
+        devuelto = totalDevolucion;
         ticket = new TicketModel(id_ticket, totalDevolucion, true, false, entregado, devuelto, usuario.getIdTienda());
         if (bbddController.insertarTicket(ticket)) {
-            for (ProductoModel producto : listaProductosTicket){
-                if (producto.getCantidad() >0) {
+            for (ProductoModel producto : listaProductosTicket) {
+                if (producto.getCantidad() > 0) {
                     Producto_TicketModel nuevoProductoTicket = new Producto_TicketModel(producto.getCodigoBarras(), id_ticket, producto.getCantidad());
 
                     if (bbddController.insertarProductoTicket(nuevoProductoTicket)) {
@@ -281,8 +268,8 @@ public class RealizarDevolucion extends AppCompatActivity implements AdaptadorPr
                     }
                 }
             }
-            for (ProductoModel productoDevuelto : listaProductosDevueltos){
-                if(bbddController.incrementarVecesDevuelto(productoDevuelto.getCodigoBarras(), productoDevuelto.getCantidad())) {
+            for (ProductoModel productoDevuelto : listaProductosDevueltos) {
+                if (bbddController.incrementarVecesDevuelto(productoDevuelto.getCodigoBarras(), productoDevuelto.getCantidad())) {
                     Log.d(TAG, "Veces devueltas del producto actualizado: " + productoDevuelto.getCodigoBarras());
                 }
                 if (bbddController.modificarStockProducto(productoDevuelto.getCodigoBarras(), -productoDevuelto.getCantidad())) {
@@ -328,7 +315,6 @@ public class RealizarDevolucion extends AppCompatActivity implements AdaptadorPr
         // Ya se tienen todos los permisos necesarios
         conectarImpresora();
     }
-
 
 
     private boolean conectarImpresora() {
@@ -535,7 +521,8 @@ public class RealizarDevolucion extends AppCompatActivity implements AdaptadorPr
                         checkBluetoothConnectPermission();
                         break;
                 }
-            } catch (EscPosEncodingException | EscPosBarcodeException | EscPosParserException | EscPosConnectionException e) {
+            } catch (EscPosEncodingException | EscPosBarcodeException | EscPosParserException |
+                     EscPosConnectionException e) {
                 e.printStackTrace();
             }
         } else {
@@ -567,6 +554,7 @@ public class RealizarDevolucion extends AppCompatActivity implements AdaptadorPr
             }
         }
     }
+
     private void actualizarSugerencias(List<String> sugerencias, ArrayAdapter<String> adapter) {
         // Limpiar el adaptador y agregar las nuevas sugerencias
         adapter.clear();
@@ -593,7 +581,6 @@ public class RealizarDevolucion extends AppCompatActivity implements AdaptadorPr
     }
 
 
-
     private void verificarCodigoEscaneado() throws ParseException {
         // Realizar una consulta a la base de datos para verificar la existencia del ticket correspondiente al código escaneado
         boolean ticketExistente = bbddController.verificarExistenciaTicket(String.valueOf(codigoEscaneado), usuario.getIdTienda());
@@ -605,11 +592,11 @@ public class RealizarDevolucion extends AppCompatActivity implements AdaptadorPr
             if (!fecha_limite.before(fecha_actual)) {
                 cargarProductos();
                 realizarDevolucion.setVisibility(View.VISIBLE);
-            }else{
+            } else {
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(RealizarDevolucion.this);
                 builder.setTitle("Ticket vencido");
-                builder.setMessage("Ya no se puede realizar la devolución al haber superado la fecha limite de devolucion : "+fecha_limite.toString());
+                builder.setMessage("Ya no se puede realizar la devolución al haber superado la fecha limite de devolucion : " + fecha_limite.toString());
                 builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -656,7 +643,6 @@ public class RealizarDevolucion extends AppCompatActivity implements AdaptadorPr
         adaptadorProductoTicket = new AdaptadorProductoTicket(RealizarDevolucion.this, listaProductosTicket, RealizarDevolucion.this);
         todosProductosTicket.setAdapter(adaptadorProductoTicket);
     }
-
 
 
     @Override
@@ -711,7 +697,7 @@ public class RealizarDevolucion extends AppCompatActivity implements AdaptadorPr
                         }
                     }
                     listaProductosDevueltos.add(productoDevuelto);
-                    productoExistente=true;
+                    productoExistente = true;
                     break;
 
 
@@ -855,7 +841,6 @@ public class RealizarDevolucion extends AppCompatActivity implements AdaptadorPr
 
 
     }
-
 
 
     @Override

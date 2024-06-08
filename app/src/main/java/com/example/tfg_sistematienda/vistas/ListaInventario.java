@@ -1,45 +1,36 @@
 package com.example.tfg_sistematienda.vistas;
 
 
-
-import android.os.Bundle;
-
-import androidx.activity.EdgeToEdge;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
-
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.os.Environment;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.tfg_sistematienda.Adaptadores.AdaptadorProducto;
+import com.example.tfg_sistematienda.R;
 import com.example.tfg_sistematienda.controladores.BBDDController;
 import com.example.tfg_sistematienda.modelos.ProductoModel;
 import com.example.tfg_sistematienda.modelos.UsuarioModel;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
-
-import com.example.tfg_sistematienda.R;
 import com.journeyapps.barcodescanner.CaptureActivity;
 
 import org.apache.poi.ss.usermodel.Cell;
@@ -57,30 +48,28 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * Clase para mostrar la lista de productos en el inventario y generar un archivo Excel con la información.
+ */
 public class ListaInventario extends AppCompatActivity {
 
-
+    static final String TAG = "ScanBarcodeActivity";
     private static final int CAMERA_PERMISSION_REQUEST_CODE = 1;
     private static final int WRITE_EXTERNAL_STORAGE_PERMISSION_REQUEST_CODE = 2;
     private static final int REQUEST_EXTERNAL_STORAGE = 18;
-
-    static final String TAG = "ScanBarcodeActivity";
     private static final int MAX_CELL_LENGTH = 32767;
     private boolean allowBackPress = false;
     private ImageButton botonEscaneo;
     private String codigoEscaneado;
-
     private EditText codigoBuscar;
-
     private RecyclerView recyclerView;
     private AdaptadorProducto adaptadorProducto;
     private List<ProductoModel> listaProductos;
     private ImageButton generarExcel, bajoStock, volverMenu;
     // Modelo del usuario que está utilizando la aplicación
     private UsuarioModel usuario;
+    private BBDDController bbddController = new BBDDController();
 
-
-    private BBDDController bbddController= new BBDDController();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -107,7 +96,6 @@ public class ListaInventario extends AppCompatActivity {
         cargarProductos();
 
         adaptadorProducto = new AdaptadorProducto(this, listaProductos);
-        adaptadorProducto = new AdaptadorProducto(this, listaProductos);
         recyclerView.setAdapter(adaptadorProducto);
 
         codigoBuscar = findViewById(R.id.et_codigo_buscar);
@@ -119,6 +107,7 @@ public class ListaInventario extends AppCompatActivity {
         volverMenu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // Insertar log de acceso al menú reponedor
                 bbddController.insertarLog("Acceso menu reponedor", LocalDateTime.now(), usuario.getDni());
                 Intent intent = new Intent(ListaInventario.this, GeneralReponedor.class);
                 intent.putExtra("usuarioDNI", usuarioDNI);
@@ -129,21 +118,23 @@ public class ListaInventario extends AppCompatActivity {
         generarExcel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                      try {
-                        generarExcel();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                try {
+                    generarExcel();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         });
 
 
         codigoBuscar.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
 
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
 
             @Override
             public void afterTextChanged(Editable s) {
@@ -172,7 +163,6 @@ public class ListaInventario extends AppCompatActivity {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, WRITE_EXTERNAL_STORAGE_PERMISSION_REQUEST_CODE);
         }
-
     }
 
     @Override
@@ -184,6 +174,9 @@ public class ListaInventario extends AppCompatActivity {
         }
     }
 
+    /**
+     * Método para enviar una notificación por correo electrónico sobre los productos con stock bajo.
+     */
     private void enviarNotificacionStockBajo() {
         List<ProductoModel> productosBajoStock = new ArrayList<>();
         for (ProductoModel producto : listaProductos) {
@@ -201,19 +194,25 @@ public class ListaInventario extends AppCompatActivity {
                 mensaje.append("Descripción: ").append(producto.getDescripcion()).append("\n");
                 mensaje.append("Cantidad Stock: ").append(producto.getCantidadStock()).append("\n\n");
             }
+            // Insertar log de notificación de stock bajo
             bbddController.insertarLog("Notifica bajo stock", LocalDateTime.now(), usuario.getDni());
+            // Enviar correo electrónico
             enviarCorreo("ioanbota2002@outlook.es", "Notificación de Stock Bajo", mensaje.toString());
         } else {
             Toast.makeText(this, "No hay productos con stock bajo.", Toast.LENGTH_SHORT).show();
         }
     }
 
+    /**
+     * Método para enviar un correo electrónico.
+     */
     private void enviarCorreo(String destinatario, String asunto, String mensaje) {
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("message/rfc822");
         intent.putExtra(Intent.EXTRA_EMAIL, new String[]{destinatario});
         intent.putExtra(Intent.EXTRA_SUBJECT, asunto);
         intent.putExtra(Intent.EXTRA_TEXT, mensaje);
+        // Insertar log de envío de correo
         bbddController.insertarLog("Envio de correo", LocalDateTime.now(), usuario.getDni());
 
         try {
@@ -223,11 +222,18 @@ public class ListaInventario extends AppCompatActivity {
         }
     }
 
+    /**
+     * Método para cargar la lista de productos desde la base de datos y mostrarla en el RecyclerView.
+     */
     private void cargarProductos() {
         listaProductos = bbddController.obtenerListaProductos(usuario.getIdTienda());
     }
 
-
+    /**
+     * Método para filtrar los productos por código de barras y actualizar la lista mostrada en el RecyclerView.
+     *
+     * @param codigo El código de barras para filtrar los productos.
+     */
     private void filtrarProductosPorCodigo(String codigo) {
         if (codigo.isEmpty()) {
             cargarProductos(); // Cargar todos los productos nuevamente
@@ -243,6 +249,11 @@ public class ListaInventario extends AppCompatActivity {
         }
     }
 
+    /**
+     * Método para generar un archivo Excel con la información de los productos.
+     *
+     * @throws IOException Si hay un error al escribir en el archivo.
+     */
     private void generarExcel() throws IOException {
         File directory = new File(this.getExternalFilesDir(null), "MiCarpeta");
         if (!directory.exists()) {
@@ -306,7 +317,9 @@ public class ListaInventario extends AppCompatActivity {
         Toast.makeText(this, "Archivo Excel generado en " + file.getAbsolutePath(), Toast.LENGTH_LONG).show();
     }
 
-
+    /**
+     * Método para solicitar permiso de almacenamiento externo.
+     */
     private void requestStoragePermission() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -317,6 +330,9 @@ public class ListaInventario extends AppCompatActivity {
         }
     }
 
+    /**
+     * Método para iniciar el escáner de código de barras.
+     */
     private void iniciarEscaner() {
         IntentIntegrator integrator = new IntentIntegrator(this);
         integrator.setCaptureActivity(CaptureActivity.class);
@@ -348,7 +364,6 @@ public class ListaInventario extends AppCompatActivity {
         }
     }
 
-
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -373,7 +388,4 @@ public class ListaInventario extends AppCompatActivity {
                 break;
         }
     }
-
-
-
 }

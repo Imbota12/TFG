@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.tfg_sistematienda.R;
 import com.example.tfg_sistematienda.controladores.BBDDController;
-import com.example.tfg_sistematienda.modelos.LogModel;
 import com.example.tfg_sistematienda.modelos.ProductoModel;
 
 import java.util.ArrayList;

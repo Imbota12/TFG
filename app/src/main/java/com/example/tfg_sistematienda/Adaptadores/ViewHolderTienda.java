@@ -11,8 +11,9 @@ import com.example.tfg_sistematienda.R;
 
 public class ViewHolderTienda extends RecyclerView.ViewHolder {
 
-public TextView nombreTienda, direccionTienda, telefonoTienda, cifTienda;
-public ImageButton eliminarTienda, llamarTienda;
+    public TextView nombreTienda, direccionTienda, telefonoTienda, cifTienda;
+    public ImageButton eliminarTienda, llamarTienda;
+
     public ViewHolderTienda(@NonNull View itemView) {
         super(itemView);
         nombreTienda = itemView.findViewById(R.id.nombre_tienda);

@@ -15,11 +15,9 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -56,7 +54,6 @@ import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 import com.journeyapps.barcodescanner.CaptureActivity;
 
-import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.time.LocalDateTime;
@@ -71,6 +68,9 @@ import java.util.concurrent.Executors;
 public class RealizaVenta extends AppCompatActivity implements AdaptadorProductosVenta.OnProductoSeleccionadoListener, AdaptadorProductosComprados.OnProductRemovedListener, AdaptadorProductosComprados.OnPriceUpdateListener, AdaptadorProductosComprados.OnQuantityChangedListener, AdaptadorProductosComprados.OnQuantityChangedListenerUp {
 
     private static final int REQUEST_ENABLE_BT = 27;
+    private static final int CAMERA_PERMISSION_REQUEST_CODE = 150;
+    // Define un ExecutorService para manejar las operaciones en un hilo separado
+    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
     private RecyclerView todosProductos, productosComprados;
     private EditText codigoBuscar;
     private ImageButton escanearProducto, realizarVenta, cancelarVenta;
@@ -84,20 +84,15 @@ public class RealizaVenta extends AppCompatActivity implements AdaptadorProducto
     private BBDDController bbddController = new BBDDController();
     private TicketModel ticket;
     private double totalVenta;
-
     private double entregado, devuelto;
     private EditText aPagar, aRecoger, aDevolver;
     private ImageButton tarjeta, efectivo, realizarPago, comprobar;
     private TextView tx_Pagar, tx_Recoger, tx_Devolver, eu_Pagar, eu_Recoger, eu_Devolver;
-    private static final int CAMERA_PERMISSION_REQUEST_CODE = 150;
-
     private BluetoothConnection connection;
     private EscPosPrinter printer;
     private BluetoothAdapter bluetoothAdapter;
     private UsuarioModel usuario;
-    private boolean allowBackPress=false;
-    // Define un ExecutorService para manejar las operaciones en un hilo separado
-    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
+    private boolean allowBackPress = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -160,7 +155,6 @@ public class RealizaVenta extends AppCompatActivity implements AdaptadorProducto
         id_ticket = nuevoIdBarras;
 
 
-
         codigoBuscar.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -202,8 +196,6 @@ public class RealizaVenta extends AppCompatActivity implements AdaptadorProducto
         });
 
 
-
-
     }
 
     @Override
@@ -224,7 +216,7 @@ public class RealizaVenta extends AppCompatActivity implements AdaptadorProducto
 
                 // Insertar el producto en la base de datos
                 if (bbddController.insertarProductoTicket(nuevoProductoTicket)) {
-                    if(bbddController.incrementarVecesComprado(nuevoProductoTicket.getCodigoBarras_producto(), nuevoProductoTicket.getCantidad())) {
+                    if (bbddController.incrementarVecesComprado(nuevoProductoTicket.getCodigoBarras_producto(), nuevoProductoTicket.getCantidad())) {
                         Log.d(TAG, "Veces compradas del producto actualizado: " + nuevoProductoTicket.getCodigoBarras_producto());
                     }
                     // Modificar el stock del producto en la base de datos
@@ -423,8 +415,7 @@ public class RealizaVenta extends AppCompatActivity implements AdaptadorProducto
     }
 
 
-
-    private void abrirDialogoPago(double totalVenta){
+    private void abrirDialogoPago(double totalVenta) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("REALIZAR PAGO");
 
@@ -432,24 +423,24 @@ public class RealizaVenta extends AppCompatActivity implements AdaptadorProducto
         View dialogView = LayoutInflater.from(this).inflate(R.layout.pago, null);
         builder.setView(dialogView);
 
-        aPagar=dialogView.findViewById(R.id.a_pagar);
-        aRecoger=dialogView.findViewById(R.id.entregado);
-        aDevolver=dialogView.findViewById(R.id.a_devolver);
+        aPagar = dialogView.findViewById(R.id.a_pagar);
+        aRecoger = dialogView.findViewById(R.id.entregado);
+        aDevolver = dialogView.findViewById(R.id.a_devolver);
 
-        tarjeta=dialogView.findViewById(R.id.pago_tarjeta);
-        efectivo=dialogView.findViewById(R.id.pago_efectivo);
+        tarjeta = dialogView.findViewById(R.id.pago_tarjeta);
+        efectivo = dialogView.findViewById(R.id.pago_efectivo);
 
-        realizarPago=dialogView.findViewById(R.id.tramitar_pago);
+        realizarPago = dialogView.findViewById(R.id.tramitar_pago);
         realizarPago.setVisibility(View.INVISIBLE);
 
-        tx_Pagar=dialogView.findViewById(R.id.tx_apagar);
-        tx_Recoger=dialogView.findViewById(R.id.tx_entregado);
-        tx_Devolver=dialogView.findViewById(R.id.tx_adevolver);
+        tx_Pagar = dialogView.findViewById(R.id.tx_apagar);
+        tx_Recoger = dialogView.findViewById(R.id.tx_entregado);
+        tx_Devolver = dialogView.findViewById(R.id.tx_adevolver);
 
-        eu_Pagar=dialogView.findViewById(R.id.eu_pagar);
-        eu_Recoger=dialogView.findViewById(R.id.eu_entre);
-        eu_Devolver=dialogView.findViewById(R.id.eu_devo);
-        comprobar=dialogView.findViewById(R.id.comprobar);
+        eu_Pagar = dialogView.findViewById(R.id.eu_pagar);
+        eu_Recoger = dialogView.findViewById(R.id.eu_entre);
+        eu_Devolver = dialogView.findViewById(R.id.eu_devo);
+        comprobar = dialogView.findViewById(R.id.comprobar);
 
 
         aPagar.setText(String.valueOf(totalVenta));
@@ -486,50 +477,50 @@ public class RealizaVenta extends AppCompatActivity implements AdaptadorProducto
                 aRecoger.setText(String.valueOf(totalVenta));
                 aDevolver.setText("0,00");
 
-                entregado=Double.valueOf(aRecoger.getText().toString());
-                devuelto=0.00;
+                entregado = Double.valueOf(aRecoger.getText().toString());
+                devuelto = 0.00;
             }
         });
 
         efectivo.setOnClickListener(new View.OnClickListener() {
-           @Override
-           public void onClick(View v) {
-               tx_Recoger.setVisibility(View.VISIBLE);
-               tx_Devolver.setVisibility(View.VISIBLE);
-               eu_Recoger.setVisibility(View.VISIBLE);
-               eu_Devolver.setVisibility(View.VISIBLE);
-               aDevolver.setEnabled(false);
-               aRecoger.setVisibility(View.VISIBLE);
-               aDevolver.setVisibility(View.VISIBLE);
+            @Override
+            public void onClick(View v) {
+                tx_Recoger.setVisibility(View.VISIBLE);
+                tx_Devolver.setVisibility(View.VISIBLE);
+                eu_Recoger.setVisibility(View.VISIBLE);
+                eu_Devolver.setVisibility(View.VISIBLE);
+                aDevolver.setEnabled(false);
+                aRecoger.setVisibility(View.VISIBLE);
+                aDevolver.setVisibility(View.VISIBLE);
 
 
-               aRecoger.addTextChangedListener(new TextWatcher() {
-                   @Override
-                   public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                       // No necesitas implementar nada aquí
-                   }
+                aRecoger.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                        // No necesitas implementar nada aquí
+                    }
 
-                   @Override
-                   public void onTextChanged(CharSequence s, int start, int before, int count) {
-                       // No necesitas implementar nada aquí
-                   }
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+                        // No necesitas implementar nada aquí
+                    }
 
-                   @Override
-                   public void afterTextChanged(Editable s) {
-                      comprobar.setVisibility(View.VISIBLE);
-                   }
-               });
+                    @Override
+                    public void afterTextChanged(Editable s) {
+                        comprobar.setVisibility(View.VISIBLE);
+                    }
+                });
 
-               comprobar.setOnClickListener(new View.OnClickListener() {
-                   @Override
-                   public void onClick(View v) {
-                       entregado=Double.valueOf(aRecoger.getText().toString());
-                       calcularCambio(totalVenta, entregado);
+                comprobar.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        entregado = Double.valueOf(aRecoger.getText().toString());
+                        calcularCambio(totalVenta, entregado);
 
-                   }
-               });
+                    }
+                });
 
-           }
+            }
         });
 
         realizarPago.setOnClickListener(new View.OnClickListener() {
@@ -612,7 +603,7 @@ public class RealizaVenta extends AppCompatActivity implements AdaptadorProducto
                 }
                 if (productoEscaneado != null) {
                     // Verificar si hay suficiente stock disponible
-                    if ( productoEscaneado.getCantidadStock() <= productoEscaneado.getCantidad() ) {
+                    if (productoEscaneado.getCantidadStock() <= productoEscaneado.getCantidad()) {
                         // Mostrar un AlertDialog de advertencia
                         AlertDialog.Builder builder = new AlertDialog.Builder(this);
                         builder.setTitle("Alerta");
@@ -729,19 +720,19 @@ public class RealizaVenta extends AppCompatActivity implements AdaptadorProducto
     public void onProductoSeleccionado(ProductoModel producto) {
 
         // Verificar si hay suficiente stock disponible
-        if ( producto.getCantidadStock() <= producto.getCantidad() ) {
-                // Mostrar un AlertDialog de advertencia
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setTitle("Alerta");
-                builder.setMessage("No hay suficiente stock disponible para este producto.");
-                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        // Cerrar el diálogo o ejecutar alguna acción adicional si es necesario
-                    }
-                });
-                builder.show();
-                return; // Detener el proceso
-            }
+        if (producto.getCantidadStock() <= producto.getCantidad()) {
+            // Mostrar un AlertDialog de advertencia
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Alerta");
+            builder.setMessage("No hay suficiente stock disponible para este producto.");
+            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    // Cerrar el diálogo o ejecutar alguna acción adicional si es necesario
+                }
+            });
+            builder.show();
+            return; // Detener el proceso
+        }
 
 
         // Buscar si el producto ya está en la lista de productos comprados
@@ -781,7 +772,6 @@ public class RealizaVenta extends AppCompatActivity implements AdaptadorProducto
         adaptadorComprados.notifyDataSetChanged();
         precioTotal.setText(Double.toString(calcularPrecioTotal(listaCantidades)));
     }
-
 
 
     private double calcularPrecioTotal(List<Producto_TicketModel> listaCantidades) {

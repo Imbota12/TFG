@@ -19,7 +19,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.tfg_sistematienda.R;
 import com.example.tfg_sistematienda.controladores.BBDDController;
-import com.example.tfg_sistematienda.modelos.ProductoModel;
 import com.example.tfg_sistematienda.modelos.TiendaModel;
 
 import java.util.List;
@@ -39,7 +38,6 @@ public class AdaptadorTienda extends RecyclerView.Adapter<ViewHolderTienda> {
     }
 
 
-
     @NonNull
     @Override
     public ViewHolderTienda onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -56,11 +54,11 @@ public class AdaptadorTienda extends RecyclerView.Adapter<ViewHolderTienda> {
         holder.cifTienda.setText(tienda.getCif());
 
         holder.eliminarTienda.setOnClickListener(new View.OnClickListener() {
-           @Override
-           public void onClick(View v) {
-               tiendaSeleccionada = tienda;
-               abrirDialogoEliminarTienda(tiendaSeleccionada);
-           }
+            @Override
+            public void onClick(View v) {
+                tiendaSeleccionada = tienda;
+                abrirDialogoEliminarTienda(tiendaSeleccionada);
+            }
         });
 
         holder.llamarTienda.setOnClickListener(new View.OnClickListener() {
@@ -145,7 +143,7 @@ public class AdaptadorTienda extends RecyclerView.Adapter<ViewHolderTienda> {
                 String nuevaDireccion = direccion.getText().toString();
                 String nuevoTelefono = telefono.getText().toString();
 
-                if(comprobarDatosTienda()){
+                if (comprobarDatosTienda()) {
                     // Actualizar los datos del producto en la BBDD
                     if (bbddController.modificarTienda(cif.getText().toString(), nuevoNombre, nuevaDireccion, nuevoTelefono)) {
                         Toast.makeText(context, "Tienda modificada correctamente", Toast.LENGTH_SHORT).show();
@@ -164,9 +162,9 @@ public class AdaptadorTienda extends RecyclerView.Adapter<ViewHolderTienda> {
                     // Cerrar el diálogo
                     dialog.dismiss();
                 } else {
-                // Aquí puedes añadir algún mensaje de error si quieres
-                Toast.makeText(context, "Datos inválidos. Por favor, verifica los campos.", Toast.LENGTH_SHORT).show();
-            }
+                    // Aquí puedes añadir algún mensaje de error si quieres
+                    Toast.makeText(context, "Datos inválidos. Por favor, verifica los campos.", Toast.LENGTH_SHORT).show();
+                }
 
             }
         });
@@ -205,7 +203,7 @@ public class AdaptadorTienda extends RecyclerView.Adapter<ViewHolderTienda> {
             telefono.setError("Campo vacío");
             datosValidos = false;
         }
-        if (telefono.getText().length()<9){
+        if (telefono.getText().length() < 9) {
             telefono.setError("Mínimo 9 dígitos");
             datosValidos = false;
         }
@@ -226,18 +224,16 @@ public class AdaptadorTienda extends RecyclerView.Adapter<ViewHolderTienda> {
     }
 
 
-
-
-    private void abrirDialogoEliminarTienda(final TiendaModel tiendaSeleccionada){
+    private void abrirDialogoEliminarTienda(final TiendaModel tiendaSeleccionada) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setMessage("¿Estás seguro de que deseas borrar esta tienda?");
         builder.setPositiveButton("Sí", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 // Borrar el producto de la base de datos y del RecyclerView
-                if (bbddController.borrarTienda(tiendaSeleccionada.getCif())){
+                if (bbddController.borrarTienda(tiendaSeleccionada.getCif())) {
                     Toast.makeText(context, "Tienda borrada correctamente", Toast.LENGTH_SHORT).show();
-                }else{
+                } else {
                     Toast.makeText(context, "Error al intentar borrar la tienda", Toast.LENGTH_SHORT).show();
                 }
                 listaTiendas.remove(tiendaSeleccionada);

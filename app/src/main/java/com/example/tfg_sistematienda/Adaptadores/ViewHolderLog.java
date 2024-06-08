@@ -11,6 +11,7 @@ import com.example.tfg_sistematienda.R;
 public class ViewHolderLog extends RecyclerView.ViewHolder {
 
     public TextView fechaLog, accionLog, nombreLog, dniLog, telefonoLog, tipoLog, tiendaLog;
+
     public ViewHolderLog(@NonNull View itemView) {
         super(itemView);
 

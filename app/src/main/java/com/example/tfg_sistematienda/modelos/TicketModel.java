@@ -105,5 +105,8 @@ public class TicketModel {
     public String getId_ticket() {
         return id_ticket;
     }
-    public void setId_ticket(String id_ticket) {this.id_ticket = id_ticket;}
+
+    public void setId_ticket(String id_ticket) {
+        this.id_ticket = id_ticket;
+    }
 }

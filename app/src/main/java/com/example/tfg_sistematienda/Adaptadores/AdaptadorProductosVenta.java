@@ -26,23 +26,16 @@ public class AdaptadorProductosVenta extends RecyclerView.Adapter<ViewHolderProd
     private ProductoModel productoSeleccionado;
     private BBDDController bbddController = new BBDDController();
     private ImageView imagenEditar;
-
     private EditText nombre;
     private EditText descripcion;
 
     private OnProductoSeleccionadoListener productoSeleccionadoListener;
-
-    public interface OnProductoSeleccionadoListener {
-        void onProductoSeleccionado(ProductoModel producto);
-    }
 
     public AdaptadorProductosVenta(Context context, List<ProductoModel> listaProductos, OnProductoSeleccionadoListener listener) {
         this.listaProductos = listaProductos;
         this.context = context;
         this.productoSeleccionadoListener = listener;
     }
-
-
 
     @NonNull
     @Override
@@ -69,17 +62,17 @@ public class AdaptadorProductosVenta extends RecyclerView.Adapter<ViewHolderProd
         }
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    // Actualizar el producto seleccionado
-                    productoSeleccionado = listaProductos.get(position);
+            @Override
+            public void onClick(View v) {
+                // Actualizar el producto seleccionado
+                productoSeleccionado = listaProductos.get(position);
 
-                    // Notificar al listener que se ha seleccionado un producto
-                    if (productoSeleccionadoListener != null) {
-                        productoSeleccionadoListener.onProductoSeleccionado(productoSeleccionado);
-                    }
+                // Notificar al listener que se ha seleccionado un producto
+                if (productoSeleccionadoListener != null) {
+                    productoSeleccionadoListener.onProductoSeleccionado(productoSeleccionado);
                 }
-            });
+            }
+        });
     }
 
     public void actualizarListaTodos(List<ProductoModel> nuevaLista) {
@@ -88,9 +81,13 @@ public class AdaptadorProductosVenta extends RecyclerView.Adapter<ViewHolderProd
         notifyDataSetChanged();
     }
 
-
     @Override
     public int getItemCount() {
         return listaProductos.size();
+    }
+
+
+    public interface OnProductoSeleccionadoListener {
+        void onProductoSeleccionado(ProductoModel producto);
     }
 }

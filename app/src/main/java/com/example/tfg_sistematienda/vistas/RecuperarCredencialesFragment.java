@@ -13,7 +13,6 @@ import android.widget.TextView;
 
 import androidx.fragment.app.DialogFragment;
 
-import com.example.tfg_sistematienda.MainActivity;
 import com.example.tfg_sistematienda.R;
 import com.example.tfg_sistematienda.controladores.BBDDController;
 import com.example.tfg_sistematienda.modelos.UsuarioModel;
@@ -24,7 +23,8 @@ import java.time.LocalDateTime;
 
 public class RecuperarCredencialesFragment extends DialogFragment {
 
-    private BBDDController bbddController= new BBDDController();
+    private BBDDController bbddController = new BBDDController();
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.popup_recuperarcredenciales, container, false);
@@ -62,8 +62,8 @@ public class RecuperarCredencialesFragment extends DialogFragment {
             }
         };
 
-        nombre.setFilters(new InputFilter[] { filter });
-        apellidos.setFilters(new InputFilter[] { filter });
+        nombre.setFilters(new InputFilter[]{filter});
+        apellidos.setFilters(new InputFilter[]{filter});
 
         InputFilter dniFilter = new InputFilter() {
             @Override
@@ -97,7 +97,7 @@ public class RecuperarCredencialesFragment extends DialogFragment {
         };
 
 // Establece el InputFilter en el EditText de DNI
-        dni.setFilters(new InputFilter[] { dniFilter });
+        dni.setFilters(new InputFilter[]{dniFilter});
 
         // Define el InputFilter para el teléfono
         InputFilter phoneFilter = new InputFilter() {
@@ -126,7 +126,7 @@ public class RecuperarCredencialesFragment extends DialogFragment {
         };
 
 // Establece el InputFilter en el EditText de teléfono
-        telefono.setFilters(new InputFilter[] { phoneFilter });
+        telefono.setFilters(new InputFilter[]{phoneFilter});
 
         buscar.setOnClickListener(v -> buscarUsuario(nombre, apellidos, dni, telefono, usuario, resetContra));
         resetContra.setOnClickListener(v -> mostrarCamposRestablecerContrasena(textoC, textoCr, contra, contraVeri, cambiarContra));
@@ -185,7 +185,6 @@ public class RecuperarCredencialesFragment extends DialogFragment {
                 .setPositiveButton("Aceptar", (dialog, which) -> dialog.dismiss())
                 .show();
     }
-
 
 
     @Override

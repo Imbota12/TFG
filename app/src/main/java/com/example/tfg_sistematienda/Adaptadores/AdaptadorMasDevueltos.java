@@ -25,6 +25,7 @@ public class AdaptadorMasDevueltos extends RecyclerView.Adapter<ViewHolderMasDev
         this.masDevueltos = masDevueltos;
         this.context = context;
     }
+
     @NonNull
     @Override
     public ViewHolderMasDevueltos onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
