@@ -27,7 +27,10 @@ POSPro es una aplicación de punto de venta físico diseñada para facilitar las
 4. En caso de ser un vendedor, tendrás las opciones de realizar una venta o una devolucion
 5. Compruebe el manual de usuario para tener toda la información y los pasos a seguir para el funcionamiento de la aplicación. [MANUAL AQUÍ](https://drive.google.com/file/d/1KPvSZZvpYvaTIpqkGWKkHD23IQZF_51-/view?usp=sharing)
 
+<h3 align="center">DESCARGA APK</h3>
 
+Si quieres descargar el apk de la aplicación, podrás hacerlo directamente desde [aquí](https://drive.google.com/file/d/1Xv9NZ92tCMbU7womZ_I6Gm3p4ea_djqN/view?usp=sharing). Recuerde que deberá tener instalado en su dispositivo PostgreSQL para que se pueda ejecutar la aplicación correctamente.
+   
 
 <h3 align="center">Capturas de Pantalla </h3>
 
