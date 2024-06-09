@@ -25,7 +25,7 @@ POSPro es una aplicación de punto de venta físico diseñada para facilitar las
 2. En caso de ser un administrador tendrás las opciones de añadir nueva tienda, contratar empleado, estadisticas de productos, comprobar logs, administrar tiendas, administrar empleados y comprobar los ingresos
 3. En caso de ser un reponedor, tendrás las opciones de añadir un nuevo producto a la tienda, o gestionar la lista de los productos pudiendo modificar el producto, modificar su stock, imprimir su codigo de barras o eliminar el producto
 4. En caso de ser un vendedor, tendrás las opciones de realizar una venta o una devolucion
-5. Compruebe el manual de usuario para tener toda la información y los pasos a seguir para el funcionamiento de la aplicación
+5. Compruebe el manual de usuario para tener toda la información y los pasos a seguir para el funcionamiento de la aplicación. [MANUAL AQUÍ](https://drive.google.com/file/d/1KPvSZZvpYvaTIpqkGWKkHD23IQZF_51-/view?usp=sharing)
 
 
 
