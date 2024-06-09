@@ -66,5 +66,6 @@ A continuación se muestran algunas capturas de pantalla de la aplicación POSPr
 ![Screenshot_2024-06-09-01-15-47-822_com example tfg_sistematienda](https://github.com/Imbota12/TFG/assets/71496093/1b828aec-55a6-4f10-99cb-593c77fd27fb)
 
 
-<h3 align="center">Video resumen</h3>
-Para obtener una visión general de la aplicación POSPro, consulta nuestro vídeo resumen en este enlace.
+<h3 align="center">Video Resumen</h3>
+
+Para obtener una visión general de la aplicación POSPro, consulta nuestro vídeo resumen en este [enlace](https://www.youtube.com/watch?v=example).
