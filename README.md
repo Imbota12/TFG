@@ -1,22 +1,40 @@
-POSPro
+![gif-de-saudação](https://github.com/Imbota12/TFG/assets/71496093/81a71eaf-337f-43b4-8554-4a8d429d9d51)
+
+<h1 align="left"> Saludos, Yo soy Ioan y bienvenido a mi proyecto </h1>
 
 
-Descripción
+
+<h2 align="center"> POSPro </h2>
+
+
+
+<div align="center">
+    <img src="https://github.com/Imbota12/TFG/assets/71496093/87840302-baf5-494b-8dbb-c8aeed173161" width="200">
+</div>
+
+
+
+
+
 POSPro es una aplicación de punto de venta físico diseñada para facilitar las operaciones de ventas en negocios minoristas. Esta aplicación proporciona una interfaz intuitiva y fácil de usar para gestionar inventario, realizar ventas y generar informes.
 
 
-Tutorial de Uso
-1.	Inicio de Sesión: Abre la aplicación POSPro e inicia sesión con tus credenciales de usuario.
-2.	Gestión de Inventario: Desde el menú principal, accede a la sección de inventario para agregar, modificar o eliminar productos.
-3.	Realizar una Venta: Ve a la opción de ventas y selecciona los productos que el cliente desea comprar. Puedes buscar productos por nombre o escanear su código de barras.
-4.	Procesar Pago: Una vez seleccionados los productos, procede a procesar el pago utilizando las opciones disponibles, como efectivo, tarjeta de crédito, etc.
-5.	Generar Informes: Accede a la sección de informes para ver datos detallados sobre las ventas realizadas, inventario actual y más.
+<h3 align="center">Tutorial de Uso</h3>
+
+1. Inicio de Sesión: Abre la aplicación POSPro e inicia sesión con tus credenciales de usuario.
+2. En caso de ser un administrador tendrás las opciones de añadir nueva tienda, contratar empleado, estadisticas de productos, comprobar logs, administrar tiendas, administrar empleados y comprobar los ingresos
+3. En caso de ser un reponedor, tendrás las opciones de añadir un nuevo producto a la tienda, o gestionar la lista de los productos pudiendo modificar el producto, modificar su stock, imprimir su codigo de barras o eliminar el producto
+4. En caso de ser un vendedor, tendrás las opciones de realizar una venta o una devolucion
+5. Compruebe el manual de usuario para tener toda la información y los pasos a seguir para el funcionamiento de la aplicación
 
 
 
-    Capturas de Pantalla
+<h3 align="center">Capturas de Pantalla </h3>
 
-   A continuación se muestran algunas capturas de pantalla de la aplicación POSPro:
+
+A continuación se muestran algunas capturas de pantalla de la aplicación POSPro:
+
+
 ![Screenshot_2024-06-09-01-15-01-626_com example tfg_sistematienda](https://github.com/Imbota12/TFG/assets/71496093/ba0c273a-bf11-4990-ad19-d9706624380a)
 
 ![Screenshot_2024-06-09-01-15-08-147_com example tfg_sistematienda](https://github.com/Imbota12/TFG/assets/71496093/1058f9ee-5d11-4ccf-9e19-5cf3087a181a)
@@ -48,5 +66,5 @@ Tutorial de Uso
 ![Screenshot_2024-06-09-01-15-47-822_com example tfg_sistematienda](https://github.com/Imbota12/TFG/assets/71496093/1b828aec-55a6-4f10-99cb-593c77fd27fb)
 
 
-Video Resumen
+<h3 align="center">Video resumen</h3>
 Para obtener una visión general de la aplicación POSPro, consulta nuestro vídeo resumen en este enlace.
